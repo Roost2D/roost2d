@@ -4,6 +4,10 @@ import { spawnSync } from 'node:child_process';
 
 const tag = process.argv[2];
 if (!['next', 'latest'].includes(tag)) throw new Error('Usage: node scripts/publish-packages.mjs <next|latest>');
+const bootstrap = process.argv.includes('--bootstrap');
+if (bootstrap && tag !== 'next') {
+  throw new Error('The one-time bootstrap publish is restricted to the next dist-tag.');
+}
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const packageRoot = resolve('packages');
 const packages = new Map();
@@ -23,6 +27,7 @@ for (const name of [...packages.keys()].sort()) visit(name);
 
 for (const { root, manifest } of ordered) {
   console.log(`Publishing ${manifest.name}@${manifest.version} under ${tag}...`);
-  const result = spawnSync(npm, ['publish', root, '--access', 'public', '--provenance', '--tag', tag], { stdio: 'inherit', shell: process.platform === 'win32' });
+  const provenance = bootstrap ? [] : ['--provenance'];
+  const result = spawnSync(npm, ['publish', root, '--access', 'public', ...provenance, '--tag', tag], { stdio: 'inherit', shell: process.platform === 'win32' });
   if (result.status !== 0) throw new Error(`Publishing failed for ${manifest.name}`);
 }

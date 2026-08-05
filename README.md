@@ -84,6 +84,7 @@ Commercial use of those assets requires a separate Chikn agreement. Roost2D may 
 - [Architecture and package boundaries](docs/architecture.md)
 - [Package map](docs/packages.md)
 - [Chikn asset integration](docs/chikn-assets.md)
+- [Release operator runbook](docs/tooling-releases.md#release-operator-runbook)
 - [Agent guide](AGENTS.md) and [compact model context](llms.txt)
 - Compiled reference application: [`apps/showcase`](apps/showcase)
 

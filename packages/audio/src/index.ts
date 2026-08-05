@@ -58,10 +58,18 @@ export class AudioManager {
   async play(id: string, options: PlayOptions = {}): Promise<PlayingSound | undefined> {
     const definition = this.requireDefinition(id); const now = performance.now();
     if (now - (this.lastPlayed.get(id) ?? -Infinity) < (definition.cooldownMs ?? 0)) return undefined;
-    const active = this.active.get(id) ?? new Set(); if (active.size >= (definition.maxConcurrent ?? Infinity)) return undefined;
-    const source = this.context.createBufferSource(); source.buffer = await this.load(id); source.playbackRate.value = Math.max(0.01, options.rate ?? 1); source.loop = options.loop ?? definition.loop ?? false;
+    // Register the active set and the cooldown *before* awaiting: two concurrent plays used to each
+    // create their own Set, and the second overwrote the first, orphaning a source stop() never saw.
+    let active = this.active.get(id);
+    if (!active) { active = new Set(); this.active.set(id, active); }
+    const maxConcurrent = definition.maxConcurrent ?? Infinity;
+    if (active.size >= maxConcurrent) return undefined;
+    this.lastPlayed.set(id, now);
+    const buffer = await this.load(id);
+    if (active.size >= maxConcurrent) return undefined; // Re-check: other plays may have started during the load.
+    const source = this.context.createBufferSource(); source.buffer = buffer; source.playbackRate.value = Math.max(0.01, options.rate ?? 1); source.loop = options.loop ?? definition.loop ?? false;
     const gain = this.context.createGain(); gain.gain.value = clampVolume((definition.volume ?? 1) * (options.volume ?? 1));
-    source.connect(gain); gain.connect(this.mixer.group(options.channel ?? definition.channel ?? 'sfx')); active.add(source); this.active.set(id, active); this.lastPlayed.set(id, now);
+    source.connect(gain); gain.connect(this.mixer.group(options.channel ?? definition.channel ?? 'sfx')); active.add(source);
     let resolveEnded!: () => void; const ended = new Promise<void>((resolve) => { resolveEnded = resolve; });
     const cleanup = () => { active.delete(source); source.disconnect(); gain.disconnect(); resolveEnded(); };
     source.addEventListener('ended', cleanup, { once: true }); source.start();

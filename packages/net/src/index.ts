@@ -39,23 +39,57 @@ export class LocalWorkerTransport implements MessageTransport {
 export interface SocketLike extends EventTarget { readonly readyState: number; send(message: string): void; close(code?: number, reason?: string): void; }
 export class SocketTransport implements MessageTransport {
   state: ConnectionState = 'idle'; private socket?: SocketLike; private readonly listeners = new Set<(message: string) => void>(); private readonly stateListeners = new Set<(state: ConnectionState) => void>();
+  private connecting?: Promise<void>; private abortConnect?: (reason: Error) => void; private unbindSocket?: () => void; private generation = 0;
   constructor(private readonly url: string, private readonly createSocket: (url: string) => SocketLike = (value) => new WebSocket(value)) {}
   connect(): Promise<void> {
-    if (this.state === 'open') return Promise.resolve(); this.setState('connecting'); this.socket = this.createSocket(this.url);
-    return new Promise((resolve, reject) => {
-      const open = () => { cleanup(); this.bind(); this.setState('open'); resolve(); };
-      const error = () => { cleanup(); this.setState('error'); reject(new Error(`WebSocket connection failed: ${this.url}`)); };
-      const cleanup = () => { this.socket?.removeEventListener('open', open); this.socket?.removeEventListener('error', error); };
-      this.socket!.addEventListener('open', open); this.socket!.addEventListener('error', error);
+    if (this.state === 'open') return Promise.resolve();
+    if (this.connecting) return this.connecting; // A second call must not orphan the in-flight socket.
+    this.setState('connecting');
+    let socket: SocketLike;
+    try { socket = this.createSocket(this.url); }
+    catch (error) { this.setState('error'); return Promise.reject(error instanceof Error ? error : new Error(String(error))); }
+    const generation = ++this.generation; this.socket = socket;
+    let connecting: Promise<void>;
+    connecting = new Promise((resolve, reject) => {
+      const settle = () => {
+        socket.removeEventListener('open', open); socket.removeEventListener('error', error);
+        if (this.connecting === connecting) this.connecting = undefined;
+        if (this.socket === socket) this.abortConnect = undefined;
+      };
+      const open = () => {
+        settle();
+        if (this.socket !== socket || this.generation !== generation) { reject(new Error(`WebSocket connection was superseded: ${this.url}`)); return; }
+        this.bind(socket, generation); this.setState('open'); resolve();
+      };
+      const error = () => {
+        settle();
+        if (this.socket === socket && this.generation === generation) { this.socket = undefined; socket.close(); this.setState('error'); }
+        reject(new Error(`WebSocket connection failed: ${this.url}`));
+      };
+      this.abortConnect = (reason) => { settle(); reject(reason); };
+      socket.addEventListener('open', open); socket.addEventListener('error', error);
     });
+    this.connecting = connecting;
+    return this.connecting;
   }
   send(message: string): void { if (this.state !== 'open' || !this.socket) throw new Error('Socket transport is not open'); this.socket.send(message); }
   subscribe(listener: (message: string) => void): () => void { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   subscribeState(listener: (state: ConnectionState) => void): () => void { this.stateListeners.add(listener); return () => this.stateListeners.delete(listener); }
-  close(code = 1000, reason = 'closed'): void { this.socket?.close(code, reason); this.socket = undefined; this.setState('closed'); }
-  private bind(): void {
-    this.socket!.addEventListener('message', (event) => { const data = (event as MessageEvent).data; if (typeof data !== 'string') return; for (const listener of this.listeners) listener(data); });
-    this.socket!.addEventListener('close', () => this.setState('closed')); this.socket!.addEventListener('error', () => this.setState('error'));
+  /** Settles a pending `connect()` rather than leaving its promise unresolved forever. */
+  close(code = 1000, reason = 'closed'): void {
+    const socket = this.socket; this.generation += 1;
+    this.abortConnect?.(new Error(`WebSocket closed before opening: ${this.url}`)); this.abortConnect = undefined;
+    this.unbindSocket?.(); this.unbindSocket = undefined; this.socket = undefined;
+    socket?.close(code, reason); this.setState('closed');
+  }
+  private bind(socket: SocketLike, generation: number): void {
+    const current = () => this.socket === socket && this.generation === generation;
+    const message = (event: Event) => { if (!current()) return; const data = (event as MessageEvent).data; if (typeof data !== 'string') return; for (const listener of this.listeners) listener(data); };
+    const close = () => { if (!current()) return; cleanup(); this.socket = undefined; this.setState('closed'); };
+    const error = () => { if (current()) this.setState('error'); };
+    const cleanup = () => { socket.removeEventListener('message', message); socket.removeEventListener('close', close); socket.removeEventListener('error', error); if (this.unbindSocket === cleanup) this.unbindSocket = undefined; };
+    this.unbindSocket?.(); this.unbindSocket = cleanup;
+    socket.addEventListener('message', message); socket.addEventListener('close', close); socket.addEventListener('error', error);
   }
   private setState(state: ConnectionState): void { this.state = state; for (const listener of this.stateListeners) listener(state); }
 }

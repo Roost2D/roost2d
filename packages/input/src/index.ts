@@ -8,12 +8,16 @@ export interface InputContext { id: string; enabled?: boolean; blocksLower?: boo
 export interface InputManagerOptions { holdMs?: number; dragThreshold?: number; gamepadDeadZone?: number; now?: () => number; }
 
 interface Binding { action: string; codes: Set<string>; contextId?: string; }
+interface TrackedPointer { x: number; y: number; startX: number; startY: number; buttons: number; pointerType?: string; }
 
 export class InputManager {
-  private readonly bindings = new Map<string, Binding>();
+  /** Keyed by code; one entry per context, since the same key may mean different things per context. */
+  private readonly bindings = new Map<string, Binding[]>();
   private readonly actions = new Map<string, ActionState>();
   private readonly contexts: InputContext[] = [];
-  private readonly pointers = new Map<number, { x: number; y: number }>();
+  private readonly pointers = new Map<number, TrackedPointer>();
+  /** The pointer the public `pointer`/gesture state follows; other fingers must not disturb it. */
+  private primaryPointerId?: number;
   private enabled = true;
   private blocked = false;
   private pointerDownAt = 0;
@@ -24,35 +28,53 @@ export class InputManager {
 
   private readonly onKeyDown = (event: Event) => {
     if (!this.enabled || this.blocked || !(event instanceof KeyboardEvent)) return;
-    const binding = this.bindings.get(event.code); if (!binding || !this.isBindingActive(binding)) return;
+    const binding = this.resolve(event.code); if (!binding) return;
     const state = this.state(binding.action); if (!state.down) state.pressed = true; state.down = true; state.value = 1;
   };
   private readonly onKeyUp = (event: Event) => {
     if (!(event instanceof KeyboardEvent)) return;
-    const binding = this.bindings.get(event.code); if (!binding) return;
-    const state = this.state(binding.action); if (state.down) state.released = true; state.down = false; state.value = 0;
+    // Release every binding for the code: a context change between down and up must not strand a key.
+    for (const binding of this.bindings.get(event.code) ?? []) {
+      const state = this.state(binding.action); if (state.down) state.released = true; state.down = false; state.value = 0;
+    }
   };
   private readonly onPointerDown = (event: Event) => {
     if (!this.enabled || this.blocked || !(event instanceof PointerEvent)) return;
-    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY }); this.pointerDownAt = this.now();
-    Object.assign(this.pointer, { x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, deltaX: 0, deltaY: 0, buttons: event.buttons, down: true, dragging: false, pointerId: event.pointerId, pointerType: event.pointerType });
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, buttons: event.buttons, pointerType: event.pointerType });
+    if (this.primaryPointerId === undefined) this.promotePrimary(event.pointerId);
     this.updatePinch();
   };
   private readonly onPointerMove = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
-    const previousX = this.pointer.x; const previousY = this.pointer.y;
-    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    this.pointer.x = event.clientX; this.pointer.y = event.clientY; this.pointer.deltaX += event.clientX - previousX; this.pointer.deltaY += event.clientY - previousY; this.pointer.buttons = event.buttons;
-    const distance = Math.hypot(event.clientX - this.pointer.startX, event.clientY - this.pointer.startY);
-    if (this.pointer.down && distance >= this.options.dragThreshold) this.pointer.dragging = this.gestures.drag = true;
-    this.gestures.panX += event.clientX - previousX; this.gestures.panY += event.clientY - previousY; this.updatePinch();
+    const tracked = this.pointers.get(event.pointerId);
+    if (!tracked) return; // Hover-only pointers are not active gesture participants.
+    const previousX = tracked.x; const previousY = tracked.y;
+    tracked.x = event.clientX; tracked.y = event.clientY; tracked.buttons = event.buttons;
+    // Pan is a whole-surface gesture; the public pointer state tracks only the primary pointer.
+    this.gestures.panX += event.clientX - previousX; this.gestures.panY += event.clientY - previousY;
+    if (this.primaryPointerId === event.pointerId) {
+      this.pointer.x = event.clientX; this.pointer.y = event.clientY; this.pointer.buttons = event.buttons;
+      this.pointer.deltaX += event.clientX - previousX; this.pointer.deltaY += event.clientY - previousY;
+      const distance = Math.hypot(event.clientX - this.pointer.startX, event.clientY - this.pointer.startY);
+      if (this.pointer.down && distance >= this.options.dragThreshold) this.pointer.dragging = this.gestures.drag = true;
+    }
+    this.updatePinch();
   };
   private readonly onPointerUp = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
-    this.pointers.delete(event.pointerId);
+    this.pointers.delete(event.pointerId); this.previousPinchDistance = 0;
+    if (this.primaryPointerId !== event.pointerId) return; // A second finger lifting must not cancel the primary drag.
     if (this.pointer.down && !this.pointer.dragging && this.now() - this.pointerDownAt < this.options.holdMs) this.gestures.tap = true;
-    this.pointer.down = false; this.pointer.dragging = false; this.pointer.buttons = event.buttons; this.previousPinchDistance = 0;
+    this.pointer.down = false; this.pointer.dragging = false; this.pointer.buttons = event.buttons; this.primaryPointerId = undefined;
+    const [next] = this.pointers.keys();
+    if (next !== undefined) this.promotePrimary(next); // A still-down finger continues the gesture.
   };
+
+  private promotePrimary(pointerId: number): void {
+    const tracked = this.pointers.get(pointerId); if (!tracked) return;
+    this.primaryPointerId = pointerId; this.pointerDownAt = this.now();
+    Object.assign(this.pointer, { x: tracked.x, y: tracked.y, startX: tracked.x, startY: tracked.y, deltaX: 0, deltaY: 0, buttons: tracked.buttons, down: true, dragging: false, pointerId, pointerType: tracked.pointerType });
+  }
 
   private readonly options: Required<Omit<InputManagerOptions, 'now'>>;
   constructor(private readonly target: EventTarget = globalThis.window, options: InputManagerOptions = {}) {
@@ -64,13 +86,30 @@ export class InputManager {
     target.addEventListener('pointerup', this.onPointerUp); target.addEventListener('pointercancel', this.onPointerUp);
   }
 
+  /**
+   * Binds `codes` to `action`. The same code may be bound in different input contexts; binding it
+   * twice within one context is an error rather than a silent steal from the previous owner.
+   */
   bind(action: string, codes: readonly string[], contextId?: string): void {
-    this.unbind(action);
     const binding: Binding = { action, codes: new Set(codes), contextId };
-    for (const code of codes) this.bindings.set(code, binding); this.state(action);
+    for (const code of binding.codes) {
+      const existing = this.bindings.get(code) ?? [];
+      const conflict = existing.find((candidate) => candidate.action !== action && candidate.contextId === contextId);
+      if (conflict) throw new Error(`Input code ${code} is already bound to ${conflict.action}${contextId ? ` in context ${contextId}` : ''}`);
+    }
+    // Commit only after every code passes preflight so a failed rebind preserves the old mapping.
+    this.unbind(action);
+    for (const code of binding.codes) { const existing = this.bindings.get(code) ?? []; existing.push(binding); this.bindings.set(code, existing); }
+    this.state(action);
   }
   rebind(action: string, codes: readonly string[], contextId?: string): void { this.bind(action, codes, contextId); }
-  unbind(action: string): void { for (const [code, binding] of this.bindings) if (binding.action === action) this.bindings.delete(code); this.actions.delete(action); }
+  unbind(action: string): void {
+    for (const [code, bindings] of this.bindings) {
+      const remaining = bindings.filter((binding) => binding.action !== action);
+      if (remaining.length) this.bindings.set(code, remaining); else this.bindings.delete(code);
+    }
+    this.actions.delete(action);
+  }
   pushContext(context: InputContext): void { this.removeContext(context.id); this.contexts.push({ ...context, enabled: context.enabled ?? true }); }
   removeContext(id: string): boolean { const index = this.contexts.findIndex((context) => context.id === id); if (index < 0) return false; this.contexts.splice(index, 1); return true; }
   setEnabled(enabled: boolean): void { this.enabled = enabled; if (!enabled) this.releaseAll(); }
@@ -98,10 +137,21 @@ export class InputManager {
     this.target.removeEventListener('keydown', this.onKeyDown); this.target.removeEventListener('keyup', this.onKeyUp);
     this.target.removeEventListener('pointerdown', this.onPointerDown); this.target.removeEventListener('pointermove', this.onPointerMove);
     this.target.removeEventListener('pointerup', this.onPointerUp); this.target.removeEventListener('pointercancel', this.onPointerUp);
-    this.bindings.clear(); this.actions.clear(); this.contexts.length = 0; this.pointers.clear();
+    this.bindings.clear(); this.actions.clear(); this.contexts.length = 0; this.pointers.clear(); this.primaryPointerId = undefined;
   }
 
   private state(action: string): ActionState { let state = this.actions.get(action); if (!state) { state = { down: false, pressed: false, released: false, value: 0 }; this.actions.set(action, state); } return state; }
+  /** Picks the active binding for a code, preferring the top-most context over a context-free one. */
+  private resolve(code: string): Binding | undefined {
+    const candidates = this.bindings.get(code); if (!candidates?.length) return undefined;
+    let best: Binding | undefined; let bestRank = -2;
+    for (const binding of candidates) {
+      if (!this.isBindingActive(binding)) continue;
+      const rank = binding.contextId ? this.contexts.findIndex((context) => context.id === binding.contextId) : -1;
+      if (rank >= bestRank) { best = binding; bestRank = rank; }
+    }
+    return best;
+  }
   private isBindingActive(binding: Binding): boolean {
     if (!binding.contextId || !this.contexts.length) return true;
     for (let index = this.contexts.length - 1; index >= 0; index -= 1) {
@@ -111,7 +161,7 @@ export class InputManager {
     return false;
   }
   private applyGamepadValue(code: string, value: number): void {
-    const binding = this.bindings.get(code); if (!binding || !this.isBindingActive(binding)) return;
+    const binding = this.resolve(code); if (!binding) return;
     const state = this.state(binding.action); const down = Math.abs(value) > this.options.gamepadDeadZone;
     if (down && !state.down) state.pressed = true; if (!down && state.down) state.released = true; state.down = down; state.value = value;
   }

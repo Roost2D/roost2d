@@ -262,6 +262,9 @@ export class GameRuntime implements Disposable {
   private frameDriver?: FrameDriver;
   private lastFrameMs = 0;
   private switching = Promise.resolve();
+  /** Incremented by every `start`/`stop`, so a frame callback can tell whether its loop still owns the runtime. */
+  private runGeneration = 0;
+  private disposing = false;
   paused = false;
 
   constructor(options: GameRuntimeOptions = {}) {
@@ -288,6 +291,7 @@ export class GameRuntime implements Disposable {
 
   switchScene(id: string): Promise<Scene> {
     const operation = this.switching.then(async () => {
+      if (this.disposing) throw new Error('GameRuntime is disposed');
       const factory = this.sceneFactories.get(id);
       if (!factory) throw new Error(`Unknown scene: ${id}`);
       const previous = this.current;
@@ -325,18 +329,24 @@ export class GameRuntime implements Disposable {
 
   start(driver: FrameDriver = browserFrameDriver!): void {
     if (!driver) throw new Error('A frame driver is required outside a browser');
+    if (this.disposing) throw new Error('GameRuntime is disposed');
     if (this.frameHandle !== undefined) return;
+    const generation = ++this.runGeneration;
     this.frameDriver = driver; this.lastFrameMs = driver.now();
     const frame = (timeMs: number) => {
-      if (this.frameHandle === undefined) return;
+      if (generation !== this.runGeneration) return;
       const deltaMs = Math.max(0, Math.min(1000, timeMs - this.lastFrameMs));
       this.lastFrameMs = timeMs; this.advance(deltaMs);
+      // A scene may have called stop() — or stop() then start() — during that advance. Only the
+      // loop that still owns the runtime re-arms; a handle check alone would schedule two loops.
+      if (generation !== this.runGeneration) return;
       this.frameHandle = driver.request(frame);
     };
     this.frameHandle = driver.request(frame);
   }
 
   stop(): void {
+    this.runGeneration += 1;
     if (this.frameHandle !== undefined) this.frameDriver?.cancel(this.frameHandle);
     this.frameHandle = undefined; this.frameDriver = undefined;
   }
@@ -347,7 +357,11 @@ export class GameRuntime implements Disposable {
   }
 
   async dispose(): Promise<void> {
+    if (this.disposing) return;
+    this.disposing = true;
     this.stop();
+    // Settle any in-flight switchScene first, or it repopulates loadedScenes after teardown.
+    await this.switching;
     await this.current?.exit?.(this.context);
     for (const scene of [...this.loadedScenes.values()].reverse()) await scene.dispose?.();
     for (const system of [...this.systems.values()].reverse()) await system.dispose?.();

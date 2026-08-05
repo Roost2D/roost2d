@@ -51,20 +51,30 @@ export interface LoadedAsset { asset: ResolvedAsset; bytes: ArrayBuffer; fromCac
 export interface AssetFailure { assetId: string; error: unknown; optional: boolean; }
 export interface BundleLoadResult { assets: LoadedAsset[]; failures: AssetFailure[]; }
 export interface AssetLoadProgress { loaded: number; total: number; assetId: string; failed: boolean; }
-export interface AssetLoaderOptions { fetch?: typeof globalThis.fetch; onProgress?: (progress: AssetLoadProgress) => void; }
+export interface AssetLoaderOptions {
+  fetch?: typeof globalThis.fetch;
+  onProgress?: (progress: AssetLoadProgress) => void;
+  /** Hard ceiling on any single transfer. `variant.bytes` comes from the manifest, so it cannot be the only limit. */
+  maxAssetBytes?: number;
+}
+
+export const DEFAULT_MAX_ASSET_BYTES = 64 * 1024 * 1024;
 
 export class LazyAssetLoader {
   private readonly loaded = new Map<string, Promise<LoadedAsset>>();
   private readonly downloaded = new Map<string, Promise<ArrayBuffer>>();
   private readonly fetcher: typeof globalThis.fetch;
   private readonly onProgress?: (progress: AssetLoadProgress) => void;
+  private readonly maxAssetBytes: number;
   private readonly failures: AssetFailure[] = [];
 
   constructor(private readonly resolver: AssetManifestResolver, options: AssetLoaderOptions | typeof globalThis.fetch = {}) {
     const normalized = typeof options === 'function' ? { fetch: options } : options;
     const fetcher = normalized.fetch ?? globalThis.fetch;
     if (!fetcher) throw new Error('A fetch implementation is required to load assets');
-    this.fetcher = fetcher; this.onProgress = normalized.onProgress;
+    const maxAssetBytes = normalized.maxAssetBytes ?? DEFAULT_MAX_ASSET_BYTES;
+    if (!Number.isFinite(maxAssetBytes) || maxAssetBytes <= 0) throw new Error('maxAssetBytes must be a positive number');
+    this.fetcher = fetcher; this.onProgress = normalized.onProgress; this.maxAssetBytes = maxAssetBytes;
   }
 
   load(assetId: string): Promise<LoadedAsset> {
@@ -106,31 +116,84 @@ export class LazyAssetLoader {
   }
 
   getFailures(): readonly AssetFailure[] { return this.failures; }
-  isLoaded(assetId: string): boolean { return this.loaded.has(this.resolver.resolve(assetId).file.id); }
-  unload(assetId: string): boolean { return this.loaded.delete(this.resolver.resolve(assetId).file.id); }
+  isLoaded(assetId: string): boolean { const resolved = this.tryResolve(assetId); return resolved ? this.loaded.has(resolved.file.id) : false; }
+
+  unload(assetId: string): boolean {
+    const resolved = this.tryResolve(assetId);
+    if (!resolved || !this.loaded.delete(resolved.file.id)) return false;
+    this.releaseDownload(resolved.url.href);
+    return true;
+  }
+
   clear(): void { this.loaded.clear(); this.downloaded.clear(); this.failures.length = 0; }
+
+  private tryResolve(assetId: string): ResolvedAsset | undefined {
+    try { return this.resolver.resolve(assetId); } catch { return undefined; }
+  }
+
+  /** Drops the buffered bytes for `url` once no loaded asset still resolves to it. */
+  private releaseDownload(url: string): void {
+    for (const id of this.loaded.keys()) if (this.tryResolve(id)?.url.href === url) return;
+    this.downloaded.delete(url);
+  }
 
   private async fetchAsset(assetId: string): Promise<LoadedAsset> {
     const asset = this.resolver.resolve(assetId);
     const cacheKey = asset.url.href;
     const existingDownload = this.downloaded.get(cacheKey);
-    const bytes = await (existingDownload ?? this.download(cacheKey, assetId));
+    const bytes = await (existingDownload ?? this.download(cacheKey, assetId, Math.min(asset.variant.bytes, this.maxAssetBytes)));
     if (bytes.byteLength !== asset.variant.bytes) throw new Error(`Integrity preflight failed for ${assetId}: expected ${asset.variant.bytes} bytes, received ${bytes.byteLength}`);
     if (!(await hasExpectedSha256(bytes, asset.variant.integrity.value))) throw new Error(`SHA-256 integrity check failed for ${assetId}`);
     return { asset, bytes, fromCache: Boolean(existingDownload) };
   }
 
-  private download(url: string, assetId: string): Promise<ArrayBuffer> {
+  private download(url: string, assetId: string, limitBytes: number): Promise<ArrayBuffer> {
     const pending = this.fetcher(url).then(async (response) => {
       if (!response.ok) throw new Error(`Failed to load ${assetId}: ${response.status} ${response.statusText}`);
-      return response.arrayBuffer();
+      return readCappedBody(response, assetId, limitBytes);
     }).catch((error) => { this.downloaded.delete(url); throw error; });
     this.downloaded.set(url, pending); return pending;
   }
 }
 
+/**
+ * Reads a response body, abandoning the transfer the moment it exceeds `limitBytes`. Buffering the
+ * whole body first and checking the size afterwards lets a hostile host exhaust memory with a
+ * response that would have been rejected anyway.
+ */
+async function readCappedBody(response: Response, assetId: string, limitBytes: number): Promise<ArrayBuffer> {
+  // Fetch exposes decoded chunks while Content-Length may describe the encoded transfer. The
+  // header is therefore advisory only: both understated and overstated values are legitimate.
+  // The decoded stream below is the sole size authority.
+  const reader = response.body?.getReader?.();
+  if (!reader) {
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > limitBytes) throw new Error(`${assetId} exceeds the ${limitBytes} byte transfer limit`);
+    return buffer;
+  }
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (!value) continue;
+    total += value.byteLength;
+    if (total > limitBytes) {
+      void Promise.resolve(reader.cancel()).catch(() => undefined);
+      throw new Error(`${assetId} exceeds the ${limitBytes} byte transfer limit`);
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  return bytes.buffer;
+}
+
 export function selectAssetProfile(manifest: AssetManifestV1, maximumTextureSize: number, preferred: AssetProfileId = 'high'): AssetProfileId {
-  const candidate = manifest.profiles[preferred];
+  const profiles: unknown = manifest?.profiles;
+  if (typeof profiles !== 'object' || profiles === null || Array.isArray(profiles)) throw new Error('Asset manifest does not declare any profiles');
+  const candidate = Object.hasOwn(profiles, preferred) ? manifest.profiles[preferred] : undefined;
   if (candidate && candidate.maxAtlasSize <= maximumTextureSize) return preferred;
   const compatible = Object.entries(manifest.profiles)
     .filter(([, profile]) => profile.maxAtlasSize <= maximumTextureSize)

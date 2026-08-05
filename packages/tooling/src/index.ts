@@ -1,14 +1,31 @@
 import { createHash } from 'node:crypto';
-import { access, cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
-import { basename, dirname, extname, relative, resolve, sep } from 'node:path';
+import { mkdir, readFile, readdir, realpath, stat, writeFile } from 'node:fs/promises';
+import { basename, dirname, relative, resolve, sep } from 'node:path';
 import sharp from 'sharp';
-import type { AnimationClipV1, AssetManifestV1, AtlasManifestV1, RigDefinitionV1, RightsManifestV1 } from '@roost2d/contracts';
+import type { AssetManifestV1, AtlasManifestV1, RightsManifestV1 } from '@roost2d/contracts';
 import { isSha256SRI, validateAnimationClip, validateAssetManifest, validateAtlasManifest, validateRigDefinition, validateRightsManifest } from '@roost2d/contracts';
+
+export type JsonReadResult = { ok: true; value: unknown } | { ok: false; errors: string[] };
+
+/** Reads and parses JSON without ever handing a malformed value to a validator. */
+export async function readJsonFile(path: string): Promise<JsonReadResult> {
+  let text: string;
+  try { text = await readFile(path, 'utf8'); } catch { return { ok: false, errors: [`missing or unreadable file: ${path}`] }; }
+  try { return { ok: true, value: JSON.parse(text) as unknown }; } catch (error) { return { ok: false, errors: [`invalid JSON in ${path}: ${(error as Error).message}`] }; }
+}
 
 export interface InventoryEntry { path: string; bytes: number; sha256: string; }
 export interface ImageInspection extends InventoryEntry { width: number; height: number; alpha: boolean; pixelsSha256: string; }
 export function sha256Hex(bytes: Uint8Array): string { return createHash('sha256').update(bytes).digest('hex'); }
 export function sha256SRI(bytes: Uint8Array): string { return `sha256-${createHash('sha256').update(bytes).digest('base64')}`; }
+
+/** Rights hashes for portable text sources use UTF-8 LF bytes, independent of checkout EOLs. */
+export function sourceSha256Hex(bytes: Uint8Array, sourcePath: string): string {
+  const canonical = /\.(?:json|txt|md|csv|xml|ya?ml)$/i.test(sourcePath)
+    ? Buffer.from(Buffer.from(bytes).toString('utf8').replace(/\r\n?/g, '\n'), 'utf8')
+    : bytes;
+  return sha256Hex(canonical);
+}
 
 export async function createInventory(root: string): Promise<InventoryEntry[]> {
   const entries: InventoryEntry[] = [];
@@ -31,23 +48,28 @@ export function findDuplicateImages(images: readonly ImageInspection[]): Array<{
     .filter(([, paths]) => paths.length > 1).map(([pixelsSha256, paths]) => ({ pixelsSha256, paths }));
 }
 
-export async function verifyManifestFiles(manifest: AssetManifestV1, assetRoot: string): Promise<string[]> {
-  const errors = validateAssetManifest(manifest); const root = resolve(assetRoot);
-  for (const file of manifest.files) for (const variant of file.variants) {
-    const absolute = resolve(root, variant.path); if (!isInside(root, absolute)) { errors.push(`${file.id}: path escapes asset root`); continue; }
+export async function verifyManifestFiles(manifest: unknown, assetRoot: string): Promise<string[]> {
+  const errors = validateAssetManifest(manifest);
+  if (errors.length) return errors; // Structural failure: never walk the filesystem with rejected data.
+  const { files } = manifest as AssetManifestV1; const root = resolve(assetRoot);
+  for (const file of files) for (const variant of file.variants) {
+    const absolute = await containedPath(root, variant.path); if (!absolute) { errors.push(`${file.id}: path escapes asset root`); continue; }
     try { const [bytes, info] = await Promise.all([readFile(absolute), stat(absolute)]); if (info.size !== variant.bytes) errors.push(`${file.id}: expected ${variant.bytes} bytes, got ${info.size}`); const integrity = sha256SRI(bytes); if (!isSha256SRI(variant.integrity.value) || integrity !== variant.integrity.value) errors.push(`${file.id}: SHA-256 integrity mismatch`); } catch { errors.push(`${file.id}: missing ${variant.path}`); }
   }
   return errors;
 }
 
-export async function verifyRightsFiles(manifest: RightsManifestV1, sourceRoot: string): Promise<string[]> {
-  const errors = validateRightsManifest(manifest); const root = resolve(sourceRoot); const listed = new Set<string>();
-  for (const asset of manifest.assets) {
-    const path = asset.sourcePath.replace(/^sources\//, ''); const absolute = resolve(root, path); listed.add(path);
-    if (!isInside(root, absolute)) { errors.push(`${asset.id}: path escapes source root`); continue; }
-    try { if (sha256Hex(await readFile(absolute)) !== asset.sha256) errors.push(`${asset.id}: source SHA-256 mismatch`); } catch { errors.push(`${asset.id}: missing ${asset.sourcePath}`); }
+export async function verifyRightsFiles(manifest: unknown, sourceRoot: string): Promise<string[]> {
+  const errors = validateRightsManifest(manifest);
+  if (errors.length) return errors; // Structural failure: never walk the filesystem with rejected data.
+  const { assets, excludedPaths } = manifest as RightsManifestV1; const root = resolve(sourceRoot); const listed = new Set<string>();
+  const excluded = new Set(excludedPaths.map((path) => path.replace(/^sources\//, '')));
+  for (const asset of assets) {
+    const path = asset.sourcePath.replace(/^sources\//, ''); listed.add(path);
+    const absolute = await containedPath(root, path); if (!absolute) { errors.push(`${asset.id}: path escapes source root`); continue; }
+    try { if (sourceSha256Hex(await readFile(absolute), asset.sourcePath) !== asset.sha256) errors.push(`${asset.id}: source SHA-256 mismatch`); } catch { errors.push(`${asset.id}: missing ${asset.sourcePath}`); }
   }
-  for (const entry of await createInventory(root)) if (!listed.has(entry.path) && !manifest.excludedPaths.includes(entry.path)) errors.push(`unclassified source file: sources/${entry.path}`);
+  for (const entry of await createInventory(root)) if (!listed.has(entry.path) && !excluded.has(entry.path)) errors.push(`unclassified source file: sources/${entry.path}`);
   return errors;
 }
 
@@ -86,13 +108,45 @@ export async function buildAtlases(config: AtlasBuildConfig, options: { dryRun?:
 }
 
 export async function validateAtlasFiles(atlasFile: string): Promise<string[]> {
-  const atlas = JSON.parse(await readFile(atlasFile, 'utf8')) as AtlasManifestV1; const errors = validateAtlasManifest(atlas);
-  try { const imagePath = resolve(dirname(atlasFile), atlas.image); const [bytes, metadata] = await Promise.all([readFile(imagePath), sharp(imagePath).metadata()]); if (sha256SRI(bytes) !== atlas.integrity.value) errors.push('atlas image integrity mismatch'); if (metadata.width !== atlas.width || metadata.height !== atlas.height) errors.push('atlas image dimensions mismatch'); } catch { errors.push(`missing atlas image ${atlas.image}`); }
+  const parsed = await readJsonFile(atlasFile);
+  if (!parsed.ok) return parsed.errors;
+  const errors = validateAtlasManifest(parsed.value);
+  if (errors.length) return errors; // The image path is only trustworthy once the contract accepts it.
+  const atlas = parsed.value as AtlasManifestV1;
+  const imagePath = await containedPath(dirname(resolve(atlasFile)), atlas.image);
+  if (!imagePath) return [`atlas image escapes the atlas directory: ${atlas.image}`];
+  try { const [bytes, metadata] = await Promise.all([readFile(imagePath), sharp(imagePath).metadata()]); if (sha256SRI(bytes) !== atlas.integrity.value) errors.push('atlas image integrity mismatch'); if (metadata.width !== atlas.width || metadata.height !== atlas.height) errors.push('atlas image dimensions mismatch'); } catch { errors.push(`missing atlas image ${atlas.image}`); }
   return errors;
 }
 
-export async function validateRigFile(path: string): Promise<string[]> { return validateRigDefinition(JSON.parse(await readFile(path, 'utf8')) as RigDefinitionV1); }
-export async function validateAnimationFile(path: string, rigPath?: string): Promise<string[]> { const data = JSON.parse(await readFile(path, 'utf8')); const clips = Array.isArray(data) ? data : data.animations ?? [data]; const rig = rigPath ? JSON.parse(await readFile(rigPath, 'utf8')) as RigDefinitionV1 : undefined; return clips.flatMap((clip: AnimationClipV1) => validateAnimationClip(clip, rig)); }
+export async function validateRigFile(path: string): Promise<string[]> {
+  const parsed = await readJsonFile(path);
+  return parsed.ok ? validateRigDefinition(parsed.value) : parsed.errors;
+}
+
+export async function validateAnimationFile(path: string, rigPath?: string): Promise<string[]> {
+  const parsed = await readJsonFile(path);
+  if (!parsed.ok) return parsed.errors;
+  let rig: unknown;
+  if (rigPath) {
+    const parsedRig = await readJsonFile(rigPath);
+    if (!parsedRig.ok) return parsedRig.errors;
+    const rigErrors = validateRigDefinition(parsedRig.value);
+    if (rigErrors.length) return rigErrors;
+    rig = parsedRig.value;
+  }
+  const clips = animationClips(parsed.value);
+  if (!clips) return [`${path}: expected a clip, an array of clips, or { animations: [...] }`];
+  return clips.flatMap((clip) => validateAnimationClip(clip, rig));
+}
+
+function animationClips(value: unknown): unknown[] | undefined {
+  if (Array.isArray(value)) return value as unknown[];
+  if (typeof value !== 'object' || value === null) return undefined;
+  const animations = (value as { animations?: unknown }).animations;
+  if (animations === undefined) return [value];
+  return Array.isArray(animations) ? animations as unknown[] : undefined;
+}
 export function assertBudgets(label: string, actualBytes: number, maximumBytes: number): void { if (actualBytes > maximumBytes) throw new Error(`${label} is ${actualBytes} bytes; budget is ${maximumBytes} bytes`); }
 
 export async function createProject(directory: string): Promise<void> {
@@ -129,3 +183,23 @@ function pack(inputs: AtlasInput[], profile: AtlasProfileConfig): Array<{ width:
 function finishPage(page: { usedWidth: number; usedHeight: number; items: PackedItem[] }, profile: AtlasProfileConfig) { const size = (value: number) => profile.powerOfTwo ? 2 ** Math.ceil(Math.log2(value)) : value; return { width: Math.min(profile.maxSize, size(page.usedWidth)), height: Math.min(profile.maxSize, size(page.usedHeight)), items: page.items }; }
 async function walk(directory: string): Promise<string[]> { const result: string[] = []; for (const entry of await readdir(directory, { withFileTypes: true })) { const absolute = resolve(directory, entry.name); if (entry.isDirectory()) result.push(...await walk(absolute)); else if (entry.isFile()) result.push(absolute); } return result; }
 function isInside(root: string, path: string): boolean { return path === root || path.startsWith(root + sep); }
+
+/**
+ * Resolves `relativePath` under `root` and returns it only when it is genuinely contained. A lexical
+ * prefix test alone is not enough: a symlink or Windows junction inside the root can point anywhere,
+ * so the candidate itself (including a final-file symlink) is canonicalised before the comparison.
+ * Returns `undefined` — never a path — when containment cannot be established, so callers fail closed.
+ */
+async function containedPath(root: string, relativePath: string): Promise<string | undefined> {
+  const absoluteRoot = resolve(root);
+  const lexical = resolve(absoluteRoot, relativePath);
+  if (!isInside(absoluteRoot, lexical)) return undefined;
+  const realRoot = await realpath(absoluteRoot).catch(() => undefined);
+  if (!realRoot) return undefined;
+  const realCandidate = await realpath(lexical).catch(() => undefined);
+  if (realCandidate) return isInside(realRoot, realCandidate) ? realCandidate : undefined;
+  const realDirectory = await realpath(dirname(lexical)).catch(() => undefined);
+  if (!realDirectory) return lexical; // Directory does not exist; the read below reports it as missing.
+  const canonical = resolve(realDirectory, basename(lexical));
+  return isInside(realRoot, canonical) ? canonical : undefined;
+}

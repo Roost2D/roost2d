@@ -1,7 +1,8 @@
 export interface Updatable { update(deltaMs: number): boolean; reset(): void; }
 export interface TransformTarget { x: number; y: number; scaleX?: number; scaleY?: number; alpha?: number; tint?: number; rotation?: number; }
 
-export class ObjectPool<T extends Updatable> {
+/** Recycles self-updating effects. Distinct from `@roost2d/core`'s general-purpose `ObjectPool`. */
+export class EffectPool<T extends Updatable> {
   private readonly available: T[] = [];
   private readonly active = new Set<T>();
   constructor(private readonly create: () => T, private readonly maxSize = 256) {}
@@ -69,7 +70,11 @@ export class ParticleEmitter {
 
 export class Trail<T> {
   private elapsedMs = 0; readonly points: Array<{ x: number; y: number; value: T }> = [];
-  constructor(private readonly intervalMs: number, private readonly maximumPoints: number, private readonly capture: () => { x: number; y: number; value: T }) {}
+  constructor(private readonly intervalMs: number, private readonly maximumPoints: number, private readonly capture: () => { x: number; y: number; value: T }) {
+    // A non-positive interval makes update() spin forever, since elapsedMs never falls below it.
+    if (!(intervalMs > 0)) throw new Error('Trail intervalMs must be positive');
+    if (!(maximumPoints > 0)) throw new Error('Trail maximumPoints must be positive');
+  }
   update(deltaMs: number): void { this.elapsedMs += deltaMs; while (this.elapsedMs >= this.intervalMs) { this.elapsedMs -= this.intervalMs; this.points.push(this.capture()); if (this.points.length > this.maximumPoints) this.points.shift(); } }
   clear(): void { this.points.length = 0; this.elapsedMs = 0; }
 }

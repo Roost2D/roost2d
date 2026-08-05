@@ -11,4 +11,15 @@ import { PixiApplicationHost } from '@roost2d/pixi';
 const host = await PixiApplicationHost.create({ mount: document.querySelector('#app')!, resizeTo: window });
 ```
 
-Use `PixiAssetLoader` with `@roost2d/assets` to turn a logical atlas-frame ID into a cropped Pixi texture. Destroy the host and clear owned texture loaders during teardown. [Complete quick start](https://github.com/Roost2D/roost2d/blob/main/docs/getting-started.md).
+Use `PixiAssetLoader` with `@roost2d/assets` to turn a logical atlas-frame ID into a cropped Pixi texture:
+
+```ts
+import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
+import { PixiAssetLoader } from '@roost2d/pixi';
+
+const resolver = new AssetManifestResolver(manifest, { baseUrl });
+const textures = new PixiAssetLoader(resolver, new LazyAssetLoader(resolver));
+const texture = await textures.load('chikn-flat/admiral');
+```
+
+The `LazyAssetLoader` is required: every texture is decoded from bytes it has already integrity-checked, and the URL is never fetched a second time. Because these sources stay outside Pixi's `Assets` cache, `unload(assetId)` and `clear()` own their teardown — call one of them, plus `host.dispose()`, during teardown. [Complete quick start](https://github.com/Roost2D/roost2d/blob/main/docs/getting-started.md).

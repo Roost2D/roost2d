@@ -1,4 +1,4 @@
-import { Application, Assets, Container, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData } from 'pixi.js';
+import { Application, Container, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode } from '@roost2d/rig2d';
 import type { TextureRef } from '@roost2d/contracts';
@@ -103,37 +103,88 @@ export class Camera2D {
   }
 }
 
-/** Resolves logical frame assets into cropped Pixi textures, sharing each atlas page source. */
+/** One decoded atlas page, shared by every frame texture cut out of it. */
+interface AtlasPage { pending: Promise<TextureSource>; source?: TextureSource; bitmap?: ImageBitmap; refCount: number; }
+
+/**
+ * Resolves logical frame assets into cropped Pixi textures, sharing each atlas page source.
+ *
+ * Every texture is decoded from bytes `LazyAssetLoader` has already integrity-checked. The loader
+ * deliberately never asks Pixi to fetch the URL itself: two independent requests let a host serve
+ * clean bytes to the verifying one and hostile bytes to the rendering one, and the check would
+ * still pass. Because these sources are outside Pixi's `Assets` cache, nothing else will collect
+ * them — `unload`/`clear` own their teardown.
+ */
 export class PixiAssetLoader {
   private readonly textures = new Map<string, Texture>();
-  constructor(private readonly resolver: AssetManifestResolver, private readonly integrityLoader?: LazyAssetLoader) {}
+  private readonly pages = new Map<string, AtlasPage>();
+  private readonly pageUrls = new Map<string, string>();
+
+  constructor(private readonly resolver: AssetManifestResolver, private readonly integrityLoader: LazyAssetLoader) {
+    if (!integrityLoader) throw new Error('PixiAssetLoader requires a LazyAssetLoader: textures are only built from integrity-checked bytes');
+  }
 
   async load(assetId: string): Promise<Texture> {
     const resolved = this.resolver.resolve(assetId); const canonicalId = resolved.file.id;
     const existing = this.textures.get(canonicalId); if (existing) return existing;
-    await this.integrityLoader?.load(canonicalId);
-    const page = await Assets.load<Texture>(resolved.url.href);
+    const url = resolved.url.href;
+    const page = this.pages.get(url) ?? this.openPage(url, canonicalId);
+    const source = await page.pending;
+    const settled = this.textures.get(canonicalId); if (settled) return settled; // a concurrent load won the race
     const frame = resolved.variant.frame;
-    const texture = frame ? new Texture({ source: page.source, frame: new Rectangle(frame.x, frame.y, frame.width, frame.height) }) : page;
+    const texture = new Texture(frame ? { source, frame: new Rectangle(frame.x, frame.y, frame.width, frame.height) } : { source });
     texture.label = resolved.variant.frameId ?? canonicalId;
-    this.textures.set(canonicalId, texture); return texture;
+    page.refCount += 1; this.textures.set(canonicalId, texture); this.pageUrls.set(canonicalId, url);
+    return texture;
   }
 
   unload(assetId: string): void {
-    const resolved = this.resolver.resolve(assetId); const texture = this.textures.get(resolved.file.id);
-    if (texture && resolved.variant.frame) texture.destroy(false);
-    this.textures.delete(resolved.file.id); this.integrityLoader?.unload(resolved.file.id);
+    const resolved = this.tryResolve(assetId); if (!resolved) return;
+    const canonicalId = resolved.file.id;
+    const texture = this.textures.get(canonicalId); if (!texture) return;
+    this.textures.delete(canonicalId); texture.destroy(false);
+    const url = this.pageUrls.get(canonicalId); this.pageUrls.delete(canonicalId);
+    this.integrityLoader.unload(canonicalId);
+    if (url === undefined) return;
+    const page = this.pages.get(url); if (!page) return;
+    page.refCount -= 1;
+    if (page.refCount <= 0) this.closePage(url, page);
   }
+
   async clear(): Promise<void> {
-    const urls = new Set<string>();
-    for (const [id, texture] of this.textures) { const resolved = this.resolver.resolve(id); urls.add(resolved.url.href); if (resolved.variant.frame) texture.destroy(false); }
-    this.textures.clear(); this.integrityLoader?.clear();
-    await Promise.all([...urls].map((url) => Assets.unload(url)));
+    // Settle in-flight decodes first so nothing is destroyed while it is still being built.
+    await Promise.allSettled([...this.pages.values()].map((page) => page.pending));
+    for (const texture of this.textures.values()) texture.destroy(false);
+    this.textures.clear(); this.pageUrls.clear();
+    for (const [url, page] of [...this.pages]) this.closePage(url, page);
+    this.integrityLoader.clear();
+  }
+
+  private tryResolve(assetId: string) { try { return this.resolver.resolve(assetId); } catch { return undefined; } }
+
+  private openPage(url: string, assetId: string): AtlasPage {
+    // `pending` is assigned on the very next line; the cast keeps the page identity available to decode().
+    const page: AtlasPage = { refCount: 0, pending: undefined as unknown as Promise<TextureSource> };
+    page.pending = this.decode(assetId, page).catch((error: unknown) => { this.pages.delete(url); throw error; });
+    this.pages.set(url, page);
+    return page;
+  }
+
+  private async decode(assetId: string, page: AtlasPage): Promise<TextureSource> {
+    const { bytes, asset } = await this.integrityLoader.load(assetId);
+    const bitmap = await createImageBitmap(new Blob([bytes], { type: asset.file.mediaType }));
+    let source: TextureSource;
+    try { source = new ImageSource({ resource: bitmap }); }
+    catch (error) { bitmap.close(); throw error; }
+    page.bitmap = bitmap; page.source = source;
+    return source;
+  }
+
+  private closePage(url: string, page: AtlasPage): void {
+    this.pages.delete(url);
+    try { page.source?.destroy(); } finally { page.bitmap?.close(); }
   }
 }
-
-export async function loadPixiTexture(resolver: AssetManifestResolver, assetId: string): Promise<Texture> { return new PixiAssetLoader(resolver).load(assetId); }
-export async function releasePixiTexture(resolver: AssetManifestResolver, assetId: string): Promise<void> { await Assets.unload(resolver.resolve(assetId).url.href); }
 
 export class PixiRigNode implements RigDisplayNode {
   constructor(readonly display: Container) {}

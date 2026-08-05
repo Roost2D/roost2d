@@ -18,12 +18,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm-publish
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with: { node-version: 22.14.0, cache: npm, registry-url: https://registry.npmjs.org }
       - run: npm install --global npm@11.5.2
       - run: npm --version
       - run: npm ci
-      - run: node scripts/assert-release-channel.mjs ${{ inputs.tag }}
+      # The dist-tag reaches the shell as an environment variable, never as expression interpolation.
+      - run: node scripts/assert-release-channel.mjs "$RELEASE_TAG"
+        env: { RELEASE_TAG: "${{ inputs.tag }}" }
       - run: npm run release:verify
-      - run: node scripts/publish-packages.mjs ${{ inputs.tag }}
+      - run: node scripts/publish-packages.mjs "$RELEASE_TAG"
+        env: { RELEASE_TAG: "${{ inputs.tag }}" }

@@ -1,6 +1,6 @@
 import { gsap } from 'gsap';
 import type { AnimationClipV1, AnimationTrackV1, RigAttachmentGroupV1, RigDefinitionV1, TextureRef } from '@roost2d/contracts';
-import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
+import { pickAnimationKeyframeValues, validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 
 export interface RigDisplayNode {
   x: number;
@@ -72,19 +72,22 @@ export class RigRuntime {
   }
 
   applySkin(skinId: string): void {
-    if (!this.definition.skins?.[skinId]) throw new Error(`Unknown skin: ${skinId}`);
+    if (!this.definition.skins || !Object.hasOwn(this.definition.skins, skinId)) throw new Error(`Unknown skin: ${skinId}`);
     this.skinId = skinId; this.applyVisibility();
   }
 
   get activeSkinId(): string | undefined { return this.skinId; }
 
   attachGroup(groupId: string): void {
-    const group = this.definition.attachmentGroups?.[groupId]; if (!group) throw new Error(`Unknown attachment group: ${groupId}`);
+    const groups = this.definition.attachmentGroups;
+    const group = groups && Object.hasOwn(groups, groupId) ? groups[groupId] : undefined;
+    if (!group) throw new Error(`Unknown attachment group: ${groupId}`);
     this.activeGroups.set(group.slotId, group); this.manualAttachments.delete(group.slotId); this.applyVisibility();
   }
 
   removeGroup(groupOrSlotId: string): boolean {
-    const group = this.definition.attachmentGroups?.[groupOrSlotId];
+    const groups = this.definition.attachmentGroups;
+    const group = groups && Object.hasOwn(groups, groupOrSlotId) ? groups[groupOrSlotId] : undefined;
     const removed = this.activeGroups.delete(group?.slotId ?? groupOrSlotId); if (removed) this.applyVisibility(); return removed;
   }
 
@@ -100,8 +103,9 @@ export class RigRuntime {
 
   play(clip: AnimationClipV1, options?: RigPlayOptions): RigAnimationHandle;
   play(clipId: string, options?: RigPlayOptions): RigAnimationHandle;
+  play(clipOrId: AnimationClipV1 | string, options?: RigPlayOptions): RigAnimationHandle;
   play(clipOrId: AnimationClipV1 | string, options: RigPlayOptions = {}): RigAnimationHandle {
-    const clip = typeof clipOrId === 'string' ? this.resolveClip(clipOrId) : clipOrId;
+    const clip = typeof clipOrId === 'string' ? this.resolveClip(clipOrId) : this.useClip(clipOrId);
     const layer = options.layer ?? clip.defaultLayer ?? 'base'; this.stop(layer);
     const timeline = gsap.timeline({ repeat: clip.loop ? (options.repeat ?? -1) : (options.repeat ?? 0), onComplete: () => { this.timelines.delete(layer); options.onComplete?.(); } });
     const mask = new Set(options.mask ?? clip.mask ?? []);
@@ -110,7 +114,7 @@ export class RigRuntime {
   }
 
   playOneShot(clipOrId: AnimationClipV1 | string, layer = 'reaction', onComplete?: () => void): RigAnimationHandle {
-    return this.play(clipOrId as AnimationClipV1, { layer, repeat: 0, onComplete });
+    return this.play(clipOrId, { layer, repeat: 0, onComplete });
   }
 
   stop(layer?: string): void {
@@ -143,6 +147,14 @@ export class RigRuntime {
     this.attachments.clear(); this.slotAttachments.clear(); this.bones.clear(); this.clips.clear(); this.activeGroups.clear(); this.manualAttachments.clear();
   }
 
+  /** Clips handed straight to `play` skip `registerClip`, so they are validated here instead. */
+  private useClip(clip: AnimationClipV1): AnimationClipV1 {
+    if (clip && this.clips.get(clip.id) === clip) return clip;
+    const errors = validateAnimationClip(clip, this.definition);
+    if (errors.length) throw new Error(`Invalid animation clip:\n${errors.join('\n')}`);
+    return clip;
+  }
+
   private resolveClip(id: string): AnimationClipV1 {
     let clip = this.clips.get(id); const visited = new Set<string>();
     while (clip?.fallbackClipId && !clip.tracks.length) {
@@ -167,8 +179,10 @@ export class RigRuntime {
     const targets = track.target === 'bone' ? [this.bones.get(track.targetId)] : track.target === 'attachment' ? [this.attachments.get(track.targetId)] : this.slotAttachments.get(track.targetId);
     if (!targets?.length || targets.some((target) => !target)) throw new Error(`Animation target not found: ${track.target}:${track.targetId}`);
     for (const keyframe of track.keyframes) for (const target of targets) {
-      const { timeMs, durationMs = 0, ease = 'none', ...values } = keyframe;
-      timeline.to(target!, { ...values, duration: durationMs / 1000, ease }, timeMs / 1000);
+      // Explicit pick, never a spread of the keyframe: clip data must not be able to reach GSAP's
+      // reserved vars or write arbitrary properties — `__proto__` included — onto a display node.
+      const values = pickAnimationKeyframeValues(keyframe);
+      timeline.to(target!, { ...values, duration: (keyframe.durationMs ?? 0) / 1000, ease: keyframe.ease ?? 'none' }, keyframe.timeMs / 1000);
     }
   }
 

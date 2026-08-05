@@ -16,18 +16,22 @@ export async function loadChiknAnimations(fetcher: typeof fetch = fetch): Promis
 export async function loadRoostrAnimations(fetcher: typeof fetch = fetch): Promise<AnimationClipV1[]> { return convertLegacyAnimations(await loadJson<LegacyAnimations>(roostrAnimationMetadataUrl, fetcher), 'roostr'); }
 
 export function convertLegacyRig(source: LegacyRig, id: string, displayName: string): RigDefinitionV1 {
+  if (!source || !Array.isArray(source.rig)) throw new Error('Legacy rig source must provide a rig array');
   const textureByAttachment = new Map<string, string>();
   const slotByAttachment = new Map<string, string>();
-  const skins: Record<string, Record<string, string | undefined>> = {};
+  // Null-prototype accumulators: source ids are untrusted strings, and `__proto__` as a plain-object
+  // key reparents the container instead of adding an entry.
+  const skins: Record<string, Record<string, string | undefined>> = Object.create(null);
   for (const [skinId, slots] of Object.entries(source.skins ?? {})) {
-    skins[skinId] = {};
+    const skin: Record<string, string | undefined> = Object.create(null);
     for (const [slotId, part] of Object.entries(slots)) {
       textureByAttachment.set(part.name, part.texture ?? part.name);
       slotByAttachment.set(part.name, slotId);
-      skins[skinId][slotId] = part.name;
+      skin[slotId] = part.name;
     }
+    skins[skinId] = skin;
   }
-  const attachmentGroups: Record<string, RigAttachmentGroupV1> = {};
+  const attachmentGroups: Record<string, RigAttachmentGroupV1> = Object.create(null);
   for (const [traitGroupId, traitGroup] of Object.entries(source.traits ?? {})) for (const [traitId, trait] of Object.entries(traitGroup)) {
     for (const part of trait.attachments) { textureByAttachment.set(part.name, part.texture ?? part.name); slotByAttachment.set(part.name, trait.slot); }
     const groupId = `${slug(traitGroupId)}/${slug(traitId)}`;
@@ -63,14 +67,30 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
 }
 
 export function convertLegacyAnimations(source: LegacyAnimations, species: string): AnimationClipV1[] {
+  if (!source || typeof source.animations !== 'object' || source.animations === null) throw new Error('Legacy animation source must provide an animations object');
   return Object.entries(source.animations).map(([id, animation]) => ({
     schema: 'roost2d.animation/v1', id: `${species}.${id}`, durationMs: (animation.duration ?? 1) * 1000, loop: animation.loop ?? true,
-    tracks: Object.entries((animation.tweens ?? []).reduce<Record<string, LegacyTween[]>>((tracks, tween) => { (tracks[slotName(tween.target)] ??= []).push(tween); return tracks; }, {})).map(([targetId, tweens]) => ({
+    // A Map, not a plain object: `slotName('__proto__')` as a key would otherwise hit Object.prototype.
+    tracks: [...(animation.tweens ?? []).reduce((tracks, tween) => {
+      const targetId = slotName(tween.target);
+      const existing = tracks.get(targetId);
+      if (existing) existing.push(tween); else tracks.set(targetId, [tween]);
+      return tracks;
+    }, new Map<string, LegacyTween[]>())].map(([targetId, tweens]) => ({
       target: 'slot' as const,
       targetId,
-      keyframes: tweens.map((tween) => ({ timeMs: tween.at * 1000, durationMs: (tween.properties.duration ?? 0) * 1000, ease: tween.properties.ease, x: tween.properties.x, y: tween.properties.y, rotation: tween.properties.rotation, scaleX: tween.properties.scale, scaleY: tween.properties.scale, alpha: tween.properties.alpha }))
+      // Keyframe times must be non-decreasing, and absent properties must stay absent.
+      keyframes: [...tweens].sort((a, b) => a.at - b.at).map((tween) => ({
+        timeMs: tween.at * 1000,
+        durationMs: (tween.properties.duration ?? 0) * 1000,
+        ...defined({ ease: tween.properties.ease, x: tween.properties.x, y: tween.properties.y, rotation: tween.properties.rotation, scaleX: tween.properties.scale, scaleY: tween.properties.scale, alpha: tween.properties.alpha })
+      }))
     }))
   }));
+}
+
+function defined<T extends Record<string, unknown>>(values: T): Partial<T> {
+  return Object.fromEntries(Object.entries(values).filter(([, value]) => value !== undefined)) as Partial<T>;
 }
 
 function assetToken(value: string): string { return value.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase(); }

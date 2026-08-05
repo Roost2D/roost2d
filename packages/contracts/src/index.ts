@@ -209,138 +209,370 @@ export interface RightsManifestV1 {
 
 const SRI_SHA256 = /^sha256-[A-Za-z0-9+/]{43}=$/;
 const HEX_SHA256 = /^[a-f0-9]{64}$/i;
+/** Percent-encoded `.`, `/`, and `\`, which a decoding origin server can turn back into separators. */
+const ENCODED_SEPARATOR = /%(?:2e|2f|5c)/i;
+const CONTAINMENT_BASE = 'https://roost2d.invalid/root/';
 
-export function isSha256SRI(value: string): boolean { return SRI_SHA256.test(value); }
+/** The only properties an animation keyframe may carry besides `timeMs`, `durationMs`, and `ease`. */
+export const ANIMATION_KEYFRAME_KEYS = ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha', 'visible', 'tint'] as const;
+export type AnimationKeyframeKey = (typeof ANIMATION_KEYFRAME_KEYS)[number];
+/** Exactly the animatable properties of `AnimationKeyframeV1`, each already type-checked. */
+export interface AnimationKeyframeValues { x?: number; y?: number; rotation?: number; scaleX?: number; scaleY?: number; alpha?: number; visible?: boolean; tint?: number; }
 
-export function validateAssetManifest(manifest: AssetManifestV1): string[] {
+const KEYFRAME_VALUE_KEYS: ReadonlySet<string> = new Set<string>(ANIMATION_KEYFRAME_KEYS);
+const KEYFRAME_TIMING_KEYS: ReadonlySet<string> = new Set(['timeMs', 'durationMs', 'ease']);
+const TRANSFORM_KEYS = ['x', 'y', 'rotation', 'scaleX', 'scaleY', 'alpha'] as const;
+
+export function isSha256SRI(value: unknown): boolean { return typeof value === 'string' && SRI_SHA256.test(value); }
+
+function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }
+function isFiniteNumber(value: unknown): value is number { return typeof value === 'number' && Number.isFinite(value); }
+function isNonEmptyString(value: unknown): value is string { return typeof value === 'string' && value.length > 0; }
+function isTint(value: unknown): value is number { return Number.isInteger(value) && (value as number) >= 0 && (value as number) <= 0xffffff; }
+
+/** C0 controls, DEL, and backslash. The URL parser silently strips the first group and rewrites the last. */
+function hasDisallowedCharacter(value: string): boolean {
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code < 0x20 || code === 0x7f || code === 0x5c) return true;
+  }
+  return false;
+}
+
+/**
+ * True when `path` is a relative, normalized, single-origin path that cannot escape the directory it
+ * resolves against. Rejects schemes (including `HTTPS:` and `data:`), authorities, dot and empty
+ * segments, percent-encoded separators, control characters, and query/fragment-only values. A plain
+ * containment test on `href` is not sufficient: `?x=1`, `#frag`, `.`, and `..%2f..%2f` all pass one.
+ */
+export function isContainedRelativePath(path: unknown): boolean {
+  if (!isNonEmptyString(path) || path !== path.trim()) return false;
+  if (hasDisallowedCharacter(path) || ENCODED_SEPARATOR.test(path)) return false;
+  if (path.startsWith('?') || path.startsWith('#') || path.includes(':')) return false;
+  if (path.split('/').some((segment) => !segment || segment === '.' || segment === '..')) return false;
+  const base = new URL(CONTAINMENT_BASE);
+  let resolved: URL;
+  try { resolved = new URL(path, base); } catch { return false; }
+  return resolved.origin === base.origin
+    && resolved.pathname.startsWith(base.pathname)
+    && resolved.pathname.length > base.pathname.length
+    && !resolved.search && !resolved.hash;
+}
+
+/** Returns the entries when `value` is an array of objects, or `undefined` so callers stop early. */
+function readEntries(value: unknown, label: string, errors: string[]): Record<string, unknown>[] | undefined {
+  if (!Array.isArray(value)) { errors.push(`${label} must be an array`); return undefined; }
+  const entries: Record<string, unknown>[] = [];
+  let malformed = false;
+  for (let index = 0; index < value.length; index += 1) {
+    const entry: unknown = value[index];
+    if (!isRecord(entry)) { errors.push(`${label}[${index}] must be an object`); malformed = true; continue; }
+    entries.push(entry);
+  }
+  return malformed ? undefined : entries;
+}
+
+/** Returns the record when `value` is an absent or plain object, or `undefined` so callers stop early. */
+function readRecord(value: unknown, label: string, errors: string[]): Record<string, unknown> | undefined {
+  if (value === undefined) return {};
+  if (!isRecord(value)) { errors.push(`${label} must be an object`); return undefined; }
+  return value;
+}
+
+function transformErrors(value: Record<string, unknown>, label: string): string[] {
+  const errors: string[] = [];
+  for (const key of TRANSFORM_KEYS) if (value[key] !== undefined && !isFiniteNumber(value[key])) errors.push(`${label}: ${key} must be a finite number`);
+  return errors;
+}
+
+function uniqueIds(values: readonly Record<string, unknown>[], label: string, errors: string[]): Set<string> {
+  const ids = new Set<string>();
+  for (const value of values) {
+    if (!isNonEmptyString(value.id) || ids.has(value.id)) errors.push(`duplicate or empty ${label} id: ${String(value.id)}`);
+    else ids.add(value.id);
+  }
+  return ids;
+}
+
+function validateAssetProfiles(profiles: unknown): string[] {
+  if (!isRecord(profiles)) return ['profiles must be an object'];
+  const entries = Object.entries(profiles);
+  if (!entries.length) return ['profiles must declare at least one profile'];
+  const errors: string[] = [];
+  for (const [id, profile] of entries) {
+    if (!isRecord(profile)) { errors.push(`${id}: profile must be an object`); continue; }
+    for (const key of ['maxAtlasSize', 'scale', 'gpuBudgetBytes'] as const) {
+      const value = profile[key];
+      if (!isFiniteNumber(value) || value <= 0) errors.push(`${id}: profile ${key} must be a positive number`);
+    }
+  }
+  return errors;
+}
+
+function protectedRightsErrors(value: Record<string, unknown>, label: string): string[] {
+  const errors: string[] = [];
+  if (value.ownership !== 'third-party-chikn-rights-holder') errors.push(`${label}: protected ownership is required`);
+  if (value.hostingAuthorized !== true || value.communityUseAuthorized !== true) errors.push(`${label}: protected hosting/community permission is required`);
+  if (value.sublicenseGrantedByRepository !== false) errors.push(`${label}: repository sublicense must be false`);
+  return errors;
+}
+
+export function validateAssetManifest(manifest: unknown): string[] {
+  if (!isRecord(manifest)) return ['asset manifest must be an object'];
   const errors: string[] = [];
   if (manifest.schema !== 'roost2d.assets/v1') errors.push('schema must be roost2d.assets/v1');
-  if (!HEX_SHA256.test(manifest.rightsDocumentSha256)) errors.push('rightsDocumentSha256 must be a SHA-256 hex digest');
-  if (!manifest.version) errors.push('version is required');
+  if (typeof manifest.rightsDocumentSha256 !== 'string' || !HEX_SHA256.test(manifest.rightsDocumentSha256)) errors.push('rightsDocumentSha256 must be a SHA-256 hex digest');
+  if (!isNonEmptyString(manifest.version)) errors.push('version is required');
+  errors.push(...validateAssetProfiles(manifest.profiles));
+
+  const files = readEntries(manifest.files, 'files', errors);
   const ids = new Set<string>();
-  for (const file of manifest.files ?? []) {
-    if (!file.id || ids.has(file.id)) errors.push(`duplicate or empty asset id: ${file.id}`);
-    ids.add(file.id);
-    for (const alias of file.aliases ?? []) {
-      if (!alias || ids.has(alias)) errors.push(`duplicate or empty asset alias: ${alias}`);
-      ids.add(alias);
+  for (const [index, file] of (files ?? []).entries()) {
+    const label = isNonEmptyString(file.id) ? file.id : `files[${index}]`;
+    if (!isNonEmptyString(file.id) || ids.has(file.id)) errors.push(`duplicate or empty asset id: ${String(file.id)}`);
+    else ids.add(file.id);
+    if (!isNonEmptyString(file.mediaType)) errors.push(`${label}: mediaType is required`);
+    if (file.aliases !== undefined) {
+      if (!Array.isArray(file.aliases)) errors.push(`${label}: aliases must be an array`);
+      else for (const alias of file.aliases as unknown[]) {
+        if (!isNonEmptyString(alias) || ids.has(alias)) errors.push(`duplicate or empty asset alias: ${String(alias)}`);
+        else ids.add(alias);
+      }
     }
-    if (!file.variants?.length) errors.push(`${file.id}: requires one or more variants`);
     if (file.license === 'CHIKN-COMMUNITY-NONCOMMERCIAL') {
-      if (file.ownership !== 'third-party-chikn-rights-holder') errors.push(`${file.id}: protected ownership is required`);
-      if (file.hostingAuthorized !== true || file.communityUseAuthorized !== true) errors.push(`${file.id}: protected hosting/community permission is required`);
-      if (file.sublicenseGrantedByRepository !== false) errors.push(`${file.id}: repository sublicense must be false`);
-      if (file.commercialUse !== 'separate-agreement-required') errors.push(`${file.id}: protected commercial boundary is required`);
+      errors.push(...protectedRightsErrors(file, label));
+      if (file.commercialUse !== 'separate-agreement-required') errors.push(`${label}: protected commercial boundary is required`);
     }
-    for (const variant of file.variants ?? []) {
-      if (variant.integrity?.algorithm !== 'sha256' || !isSha256SRI(variant.integrity.value)) errors.push(`${file.id}: invalid SHA-256 SRI value`);
-      if (!Number.isInteger(variant.bytes) || variant.bytes < 0) errors.push(`${file.id}: invalid byte count`);
-      if (!variant.path || /^(?:https?:)?\/\//.test(variant.path) || variant.path.startsWith('/')) errors.push(`${file.id}: paths must be relative`);
-      if (!(variant.scale > 0)) errors.push(`${file.id}: variant scale must be positive`);
-      if (variant.frame && [variant.frame.x, variant.frame.y, variant.frame.width, variant.frame.height].some((value) => !Number.isInteger(value) || value < 0)) errors.push(`${file.id}: invalid frame rectangle`);
+    const variants = readEntries(file.variants, `${label}.variants`, errors);
+    if (variants && !variants.length) errors.push(`${label}: requires one or more variants`);
+    for (const variant of variants ?? []) {
+      const integrity = variant.integrity;
+      if (!isRecord(integrity) || integrity.algorithm !== 'sha256' || !isSha256SRI(integrity.value)) errors.push(`${label}: invalid SHA-256 SRI value`);
+      if (!Number.isInteger(variant.bytes) || (variant.bytes as number) < 0) errors.push(`${label}: invalid byte count`);
+      if (!isContainedRelativePath(variant.path)) errors.push(`${label}: paths must be relative, normalized, and contained`);
+      if (!isNonEmptyString(variant.profile)) errors.push(`${label}: variant profile is required`);
+      if (!isFiniteNumber(variant.scale) || !(variant.scale > 0)) errors.push(`${label}: variant scale must be positive`);
+      if (variant.frameId !== undefined && !isNonEmptyString(variant.frameId)) errors.push(`${label}: variant frameId must be a string`);
+      if (variant.frame !== undefined) {
+        const frame = variant.frame;
+        if (!isRecord(frame) || [frame.x, frame.y, frame.width, frame.height].some((value) => !Number.isInteger(value) || (value as number) < 0)) errors.push(`${label}: invalid frame rectangle`);
+      }
     }
   }
+
+  const bundles = readEntries(manifest.bundles, 'bundles', errors);
   const bundleIds = new Set<string>();
-  for (const bundle of manifest.bundles ?? []) {
-    if (!bundle.id || bundleIds.has(bundle.id)) errors.push(`duplicate or empty bundle id: ${bundle.id}`);
-    bundleIds.add(bundle.id);
-    for (const item of bundle.items ?? []) {
-      if (!ids.has(item.assetId)) errors.push(`${bundle.id}: unknown asset ${item.assetId}`);
-      if (item.fallbackAssetId && !ids.has(item.fallbackAssetId)) errors.push(`${bundle.id}: unknown fallback ${item.fallbackAssetId}`);
+  for (const [index, bundle] of (bundles ?? []).entries()) {
+    const label = isNonEmptyString(bundle.id) ? bundle.id : `bundles[${index}]`;
+    if (!isNonEmptyString(bundle.id) || bundleIds.has(bundle.id)) errors.push(`duplicate or empty bundle id: ${String(bundle.id)}`);
+    else bundleIds.add(bundle.id);
+    if (typeof bundle.lazy !== 'boolean') errors.push(`${label}: lazy must be a boolean`);
+    const items = readEntries(bundle.items, `${label}.items`, errors);
+    for (const item of items ?? []) {
+      if (typeof item.required !== 'boolean') errors.push(`${label}: item required must be a boolean`);
+      if (!isNonEmptyString(item.assetId)) { errors.push(`${label}: item assetId is required`); continue; }
+      // Cross-checking ids is only meaningful when the file list itself parsed.
+      if (files && !ids.has(item.assetId)) errors.push(`${label}: unknown asset ${item.assetId}`);
+      if (item.fallbackAssetId === undefined) continue;
+      if (!isNonEmptyString(item.fallbackAssetId)) errors.push(`${label}: fallbackAssetId must be a string`);
+      else if (files && !ids.has(item.fallbackAssetId)) errors.push(`${label}: unknown fallback ${item.fallbackAssetId}`);
     }
   }
   return errors;
 }
 
-export function validateAtlasManifest(atlas: AtlasManifestV1): string[] {
+export function validateAtlasManifest(atlas: unknown): string[] {
+  if (!isRecord(atlas)) return ['atlas manifest must be an object'];
   const errors: string[] = [];
   if (atlas.schema !== 'roost2d.atlas/v1') errors.push('schema must be roost2d.atlas/v1');
-  if (!atlas.image || /^(?:https?:)?\/\//.test(atlas.image)) errors.push('atlas image must be a relative path');
-  if (!isSha256SRI(atlas.integrity?.value ?? '')) errors.push('atlas integrity must be SHA-256 SRI');
-  if (!(atlas.width > 0 && atlas.height > 0)) errors.push('atlas dimensions must be positive');
-  for (const [id, frame] of Object.entries(atlas.frames ?? {})) {
-    if (!id) errors.push('atlas frame id cannot be empty');
-    if (frame.x < 0 || frame.y < 0 || frame.width <= 0 || frame.height <= 0 || frame.x + frame.width > atlas.width || frame.y + frame.height > atlas.height) errors.push(`${id}: frame is outside atlas bounds`);
+  if (!isNonEmptyString(atlas.profile)) errors.push('atlas profile is required');
+  if (!isContainedRelativePath(atlas.image)) errors.push('atlas image must be a relative path');
+  const integrity = atlas.integrity;
+  if (!isRecord(integrity) || integrity.algorithm !== 'sha256' || !isSha256SRI(integrity.value)) errors.push('atlas integrity must be SHA-256 SRI');
+
+  const width = isFiniteNumber(atlas.width) && atlas.width > 0 ? atlas.width : undefined;
+  const height = isFiniteNumber(atlas.height) && atlas.height > 0 ? atlas.height : undefined;
+  if (width === undefined || height === undefined) errors.push('atlas dimensions must be positive');
+
+  const frames = readRecord(atlas.frames, 'atlas frames', errors);
+  for (const [id, frame] of Object.entries(frames ?? {})) {
+    if (!id) { errors.push('atlas frame id cannot be empty'); continue; }
+    if (!isRecord(frame)) { errors.push(`${id}: frame must be an object`); continue; }
+    const { x, y, width: frameWidth, height: frameHeight } = frame;
+    if (!isFiniteNumber(x) || !isFiniteNumber(y) || !isFiniteNumber(frameWidth) || !isFiniteNumber(frameHeight)) { errors.push(`${id}: frame rectangle must be numeric`); continue; }
+    if (width === undefined || height === undefined) continue;
+    if (x < 0 || y < 0 || frameWidth <= 0 || frameHeight <= 0 || x + frameWidth > width || y + frameHeight > height) errors.push(`${id}: frame is outside atlas bounds`);
   }
   return errors;
 }
 
-export function validateRigDefinition(rig: RigDefinitionV1): string[] {
+export function validateRigDefinition(rig: unknown): string[] {
+  if (!isRecord(rig)) return ['rig definition must be an object'];
   const errors: string[] = [];
   if (rig.schema !== 'roost2d.rig/v1') errors.push('schema must be roost2d.rig/v1');
-  const bones = uniqueIds(rig.bones, 'bone', errors);
-  const slots = uniqueIds(rig.slots, 'slot', errors);
-  const attachments = uniqueIds(rig.attachments, 'attachment', errors);
-  for (const bone of rig.bones) if (bone.parentId && !bones.has(bone.parentId)) errors.push(`${bone.id}: unknown parent bone ${bone.parentId}`);
-  for (const bone of rig.bones) {
-    const visited = new Set([bone.id]); let parent = bone.parentId;
-    while (parent) { if (visited.has(parent)) { errors.push(`${bone.id}: parent cycle`); break; } visited.add(parent); parent = rig.bones.find((item) => item.id === parent)?.parentId; }
+  if (!isNonEmptyString(rig.id)) errors.push('rig id is required');
+
+  const boneEntries = readEntries(rig.bones, 'bones', errors);
+  const slotEntries = readEntries(rig.slots, 'slots', errors);
+  const attachmentEntries = readEntries(rig.attachments, 'attachments', errors);
+  if (!boneEntries || !slotEntries || !attachmentEntries) return errors;
+
+  const bones = uniqueIds(boneEntries, 'bone', errors);
+  const slots = uniqueIds(slotEntries, 'slot', errors);
+  const attachments = uniqueIds(attachmentEntries, 'attachment', errors);
+
+  const parentById = new Map<string, string | undefined>();
+  for (const bone of boneEntries) {
+    const label = isNonEmptyString(bone.id) ? bone.id : 'bone';
+    for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY'] as const) if (!isFiniteNumber(bone[key])) errors.push(`${label}: bone ${key} must be a finite number`);
+    if (bone.parentId !== undefined && !isNonEmptyString(bone.parentId)) { errors.push(`${label}: parentId must be a string`); continue; }
+    if (isNonEmptyString(bone.parentId) && !bones.has(bone.parentId)) errors.push(`${label}: unknown parent bone ${bone.parentId}`);
+    if (isNonEmptyString(bone.id)) parentById.set(bone.id, isNonEmptyString(bone.parentId) ? bone.parentId : undefined);
   }
-  for (const slot of rig.slots) {
-    if (slot.boneId && !bones.has(slot.boneId)) errors.push(`${slot.id}: unknown bone ${slot.boneId}`);
-    if (slot.defaultAttachmentId && !attachments.has(slot.defaultAttachmentId)) errors.push(`${slot.id}: unknown default attachment ${slot.defaultAttachmentId}`);
+  for (const [id, parent] of parentById) {
+    const visited = new Set([id]);
+    let current = parent;
+    while (current) { if (visited.has(current)) { errors.push(`${id}: parent cycle`); break; } visited.add(current); current = parentById.get(current); }
   }
-  for (const attachment of rig.attachments) {
-    if (!slots.has(attachment.slotId)) errors.push(`${attachment.id}: unknown slot ${attachment.slotId}`);
-    if (attachment.boneId && !bones.has(attachment.boneId)) errors.push(`${attachment.id}: unknown bone ${attachment.boneId}`);
-    if (!attachment.texture?.assetId) errors.push(`${attachment.id}: texture assetId is required`);
+
+  for (const slot of slotEntries) {
+    const label = isNonEmptyString(slot.id) ? slot.id : 'slot';
+    if (!isFiniteNumber(slot.zIndex)) errors.push(`${label}: slot zIndex must be a finite number`);
+    if (slot.boneId !== undefined && (!isNonEmptyString(slot.boneId) || !bones.has(slot.boneId))) errors.push(`${label}: unknown bone ${String(slot.boneId)}`);
+    if (slot.defaultAttachmentId !== undefined && (!isNonEmptyString(slot.defaultAttachmentId) || !attachments.has(slot.defaultAttachmentId))) errors.push(`${label}: unknown default attachment ${String(slot.defaultAttachmentId)}`);
   }
-  for (const [skinId, skin] of Object.entries(rig.skins ?? {})) for (const [slotId, attachmentId] of Object.entries(skin)) {
-    if (!slots.has(slotId)) errors.push(`${skinId}: unknown slot ${slotId}`);
-    if (attachmentId && !attachments.has(attachmentId)) errors.push(`${skinId}: unknown attachment ${attachmentId}`);
+
+  for (const attachment of attachmentEntries) {
+    const label = isNonEmptyString(attachment.id) ? attachment.id : 'attachment';
+    if (!isNonEmptyString(attachment.slotId) || !slots.has(attachment.slotId)) errors.push(`${label}: unknown slot ${String(attachment.slotId)}`);
+    if (attachment.boneId !== undefined && (!isNonEmptyString(attachment.boneId) || !bones.has(attachment.boneId))) errors.push(`${label}: unknown bone ${String(attachment.boneId)}`);
+    const texture = attachment.texture;
+    if (!isRecord(texture) || !isNonEmptyString(texture.assetId)) errors.push(`${label}: texture assetId is required`);
+    else if (texture.frameId !== undefined && !isNonEmptyString(texture.frameId)) errors.push(`${label}: texture frameId must be a string`);
+    if (!isFiniteNumber(attachment.zIndex)) errors.push(`${label}: attachment zIndex must be a finite number`);
+    if (attachment.visible !== undefined && typeof attachment.visible !== 'boolean') errors.push(`${label}: visible must be a boolean`);
+    if (attachment.tint !== undefined && !isTint(attachment.tint)) errors.push(`${label}: tint must be an integer colour`);
+    errors.push(...transformErrors(attachment, label));
   }
-  if (rig.defaultSkinId && !rig.skins?.[rig.defaultSkinId]) errors.push(`unknown default skin ${rig.defaultSkinId}`);
-  for (const [groupId, group] of Object.entries(rig.attachmentGroups ?? {})) {
+
+  const skins = readRecord(rig.skins, 'skins', errors);
+  for (const [skinId, skin] of Object.entries(skins ?? {})) {
+    if (!isRecord(skin)) { errors.push(`${skinId}: skin must be an object`); continue; }
+    for (const [slotId, attachmentId] of Object.entries(skin)) {
+      if (!slots.has(slotId)) errors.push(`${skinId}: unknown slot ${slotId}`);
+      if (attachmentId !== undefined && (!isNonEmptyString(attachmentId) || !attachments.has(attachmentId))) errors.push(`${skinId}: unknown attachment ${String(attachmentId)}`);
+    }
+  }
+  // `Object.hasOwn` so a `defaultSkinId` of `toString` cannot resolve through the prototype.
+  if (rig.defaultSkinId !== undefined && (!isNonEmptyString(rig.defaultSkinId) || !skins || !Object.hasOwn(skins, rig.defaultSkinId))) errors.push(`unknown default skin ${String(rig.defaultSkinId)}`);
+
+  const groups = readRecord(rig.attachmentGroups, 'attachmentGroups', errors);
+  for (const [groupId, group] of Object.entries(groups ?? {})) {
+    if (!isRecord(group)) { errors.push(`${groupId}: attachment group must be an object`); continue; }
     if (group.id !== groupId) errors.push(`${groupId}: attachment group key/id mismatch`);
-    if (!slots.has(group.slotId)) errors.push(`${groupId}: unknown slot ${group.slotId}`);
-    for (const attachmentId of group.attachmentIds) if (!attachments.has(attachmentId)) errors.push(`${groupId}: unknown attachment ${attachmentId}`);
+    if (!isNonEmptyString(group.slotId) || !slots.has(group.slotId)) errors.push(`${groupId}: unknown slot ${String(group.slotId)}`);
+    if (!Array.isArray(group.attachmentIds)) { errors.push(`${groupId}: attachmentIds must be an array`); continue; }
+    for (const attachmentId of group.attachmentIds as unknown[]) if (!isNonEmptyString(attachmentId) || !attachments.has(attachmentId)) errors.push(`${groupId}: unknown attachment ${String(attachmentId)}`);
   }
   return errors;
 }
 
-export function validateAnimationClip(clip: AnimationClipV1, rig?: RigDefinitionV1): string[] {
+function rigTargetIds(rig: unknown): Record<'bone' | 'slot' | 'attachment', Set<string>> | undefined {
+  if (!isRecord(rig)) return undefined;
+  const collect = (value: unknown): Set<string> => {
+    const ids = new Set<string>();
+    if (Array.isArray(value)) for (const entry of value as unknown[]) if (isRecord(entry) && isNonEmptyString(entry.id)) ids.add(entry.id);
+    return ids;
+  };
+  return { bone: collect(rig.bones), slot: collect(rig.slots), attachment: collect(rig.attachments) };
+}
+
+function keyframeValueErrors(keyframe: Record<string, unknown>, label: string): string[] {
   const errors: string[] = [];
+  for (const key of Object.keys(keyframe)) {
+    if (KEYFRAME_TIMING_KEYS.has(key)) continue;
+    if (!KEYFRAME_VALUE_KEYS.has(key)) { errors.push(`${label}: unsupported keyframe property ${key}`); continue; }
+    const value = keyframe[key];
+    if (value === undefined) continue; // Every value key is optional; an explicit `undefined` is absence.
+    if (key === 'visible') { if (typeof value !== 'boolean') errors.push(`${label}: visible must be a boolean`); continue; }
+    if (key === 'tint') { if (!isTint(value)) errors.push(`${label}: tint must be an integer colour`); continue; }
+    if (!isFiniteNumber(value)) errors.push(`${label}: ${key} must be a finite number`);
+  }
+  return errors;
+}
+
+/**
+ * Copies only the contract's animation properties out of a keyframe. Consumers must build tween
+ * targets from this rather than spreading the keyframe, so an unvalidated clip cannot reach
+ * animation-library internals or write `__proto__` on a display node.
+ */
+export function pickAnimationKeyframeValues(keyframe: AnimationKeyframeV1): AnimationKeyframeValues {
+  const source = keyframe as unknown as Record<string, unknown>;
+  const values: AnimationKeyframeValues = {};
+  for (const key of TRANSFORM_KEYS) { const value = source[key]; if (isFiniteNumber(value)) values[key] = value; }
+  if (typeof source.visible === 'boolean') values.visible = source.visible;
+  if (isTint(source.tint)) values.tint = source.tint;
+  return values;
+}
+
+export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
+  if (!isRecord(clip)) return ['animation clip must be an object'];
+  const errors: string[] = [];
+  const label = isNonEmptyString(clip.id) ? clip.id : 'animation clip';
   if (clip.schema !== 'roost2d.animation/v1') errors.push('schema must be roost2d.animation/v1');
-  if (!(clip.durationMs > 0)) errors.push(`${clip.id}: durationMs must be positive`);
-  const targetIds = rig ? {
-    bone: new Set(rig.bones.map(({ id }) => id)),
-    slot: new Set(rig.slots.map(({ id }) => id)),
-    attachment: new Set(rig.attachments.map(({ id }) => id))
-  } : undefined;
-  for (const track of clip.tracks ?? []) {
-    if (targetIds && !targetIds[track.target].has(track.targetId)) errors.push(`${clip.id}: unknown ${track.target} ${track.targetId}`);
+  if (!isNonEmptyString(clip.id)) errors.push('animation clip id is required');
+  const durationMs = isFiniteNumber(clip.durationMs) && clip.durationMs > 0 ? clip.durationMs : undefined;
+  if (durationMs === undefined) errors.push(`${label}: durationMs must be positive`);
+  if (clip.loop !== undefined && typeof clip.loop !== 'boolean') errors.push(`${label}: loop must be a boolean`);
+  if (clip.fallbackClipId !== undefined && !isNonEmptyString(clip.fallbackClipId)) errors.push(`${label}: fallbackClipId must be a string`);
+  if (clip.defaultLayer !== undefined && !isNonEmptyString(clip.defaultLayer)) errors.push(`${label}: defaultLayer must be a string`);
+  if (clip.mask !== undefined && (!Array.isArray(clip.mask) || !(clip.mask as unknown[]).every(isNonEmptyString))) errors.push(`${label}: mask must be an array of ids`);
+
+  const tracks = readEntries(clip.tracks, `${label}.tracks`, errors);
+  if (!tracks) return errors;
+  const targetIds = rigTargetIds(rig);
+  for (const track of tracks) {
+    const target = track.target;
+    if (target !== 'bone' && target !== 'attachment' && target !== 'slot') { errors.push(`${label}: unknown track target ${String(target)}`); continue; }
+    if (!isNonEmptyString(track.targetId)) { errors.push(`${label}: track targetId is required`); continue; }
+    if (targetIds && !targetIds[target].has(track.targetId)) errors.push(`${label}: unknown ${target} ${track.targetId}`);
+    const trackLabel = `${label}:${track.targetId}`;
+    const keyframes = readEntries(track.keyframes, `${trackLabel}.keyframes`, errors);
+    if (!keyframes) continue;
     let previous = -1;
-    for (const keyframe of track.keyframes) {
-      if (keyframe.timeMs < previous || keyframe.timeMs < 0 || keyframe.timeMs > clip.durationMs) errors.push(`${clip.id}:${track.targetId}: invalid keyframe time ${keyframe.timeMs}`);
-      if ((keyframe.durationMs ?? 0) < 0) errors.push(`${clip.id}:${track.targetId}: negative duration`);
-      previous = keyframe.timeMs;
+    for (const keyframe of keyframes) {
+      const timeMs = keyframe.timeMs;
+      if (!isFiniteNumber(timeMs) || timeMs < previous || timeMs < 0 || (durationMs !== undefined && timeMs > durationMs)) errors.push(`${trackLabel}: invalid keyframe time ${String(timeMs)}`);
+      else previous = timeMs;
+      if (keyframe.durationMs !== undefined && (!isFiniteNumber(keyframe.durationMs) || keyframe.durationMs < 0)) errors.push(`${trackLabel}: negative duration`);
+      if (keyframe.ease !== undefined && typeof keyframe.ease !== 'string') errors.push(`${trackLabel}: ease must be a string`);
+      errors.push(...keyframeValueErrors(keyframe, trackLabel));
     }
   }
   return errors;
 }
 
-export function validateRightsManifest(manifest: RightsManifestV1): string[] {
+export function validateRightsManifest(manifest: unknown): string[] {
+  if (!isRecord(manifest)) return ['rights manifest must be an object'];
   const errors: string[] = [];
   if (manifest.schema !== 'chikn-game-assets.rights/v1') errors.push('schema must be chikn-game-assets.rights/v1');
-  const ids = new Set<string>(); const paths = new Set<string>();
-  for (const asset of manifest.assets ?? []) {
-    if (!asset.id || ids.has(asset.id)) errors.push(`duplicate or empty rights id: ${asset.id}`); ids.add(asset.id);
-    if (!asset.sourcePath || paths.has(asset.sourcePath)) errors.push(`duplicate or empty source path: ${asset.sourcePath}`); paths.add(asset.sourcePath);
-    if (!asset.license || !asset.attribution) errors.push(`${asset.id}: incomplete rights classification`);
-    if (asset.license === 'Apache-2.0' && !asset.approved) errors.push(`${asset.id}: Apache project material is not approved`);
+  if (manifest.excludedPaths !== undefined && (!Array.isArray(manifest.excludedPaths) || !(manifest.excludedPaths as unknown[]).every(isNonEmptyString))) errors.push('excludedPaths must be an array of paths');
+  const assets = readEntries(manifest.assets, 'assets', errors);
+  const ids = new Set<string>();
+  const paths = new Set<string>();
+  for (const asset of assets ?? []) {
+    const label = isNonEmptyString(asset.id) ? asset.id : 'rights asset';
+    if (!isNonEmptyString(asset.id) || ids.has(asset.id)) errors.push(`duplicate or empty rights id: ${String(asset.id)}`);
+    else ids.add(asset.id);
+    if (!isNonEmptyString(asset.sourcePath) || paths.has(asset.sourcePath)) errors.push(`duplicate or empty source path: ${String(asset.sourcePath)}`);
+    else { paths.add(asset.sourcePath); if (!isContainedRelativePath(asset.sourcePath)) errors.push(`${label}: sourcePath must be relative, normalized, and contained`); }
+    if (!isNonEmptyString(asset.license) || !isNonEmptyString(asset.attribution)) errors.push(`${label}: incomplete rights classification`);
+    if (asset.license === 'Apache-2.0' && !asset.approved) errors.push(`${label}: Apache project material is not approved`);
     if (asset.license === 'CHIKN-COMMUNITY-NONCOMMERCIAL') {
-      if (asset.ownership !== 'third-party-chikn-rights-holder') errors.push(`${asset.id}: protected ownership is required`);
-      if (asset.hostingAuthorized !== true || asset.communityUseAuthorized !== true) errors.push(`${asset.id}: protected hosting/community permission is required`);
-      if (asset.sublicenseGrantedByRepository !== false) errors.push(`${asset.id}: repository sublicense must be false`);
-      if (asset.commercialUse !== 'separate-agreement-required') errors.push(`${asset.id}: separate commercial agreement is required`);
+      errors.push(...protectedRightsErrors(asset, label));
+      if (asset.commercialUse !== 'separate-agreement-required') errors.push(`${label}: separate commercial agreement is required`);
     }
-    if (!HEX_SHA256.test(asset.sha256)) errors.push(`${asset.id}: invalid source SHA-256`);
+    if (typeof asset.sha256 !== 'string' || !HEX_SHA256.test(asset.sha256)) errors.push(`${label}: invalid source SHA-256`);
   }
   return errors;
-}
-
-function uniqueIds(values: Array<{ id: string }>, label: string, errors: string[]): Set<string> {
-  const ids = new Set<string>();
-  for (const value of values ?? []) { if (!value.id || ids.has(value.id)) errors.push(`duplicate or empty ${label} id: ${value.id}`); ids.add(value.id); }
-  return ids;
 }

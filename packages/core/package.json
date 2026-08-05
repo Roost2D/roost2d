@@ -1,0 +1,13 @@
+{
+  "name": "@roost2d/core",
+  "version": "0.1.0-rc.0",
+  "description": "Runtime-neutral lifecycle, events, and frame scheduling primitives for Roost2D.",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/core" },
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "README.md", "LICENSE"],
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "publishConfig": { "access": "public" },
+  "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc --noEmit -p tsconfig.json", "test": "node --test test/*.test.mjs" }
+}

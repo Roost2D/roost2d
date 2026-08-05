@@ -1,0 +1,30 @@
+# Roost2D model context
+
+Roost2D is an Apache-2.0 TypeScript ESM monorepo containing 13 lockstep public packages. Start with README.md, docs/architecture.md, docs/packages.md, and the target package README.
+
+Critical boundaries:
+- contracts: serialized schemas and validation
+- core: deterministic runtime/scenes; no renderer
+- pixi: PixiJS v8 adapter
+- rig2d: renderer-neutral rigs/GSAP animation
+- assets: explicit-host manifest loading and SHA-256 integrity
+- tooling: Node-only; never import from browser packages
+- chikn-rigs: Apache-2.0 metadata only; no image rights, image corpus, or required asset-pack dependency
+
+Roost2D does not include, license, or sublicense Chikn/Roostr/FarmLand visual content. The separate asset repository documents Chikn's community non-commercial boundary.
+
+Source is packages/*/src and apps/*/src. Generated dist/docs output and tarballs are not source. All @roost2d dependencies must use the same exact version.
+
+Primary commands:
+npm ci
+npm run build
+npm run check
+npm test
+npm run release:verify
+
+Integration guides:
+- docs/getting-started.md
+- docs/chikn-assets.md
+- apps/showcase
+
+Never publish without explicit release authorization. RCs use npm tag next; stable versions use latest.

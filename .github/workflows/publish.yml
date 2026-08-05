@@ -1,0 +1,29 @@
+name: Publish packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: npm dist-tag; publish release candidates to next before stable latest.
+        required: true
+        type: choice
+        options: [next, latest]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22.14.0, cache: npm, registry-url: https://registry.npmjs.org }
+      - run: npm install --global npm@11.5.2
+      - run: npm --version
+      - run: npm ci
+      - run: node scripts/assert-release-channel.mjs ${{ inputs.tag }}
+      - run: npm run release:verify
+      - run: node scripts/publish-packages.mjs ${{ inputs.tag }}

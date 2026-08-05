@@ -1,0 +1,4348 @@
+{
+    "skins": {
+        "Celestial": {
+            "Torso": {
+                "name": "Celestial_Torso",
+                "texture": "Celestial_Torso"
+            },
+            "Head": {
+                "name": "Celestial_Head",
+                "texture": "Celestial_Head"
+            },
+            "Tail": {
+                "name": "Celestial_Tail",
+                "texture": "Celestial_Tail"
+            },
+            "Wing A": {
+                "name": "Celestial_WingA",
+                "texture": "Celestial_Wing"
+            },
+            "Wing B": {
+                "name": "Celestial_WingB",
+                "texture": "Celestial_Wing"
+            },
+            "LegUpper A": {
+                "name": "Celestial_LegUpperA",
+                "texture": "Celestial_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "Celestial_LegUpperB",
+                "texture": "Celestial_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "Celestial_LegLowerA",
+                "texture": "Celestial_LegLower A"
+            },
+            "LegLower B": {
+                "name": "Celestial_LegLowerB",
+                "texture": "Celestial_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "Celestial_LegFootA",
+                "texture": "Celestial_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "Celestial_LegFootB",
+                "texture": "Celestial_LegFoot B"
+            }
+        },
+        "Crystale": {
+            "Torso": {
+                "name": "Crystale_Torso",
+                "texture": "Crystale_Torso"
+            },
+            "Head": {
+                "name": "Crystale_Head",
+                "texture": "Crystale_Head"
+            },
+            "Tail": {
+                "name": "Crystale_Tail",
+                "texture": "Crystale_Tail"
+            },
+            "Wing A": {
+                "name": "Crystale_WingA",
+                "texture": "Crystale_Wing"
+            },
+            "Wing B": {
+                "name": "Crystale_WingB",
+                "texture": "Crystale_Wing"
+            },
+            "LegUpper A": {
+                "name": "Crystale_LegUpperA",
+                "texture": "Crystale_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "Crystale_LegUpperB",
+                "texture": "Crystale_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "Crystale_LegLowerA",
+                "texture": "Crystale_LegLower A"
+            },
+            "LegLower B": {
+                "name": "Crystale_LegLowerB",
+                "texture": "Crystale_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "Crystale_LegFootA",
+                "texture": "Crystale_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "Crystale_LegFootB",
+                "texture": "Crystale_LegFoot B"
+            }
+        },
+        "Bullion": {
+            "Torso": {
+                "name": "Bullion_Torso",
+                "texture": "Bullion_Torso"
+            },
+            "Head": {
+                "name": "Bullion_Head",
+                "texture": "Bullion_Head"
+            },
+            "Tail": {
+                "name": "Bullion_Tail",
+                "texture": "Bullion_Tail"
+            },
+            "Wing A": {
+                "name": "Bullion_WingA",
+                "texture": "Bullion_Wing"
+            },
+            "Wing B": {
+                "name": "Bullion_WingB",
+                "texture": "Bullion_Wing"
+            },
+            "LegUpper A": {
+                "name": "Bullion_LegUpperA",
+                "texture": "Bullion_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "Bullion_LegUpperB",
+                "texture": "Bullion_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "Bullion_LegLowerA",
+                "texture": "Bullion_LegLower A"
+            },
+            "LegLower B": {
+                "name": "Bullion_LegLowerB",
+                "texture": "Bullion_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "Bullion_LegFootA",
+                "texture": "Bullion_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "Bullion_LegFootB",
+                "texture": "Bullion_LegFoot B"
+            }
+        },
+        "PixelChan": {
+            "Torso": {
+                "name": "PixelChan_Torso",
+                "texture": "PixelChan_Torso"
+            },
+            "Head": {
+                "name": "PixelChan_Head",
+                "texture": "PixelChan_Head"
+            },
+            "Tail": {
+                "name": "PixelChan_Tail",
+                "texture": "PixelChan_Tail"
+            },
+            "Wing A": {
+                "name": "PixelChan_WingA",
+                "texture": "PixelChan_Wing"
+            },
+            "Wing B": {
+                "name": "PixelChan_WingB",
+                "texture": "PixelChan_Wing"
+            },
+            "LegUpper A": {
+                "name": "PixelChan_LegUpperA",
+                "texture": "PixelChan_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "PixelChan_LegUpperB",
+                "texture": "PixelChan_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "PixelChan_LegLowerA",
+                "texture": "PixelChan_LegLower A"
+            },
+            "LegLower B": {
+                "name": "PixelChan_LegLowerB",
+                "texture": "PixelChan_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "PixelChan_LegFootA",
+                "texture": "PixelChan_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "PixelChan_LegFootB",
+                "texture": "PixelChan_LegFoot B"
+            }
+        },
+        "Gameboy": {
+            "Torso": {
+                "name": "GameBoy_Torso",
+                "texture": "GameBoy_Torso"
+            },
+            "Head": {
+                "name": "GameBoy_Head",
+                "texture": "GameBoy_Head"
+            },
+            "Tail": {
+                "name": "GameBoy_Tail",
+                "texture": "GameBoy_Tail"
+            },
+            "Wing A": {
+                "name": "GameBoy_WingA",
+                "texture": "GameBoy_Wing"
+            },
+            "Wing B": {
+                "name": "GameBoy_WingB",
+                "texture": "GameBoy_Wing"
+            },
+            "LegUpper A": {
+                "name": "GameBoy_LegUpperA",
+                "texture": "GameBoy_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "GameBoy_LegUpperB",
+                "texture": "GameBoy_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "GameBoy_LegLowerA",
+                "texture": "GameBoy_LegLower A"
+            },
+            "LegLower B": {
+                "name": "GameBoy_LegLowerB",
+                "texture": "GameBoy_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "GameBoy_LegFootA",
+                "texture": "GameBoy_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "GameBoy_LegFootB",
+                "texture": "GameBoy_LegFoot B"
+            }
+        },
+        "PassionRed": {
+            "Torso": {
+                "name": "PassionRed_Torso",
+                "texture": "PassionRed_Torso"
+            },
+            "Head": {
+                "name": "PassionRed_Head",
+                "texture": "PassionRed_Head"
+            },
+            "Tail": {
+                "name": "PassionRed_Tail",
+                "texture": "PassionRed_Tail"
+            },
+            "Wing A": {
+                "name": "PassionRed_WingA",
+                "texture": "PassionRed_Wing"
+            },
+            "Wing B": {
+                "name": "PassionRed_WingB",
+                "texture": "PassionRed_Wing"
+            },
+            "LegUpper A": {
+                "name": "PassionRed_LegUpperA",
+                "texture": "PassionRed_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "PassionRed_LegUpperB",
+                "texture": "PassionRed_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "PassionRed_LegLowerA",
+                "texture": "PassionRed_LegLower A"
+            },
+            "LegLower B": {
+                "name": "PassionRed_LegLowerB",
+                "texture": "PassionRed_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "PassionRed_LegFootA",
+                "texture": "PassionRed_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "PassionRed_LegFootB",
+                "texture": "PassionRed_LegFoot B"
+            }
+        },
+        "FrognationGreen": {
+            "Torso": {
+                "name": "FrogGreen_Torso",
+                "texture": "FrogGreen_Torso"
+            },
+            "Head": {
+                "name": "FrogGreen_Head",
+                "texture": "FrogGreen_Head"
+            },
+            "Tail": {
+                "name": "FrogGreen_Tail",
+                "texture": "FrogGreen_Tail"
+            },
+            "Wing A": {
+                "name": "FrogGreen_WingA",
+                "texture": "FrogGreen_Wing"
+            },
+            "Wing B": {
+                "name": "FrogGreen_WingB",
+                "texture": "FrogGreen_Wing"
+            },
+            "LegUpper A": {
+                "name": "FrogGreen_LegUpperA",
+                "texture": "FrogGreen_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "FrogGreen_LegUpperB",
+                "texture": "FrogGreen_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "FrogGreen_LegLowerA",
+                "texture": "FrogGreen_LegLower A"
+            },
+            "LegLower B": {
+                "name": "FrogGreen_LegLowerB",
+                "texture": "FrogGreen_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "FrogGreen_LegFootA",
+                "texture": "FrogGreen_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "FrogGreen_LegFootB",
+                "texture": "FrogGreen_LegFoot B"
+            }
+        },
+        "NightstalkerBlue": {
+            "Torso": {
+                "name": "NightstalkerBlue_Torso",
+                "texture": "NightstalkerBlue_Torso"
+            },
+            "Head": {
+                "name": "NightstalkerBlue_Head",
+                "texture": "NightstalkerBlue_Head"
+            },
+            "Tail": {
+                "name": "NightstalkerBlue_Tail",
+                "texture": "NightstalkerBlue_Tail"
+            },
+            "Wing A": {
+                "name": "NightstalkerBlue_WingA",
+                "texture": "NightstalkerBlue_Wing"
+            },
+            "Wing B": {
+                "name": "NightstalkerBlue_WingB",
+                "texture": "NightstalkerBlue_Wing"
+            },
+            "LegUpper A": {
+                "name": "NightstalkerBlue_LegUpperA",
+                "texture": "NightstalkerBlue_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "NightstalkerBlue_LegUpperB",
+                "texture": "NightstalkerBlue_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "NightstalkerBlue_LegLowerA",
+                "texture": "NightstalkerBlue_LegLower A"
+            },
+            "LegLower B": {
+                "name": "NightstalkerBlue_LegLowerB",
+                "texture": "NightstalkerBlue_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "NightstalkerBlue_LegFootA",
+                "texture": "NightstalkerBlue_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "NightstalkerBlue_LegFootB",
+                "texture": "NightstalkerBlue_LegFoot B"
+            }
+        },
+        "MutantPurple": {
+            "Torso": {
+                "name": "MutantPurple_Torso",
+                "texture": "MutantPurple_Torso"
+            },
+            "Head": {
+                "name": "MutantPurple_Head",
+                "texture": "MutantPurple_Head"
+            },
+            "Tail": {
+                "name": "MutantPurple_Tail",
+                "texture": "MutantPurple_Tail"
+            },
+            "Wing A": {
+                "name": "MutantPurple_WingA",
+                "texture": "MutantPurple_Wing"
+            },
+            "Wing B": {
+                "name": "MutantPurple_WingB",
+                "texture": "MutantPurple_Wing"
+            },
+            "LegUpper A": {
+                "name": "MutantPurple_LegUpperA",
+                "texture": "MutantPurple_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "MutantPurple_LegUpperB",
+                "texture": "MutantPurple_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "MutantPurple_LegLowerA",
+                "texture": "MutantPurple_LegLower A"
+            },
+            "LegLower B": {
+                "name": "MutantPurple_LegLowerB",
+                "texture": "MutantPurple_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "MutantPurple_LegFootA",
+                "texture": "MutantPurple_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "MutantPurple_LegFootB",
+                "texture": "MutantPurple_LegFoot B"
+            }
+        },
+        "RusticBrown": {
+            "Torso": {
+                "name": "RusticBrown_Torso",
+                "texture": "RusticBrown_Torso"
+            },
+            "Head": {
+                "name": "RusticBrown_Head",
+                "texture": "RusticBrown_Head"
+            },
+            "Tail": {
+                "name": "RusticBrown_Tail",
+                "texture": "RusticBrown_Tail"
+            },
+            "Wing A": {
+                "name": "RusticBrown_WingA",
+                "texture": "RusticBrown_Wing"
+            },
+            "Wing B": {
+                "name": "RusticBrown_WingB",
+                "texture": "RusticBrown_Wing"
+            },
+            "LegUpper A": {
+                "name": "RusticBrown_LegUpperA",
+                "texture": "RusticBrown_LegUpper A"
+            },
+            "LegUpper B": {
+                "name": "RusticBrown_LegUpperB",
+                "texture": "RusticBrown_LegUpper B"
+            },
+            "LegLower A": {
+                "name": "RusticBrown_LegLowerA",
+                "texture": "RusticBrown_LegLower A"
+            },
+            "LegLower B": {
+                "name": "RusticBrown_LegLowerB",
+                "texture": "RusticBrown_LegLower B"
+            },
+            "LegFoot A": {
+                "name": "RusticBrown_LegFootA",
+                "texture": "RusticBrown_LegFoot A"
+            },
+            "LegFoot B": {
+                "name": "RusticBrown_LegFootB",
+                "texture": "RusticBrown_LegFoot B"
+            }
+        }
+    },
+    "traits": {
+        "Head": {
+            "daft punk": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_DaftPunk",
+                        "texture": "DaftPunk"
+                    }
+                ]
+            },
+            "tungsten cube": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_TungstenCube",
+                        "texture": "TungstenCube"
+                    }
+                ]
+            },
+            "golden bone daddy": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_GoldenBoneDaddy",
+                        "texture": "GoldenBoneDaddy"
+                    }
+                ]
+            },
+            "boxhead": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Boxhead_A",
+                        "texture": "Boxhead A"
+                    },
+                    {
+                        "name": "Trait_Head_Boxhead_B",
+                        "texture": "Boxhead B"
+                    }
+                ]
+            },
+            "murica": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Murica",
+                        "texture": "Murica"
+                    }
+                ]
+            },
+            "hamlet": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Hamlet",
+                        "texture": "Hamlet"
+                    }
+                ]
+            },
+            "inherited royalty": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_InheritedRoyalty",
+                        "texture": "Inherited Royalty"
+                    }
+                ]
+            },
+            "pineapple": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Pineapple",
+                        "texture": "Pineapple"
+                    }
+                ]
+            },
+            "icey stare": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_IceyStare",
+                        "texture": "Icey Stare"
+                    }
+                ]
+            },
+            "golden crusader": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_GoldenCrusader",
+                        "texture": "GoldenCrusader"
+                    }
+                ]
+            },
+            "super saiyan": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_SuperSaiyan",
+                        "texture": "SuperSaiyan"
+                    }
+                ]
+            },
+            "luckiest red cap": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_LuckiestRedCap",
+                        "texture": "LuckiestRedCap"
+                    }
+                ]
+            },
+            "laser eye": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_LaserEye",
+                        "texture": "LaserEye"
+                    }
+                ]
+            },
+            "goose": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Goose",
+                        "texture": "Goose"
+                    }
+                ]
+            },
+            "cheeky redhead": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_CheekyRedhead_A",
+                        "texture": "Cheeky Redhead"
+                    },
+                    {
+                        "name": "Trait_Head_CheekyRedhead_B",
+                        "texture": "CheekyRedhead B"
+                    }
+                ]
+            },
+            "charcoal brunette": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_CharcoalBrunette_A",
+                        "texture": "CharcoalBrunette"
+                    },
+                    {
+                        "name": "Trait_Head_CharcoalBrunette_B",
+                        "texture": "CharcoalBrunette B"
+                    }
+                ]
+            },
+            "smoking lounge": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_SmokingLounge",
+                        "texture": "SmokingLounge"
+                    }
+                ]
+            },
+            "saint": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Saint",
+                        "texture": "Saint"
+                    }
+                ]
+            },
+            "mysterious fez": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_MysteriousFez",
+                        "texture": "MysteriousFez"
+                    }
+                ]
+            },
+            "all seeing eye": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_AllSeeingEye",
+                        "texture": "AllSeeingEye"
+                    }
+                ]
+            },
+            "hothead": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Hothead",
+                        "texture": "HotHead"
+                    }
+                ]
+            },
+            "gentlechikn": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Gentlechikn",
+                        "texture": "Gentlechikn"
+                    }
+                ]
+            },
+            "mfd": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Mfd",
+                        "texture": "MFD"
+                    }
+                ]
+            },
+            "avax safety officer": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_AvaxSafetyOfficer",
+                        "texture": "AVAXSafetyOfficer"
+                    }
+                ]
+            },
+            "frothy crown": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_FrothyCrown",
+                        "texture": "Frothy Crown"
+                    }
+                ]
+            },
+            "golden blonde": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_GoldenBlonde_A",
+                        "texture": "GoldenBlonde"
+                    },
+                    {
+                        "name": "Trait_Head_GoldenBlonde_B",
+                        "texture": "GoldenBlonde B"
+                    }
+                ]
+            },
+            "low vision admiral": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_LowVisionAdmiral",
+                        "texture": "LowVisionAdmiral"
+                    }
+                ]
+            },
+            "crusader": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Crusader",
+                        "texture": "Crusader"
+                    }
+                ]
+            },
+            "lucky blue cap": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_LuckyBlueCap",
+                        "texture": "LuckyBlueCap"
+                    }
+                ]
+            },
+            "construction helmet": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_ConstructionHelmet",
+                        "texture": "ConstructionHelmet"
+                    }
+                ]
+            },
+            "red mage": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_RedMage",
+                        "texture": "Red Mage"
+                    }
+                ]
+            },
+            "pixel cigarette": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_PixelCigarette",
+                        "texture": "PixelCigarette"
+                    }
+                ]
+            },
+            "gentleman's pipe": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_GentlemanSPipe",
+                        "texture": "GentlemansPipe"
+                    }
+                ]
+            },
+            "hubba bubba": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_HubbaBubba",
+                        "texture": "HubbaBubba"
+                    }
+                ]
+            },
+            "sucker": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Sucker",
+                        "texture": "Sucker"
+                    }
+                ]
+            },
+            "maverick": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Maverick",
+                        "texture": "Maverick"
+                    }
+                ]
+            },
+            "top of the morning": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_TopOfTheMorning",
+                        "texture": "TopOfTheMorning"
+                    }
+                ]
+            },
+            "nerdlinger": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Nerdlinger",
+                        "texture": "Nerdlinger"
+                    }
+                ]
+            },
+            "cool dude 69": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_CoolDude69",
+                        "texture": "Cool Dude 69"
+                    }
+                ]
+            },
+            "blue mage": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_BlueMage",
+                        "texture": "Blue Mage"
+                    }
+                ]
+            },
+            "black sweatband": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_BlackSweatband",
+                        "texture": "BlackSweatband"
+                    }
+                ]
+            },
+            "savage beast": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_SavageBeast",
+                        "texture": "SavageBeast"
+                    }
+                ]
+            },
+            "moustache": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Moustache",
+                        "texture": "Moustache"
+                    }
+                ]
+            },
+            "uniquehorn": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Uniquehorn",
+                        "texture": "Uniquehorn"
+                    }
+                ]
+            },
+            "deal with it": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_DealWithIt",
+                        "texture": "DealWithIt"
+                    }
+                ]
+            },
+            "purple sweatband": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_PurpleSweatband",
+                        "texture": "PurpleSweatband"
+                    }
+                ]
+            },
+            "covid safe": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_CovidSafe",
+                        "texture": "CovidSafe"
+                    }
+                ]
+            },
+            "pillager": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Pillager",
+                        "texture": "Pillager"
+                    }
+                ]
+            },
+            "admiral": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Admiral",
+                        "texture": "Admiral"
+                    }
+                ]
+            }
+        },
+        "Neck": {
+            "avax degen": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_AvaxDegen",
+                        "texture": "AVAXDegen"
+                    }
+                ]
+            },
+            "mim og": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_MimOg",
+                        "texture": "MIMOG"
+                    }
+                ]
+            },
+            "bitcoin maxi": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_BitcoinMaxi",
+                        "texture": "BitcoinMaxi"
+                    }
+                ]
+            },
+            "second head": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_SecondHead",
+                        "texture": "SecondHead"
+                    }
+                ]
+            },
+            "ethereum gwei guzzler": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_EthereumGweiGuzzler",
+                        "texture": "EthereumGweiGuzzler"
+                    }
+                ]
+            },
+            "blue bandana": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_BlueBandana",
+                        "texture": "BlueBandana"
+                    }
+                ]
+            },
+            "red bandana": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_RedBandana",
+                        "texture": "RedBandana"
+                    }
+                ]
+            },
+            "black bandana": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_BlackBandana",
+                        "texture": "BlackBandana"
+                    }
+                ]
+            },
+            "mim bling": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_MimBling",
+                        "texture": "MIMBling"
+                    }
+                ]
+            },
+            "bitcoin bling": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_BitcoinBling",
+                        "texture": "BitcoinBling"
+                    }
+                ]
+            },
+            "chains for days": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_ChainsForDays",
+                        "texture": "ChainsForDays"
+                    }
+                ]
+            },
+            "dollar chain": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_DollarChain",
+                        "texture": "DollarChain"
+                    }
+                ]
+            },
+            "ethereum bling": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_EthereumBling",
+                        "texture": "EthereumBling"
+                    }
+                ]
+            },
+            "chicken choker": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_ChickenChoker",
+                        "texture": "ChickenChoker"
+                    }
+                ]
+            },
+            "avax bling": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_AvaxBling",
+                        "texture": "AVAXBling"
+                    }
+                ]
+            },
+            "wage slave": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_WageSlave",
+                        "texture": "WageSlave"
+                    }
+                ]
+            },
+            "red bowtie": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_RedBowtie",
+                        "texture": "RedBowtie"
+                    }
+                ]
+            },
+            "purple bowtie": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_PurpleBowtie",
+                        "texture": "PurpleBowtie"
+                    }
+                ]
+            },
+            "hairy old man": {
+                "slot": "Neck",
+                "attachments": [
+                    {
+                        "name": "Trait_Neck_HairyOldMan",
+                        "texture": "HairyOldMan"
+                    }
+                ]
+            }
+        },
+        "Torso": {
+            "business boy": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_BusinessBoy_A",
+                        "texture": "BusinessBoy_Body"
+                    },
+                    {
+                        "name": "Trait_Torso_BusinessBoy_B",
+                        "texture": "BusinessBoy_Wing"
+                    }
+                ]
+            },
+            "karate kid": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_KarateKid_A",
+                        "texture": "KarateKid_Body"
+                    },
+                    {
+                        "name": "Trait_Torso_KarateKid_B",
+                        "texture": "KarateKid_Wing"
+                    }
+                ]
+            },
+            "action shorts": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_ActionShorts_A",
+                        "texture": "ActionShorts Body"
+                    },
+                    {
+                        "name": "Trait_Torso_ActionShorts_B",
+                        "texture": "ActionShorts PantA"
+                    },
+                    {
+                        "name": "Trait_Torso_ActionShorts_C",
+                        "texture": "ActionShorts PantB"
+                    }
+                ]
+            },
+            "nugget wand": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_NuggetWand",
+                        "texture": "NuggetWand"
+                    }
+                ]
+            },
+            "midas muscles": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_MidasMuscles_A",
+                        "texture": "MidasMucles_Front"
+                    },
+                    {
+                        "name": "Trait_Torso_MidasMuscles_B",
+                        "texture": "MidasMucles_Back"
+                    }
+                ]
+            },
+            "captain chimerica": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_CaptainChimerica",
+                        "texture": "CaptainChimerica"
+                    }
+                ]
+            },
+            "spell wand": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_SpellWand",
+                        "texture": "SpellWand"
+                    }
+                ]
+            },
+            "big bag of cash": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_BigBagOfCash",
+                        "texture": "BigBagOfCash"
+                    }
+                ]
+            },
+            "hentai": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_Hentai_A",
+                        "texture": "Hentai_Front"
+                    },
+                    {
+                        "name": "Trait_Torso_Hentai_B",
+                        "texture": "Hentai_Back"
+                    }
+                ]
+            },
+            "popsicle": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_Popsicle",
+                        "texture": "Popsicle"
+                    }
+                ]
+            },
+            "cutlass": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_Cutlass",
+                        "texture": "Cutlass"
+                    }
+                ]
+            },
+            "fresh fish": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_FreshFish",
+                        "texture": "FreshFish"
+                    }
+                ]
+            },
+            "mighty broadsword": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_MightyBroadsword",
+                        "texture": "MightyBroadsword"
+                    }
+                ]
+            },
+            "human growth hormones": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_HumanGrowthHormones_A",
+                        "texture": "HumanGrowthHormones_Front"
+                    },
+                    {
+                        "name": "Trait_Torso_HumanGrowthHormones_B",
+                        "texture": "HumanGrowthHormones_Back"
+                    }
+                ]
+            },
+            "peacemaker": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_Peacemaker",
+                        "texture": "Peacemaker"
+                    }
+                ]
+            },
+            "big ol corn cob": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_BigOlCornCob",
+                        "texture": "BigOlCornCob"
+                    }
+                ]
+            },
+            "summer days": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_SummerDays",
+                        "texture": "SummerDays"
+                    }
+                ]
+            },
+            "a fresh baguette": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_AFreshBaguette",
+                        "texture": "AFreshBaguette"
+                    }
+                ]
+            },
+            "old fashioned romance": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_OldFashionedRomance",
+                        "texture": "OldFashionedRomance"
+                    }
+                ]
+            },
+            "blue bag": {
+                "slot": "Torso",
+                "attachments": [
+                    {
+                        "name": "Trait_Torso_BlueBag",
+                        "texture": "BlueBag"
+                    }
+                ]
+            }
+        },
+        "Feet": {
+            "real feet": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_RealFeet_A",
+                        "texture": "RealFeet A"
+                    },
+                    {
+                        "name": "Trait_Feet_RealFeet_B",
+                        "texture": "RealFeet B"
+                    }
+                ]
+            },
+            "red leather boots": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_RedLeatherBoots_A",
+                        "texture": "RedBoots A"
+                    },
+                    {
+                        "name": "Trait_Feet_RedLeatherBoots_B",
+                        "texture": "RedBoots B"
+                    }
+                ]
+            },
+            "swashbucklers": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_Swashbucklers_A",
+                        "texture": "Swashbucklers A"
+                    },
+                    {
+                        "name": "Trait_Feet_Swashbucklers_B",
+                        "texture": "Swashbucklers B"
+                    }
+                ]
+            },
+            "purple leather boots": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_PurpleLeatherBoots_A",
+                        "texture": "PurpleBoots A"
+                    },
+                    {
+                        "name": "Trait_Feet_PurpleLeatherBoots_B",
+                        "texture": "PurpleBoots B"
+                    }
+                ]
+            },
+            "comfortable uggs": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_ComfortableUggs_A",
+                        "texture": "ComfortableUggs A"
+                    },
+                    {
+                        "name": "Trait_Feet_ComfortableUggs_B",
+                        "texture": "ComfortableUggs B"
+                    }
+                ]
+            },
+            "rollerderby": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_Rollerderby_A",
+                        "texture": "Rollerderby A"
+                    },
+                    {
+                        "name": "Trait_Feet_Rollerderby_B",
+                        "texture": "Rollerderby B"
+                    }
+                ]
+            },
+            "green kicks": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_GreenKicks_A",
+                        "texture": "GreenKicks A"
+                    },
+                    {
+                        "name": "Trait_Feet_GreenKicks_B",
+                        "texture": "GreenKicks B"
+                    }
+                ]
+            },
+            "red vans": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_RedVans_A",
+                        "texture": "RedVans A"
+                    },
+                    {
+                        "name": "Trait_Feet_RedVans_B",
+                        "texture": "RedVans B"
+                    }
+                ]
+            },
+            "black vans": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_BlackVans_A",
+                        "texture": "BlackVans A"
+                    },
+                    {
+                        "name": "Trait_Feet_BlackVans_B",
+                        "texture": "BlackVans B"
+                    }
+                ]
+            },
+            "blue kicks": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_BlueKicks_A",
+                        "texture": "BlueKicks A"
+                    },
+                    {
+                        "name": "Trait_Feet_BlueKicks_B",
+                        "texture": "BlueKicks B"
+                    }
+                ]
+            },
+            "purple feet": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_PurpleFeet_A",
+                        "texture": "PurpleFeet A 2"
+                    },
+                    {
+                        "name": "Trait_Feet_PurpleFeet_B",
+                        "texture": "PurpleFeet B 2"
+                    }
+                ]
+            },
+            "red feet": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_RedFeet_A",
+                        "texture": "RedFeet A 2"
+                    },
+                    {
+                        "name": "Trait_Feet_RedFeet_B",
+                        "texture": "RedFeet B 2"
+                    }
+                ]
+            },
+            "green feet": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_GreenFeet_A",
+                        "texture": "GreenFeet A 2"
+                    },
+                    {
+                        "name": "Trait_Feet_GreenFeet_B",
+                        "texture": "GreenFeet B 2"
+                    }
+                ]
+            },
+            "blue feet": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_BlueFeet_A",
+                        "texture": "BlueFeet A 2"
+                    },
+                    {
+                        "name": "Trait_Feet_BlueFeet_B",
+                        "texture": "BlueFeet B 2"
+                    }
+                ]
+            }
+        },
+        "Tail": {
+            "big mama fat pipes": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_BigMamaFatPipes",
+                        "texture": "Big Mama Fat Pipes"
+                    }
+                ]
+            },
+            "golden plumage": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_GoldenPlumage_A",
+                        "texture": "GoldenPlumage A"
+                    },
+                    {
+                        "name": "Trait_Tail_GoldenPlumage_B",
+                        "texture": "GoldenPlumage B"
+                    }
+                ]
+            },
+            "golden egg": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_GoldenEgg",
+                        "texture": "Golden Egg"
+                    }
+                ]
+            },
+            "gas guzzler": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_GasGuzzler",
+                        "texture": "Gas Guzzler"
+                    }
+                ]
+            },
+            "orange plumage": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_OrangePlumage_A",
+                        "texture": "OrangePlumage A"
+                    },
+                    {
+                        "name": "Trait_Tail_OrangePlumage_B",
+                        "texture": "OrangePlumage B"
+                    }
+                ]
+            },
+            "led": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_Led",
+                        "texture": "LED"
+                    }
+                ]
+            },
+            "red plumage": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_RedPlumage_A",
+                        "texture": "RedPlumage A"
+                    },
+                    {
+                        "name": "Trait_Tail_RedPlumage_B",
+                        "texture": "RedPlumage B"
+                    }
+                ]
+            },
+            "nyan": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_Nyan",
+                        "texture": "Nyan"
+                    }
+                ]
+            },
+            "very fresh egg": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_VeryFreshEgg",
+                        "texture": "Very Fresh Egg"
+                    }
+                ]
+            },
+            "liarliar": {
+                "slot": "Tail",
+                "attachments": [
+                    {
+                        "name": "Trait_Tail_Liarliar",
+                        "texture": "Liar Liar"
+                    }
+                ]
+            }
+        }
+    },
+    "rig": [
+        {
+            "name": "Celestial_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_Head",
+            "parent": "Celestial_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_Tail",
+            "parent": "Celestial_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_WingA",
+            "parent": "Celestial_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_WingB",
+            "parent": "Celestial_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegUpperA",
+            "parent": "Celestial_Torso",
+            "x": -3.87939453125,
+            "y": 32.692640692640694,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegUpperB",
+            "parent": "Celestial_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegLowerA",
+            "parent": "Celestial_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegLowerB",
+            "parent": "Celestial_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegFootA",
+            "parent": "Celestial_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Celestial_LegFootB",
+            "parent": "Celestial_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_Head",
+            "parent": "Crystale_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_Tail",
+            "parent": "Crystale_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_WingA",
+            "parent": "Crystale_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_WingB",
+            "parent": "Crystale_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegUpperA",
+            "parent": "Crystale_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegUpperB",
+            "parent": "Crystale_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegLowerA",
+            "parent": "Crystale_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegLowerB",
+            "parent": "Crystale_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegFootA",
+            "parent": "Crystale_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Crystale_LegFootB",
+            "parent": "Crystale_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_Head",
+            "parent": "Bullion_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_Tail",
+            "parent": "Bullion_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_WingA",
+            "parent": "Bullion_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_WingB",
+            "parent": "Bullion_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegUpperA",
+            "parent": "Bullion_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegUpperB",
+            "parent": "Bullion_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegLowerA",
+            "parent": "Bullion_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegLowerB",
+            "parent": "Bullion_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegFootA",
+            "parent": "Bullion_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Bullion_LegFootB",
+            "parent": "Bullion_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_Head",
+            "parent": "PixelChan_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_Tail",
+            "parent": "PixelChan_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_WingA",
+            "parent": "PixelChan_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_WingB",
+            "parent": "PixelChan_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegUpperA",
+            "parent": "PixelChan_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegUpperB",
+            "parent": "PixelChan_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegLowerA",
+            "parent": "PixelChan_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegLowerB",
+            "parent": "PixelChan_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegFootA",
+            "parent": "PixelChan_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PixelChan_LegFootB",
+            "parent": "PixelChan_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_Head",
+            "parent": "GameBoy_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_Tail",
+            "parent": "GameBoy_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_WingA",
+            "parent": "GameBoy_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_WingB",
+            "parent": "GameBoy_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegUpperA",
+            "parent": "GameBoy_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegUpperB",
+            "parent": "GameBoy_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegLowerA",
+            "parent": "GameBoy_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegLowerB",
+            "parent": "GameBoy_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegFootA",
+            "parent": "GameBoy_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "GameBoy_LegFootB",
+            "parent": "GameBoy_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_Head",
+            "parent": "PassionRed_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_Tail",
+            "parent": "PassionRed_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_WingA",
+            "parent": "PassionRed_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_WingB",
+            "parent": "PassionRed_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegUpperA",
+            "parent": "PassionRed_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegUpperB",
+            "parent": "PassionRed_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegLowerA",
+            "parent": "PassionRed_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegLowerB",
+            "parent": "PassionRed_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegFootA",
+            "parent": "PassionRed_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "PassionRed_LegFootB",
+            "parent": "PassionRed_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_Head",
+            "parent": "FrogGreen_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_Tail",
+            "parent": "FrogGreen_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_WingA",
+            "parent": "FrogGreen_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_WingB",
+            "parent": "FrogGreen_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegUpperA",
+            "parent": "FrogGreen_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegUpperB",
+            "parent": "FrogGreen_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegLowerA",
+            "parent": "FrogGreen_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegLowerB",
+            "parent": "FrogGreen_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegFootA",
+            "parent": "FrogGreen_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "FrogGreen_LegFootB",
+            "parent": "FrogGreen_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_Head",
+            "parent": "NightstalkerBlue_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_Tail",
+            "parent": "NightstalkerBlue_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_WingA",
+            "parent": "NightstalkerBlue_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_WingB",
+            "parent": "NightstalkerBlue_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegUpperA",
+            "parent": "NightstalkerBlue_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegUpperB",
+            "parent": "NightstalkerBlue_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegLowerA",
+            "parent": "NightstalkerBlue_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegLowerB",
+            "parent": "NightstalkerBlue_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegFootA",
+            "parent": "NightstalkerBlue_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "NightstalkerBlue_LegFootB",
+            "parent": "NightstalkerBlue_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_Head",
+            "parent": "MutantPurple_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_Tail",
+            "parent": "MutantPurple_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_WingA",
+            "parent": "MutantPurple_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_WingB",
+            "parent": "MutantPurple_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegUpperA",
+            "parent": "MutantPurple_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegUpperB",
+            "parent": "MutantPurple_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegLowerA",
+            "parent": "MutantPurple_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegLowerB",
+            "parent": "MutantPurple_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegFootA",
+            "parent": "MutantPurple_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "MutantPurple_LegFootB",
+            "parent": "MutantPurple_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_Torso",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 5,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_Head",
+            "parent": "RusticBrown_Torso",
+            "x": 37.13134765625,
+            "y": -54.303030303030305,
+            "rotation": 5.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_Tail",
+            "parent": "RusticBrown_Torso",
+            "x": -54.3115234375,
+            "y": -28.25974025974026,
+            "rotation": -15.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_WingA",
+            "parent": "RusticBrown_Torso",
+            "x": -9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_WingB",
+            "parent": "RusticBrown_Torso",
+            "x": 10.52978515625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegUpperA",
+            "parent": "RusticBrown_Torso",
+            "x": -6.09619140625,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 10,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegUpperB",
+            "parent": "RusticBrown_Torso",
+            "x": 12.74658203125,
+            "y": 33.8008658008658,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegLowerA",
+            "parent": "RusticBrown_LegUpperA",
+            "x": 0.0,
+            "y": 22.164502164502164,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegLowerB",
+            "parent": "RusticBrown_LegUpperB",
+            "x": 0.0,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -2,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegFootA",
+            "parent": "RusticBrown_LegLowerA",
+            "x": 3.87939453125,
+            "y": 16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "RusticBrown_LegFootB",
+            "parent": "RusticBrown_LegLowerB",
+            "x": 3.87939453125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": -3,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_DaftPunk",
+            "parent": null,
+            "x": -1.66259765625,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_TungstenCube",
+            "parent": null,
+            "x": 3.3251953125,
+            "y": -25.48917748917749,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_GoldenBoneDaddy",
+            "parent": null,
+            "x": 4.98779296875,
+            "y": -19.948051948051948,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Boxhead_A",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -34.90909090909091,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Boxhead_B",
+            "parent": null,
+            "x": 0.0,
+            "y": -8.865800865800866,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Murica",
+            "parent": null,
+            "x": 7.7587890625,
+            "y": -23.826839826839826,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Hamlet",
+            "parent": null,
+            "x": 1.66259765625,
+            "y": -24.935064935064936,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_InheritedRoyalty",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": -42.666666666666664,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Pineapple",
+            "parent": null,
+            "x": 0.55419921875,
+            "y": -32.13852813852814,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_IceyStare",
+            "parent": null,
+            "x": 11.63818359375,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_GoldenCrusader",
+            "parent": null,
+            "x": 2.77099609375,
+            "y": -23.272727272727273,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_SuperSaiyan",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": -47.65367965367965,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_LuckiestRedCap",
+            "parent": null,
+            "x": 6.09619140625,
+            "y": -34.35497835497836,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_LaserEye",
+            "parent": null,
+            "x": 2.216796875,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Goose",
+            "parent": null,
+            "x": 9.9755859375,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CheekyRedhead_A",
+            "parent": null,
+            "x": -16.07177734375,
+            "y": -14.96103896103896,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CheekyRedhead_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CharcoalBrunette_A",
+            "parent": null,
+            "x": -18.8427734375,
+            "y": -14.96103896103896,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CharcoalBrunette_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_SmokingLounge",
+            "parent": null,
+            "x": 17.18017578125,
+            "y": -13.852813852813853,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Saint",
+            "parent": null,
+            "x": 0.55419921875,
+            "y": -22.71861471861472,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_MysteriousFez",
+            "parent": null,
+            "x": -6.650390625,
+            "y": -32.692640692640694,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_AllSeeingEye",
+            "parent": null,
+            "x": 2.77099609375,
+            "y": -19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Hothead",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": -34.35497835497836,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Gentlechikn",
+            "parent": null,
+            "x": 8.8671875,
+            "y": -30.476190476190474,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Mfd",
+            "parent": null,
+            "x": 5.5419921875,
+            "y": -11.636363636363637,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_AvaxSafetyOfficer",
+            "parent": null,
+            "x": 4.98779296875,
+            "y": -41.004329004329,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_FrothyCrown",
+            "parent": null,
+            "x": 0.0,
+            "y": -37.67965367965368,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_GoldenBlonde_A",
+            "parent": null,
+            "x": -16.07177734375,
+            "y": -16.06926406926407,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_GoldenBlonde_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_LowVisionAdmiral",
+            "parent": null,
+            "x": -1.66259765625,
+            "y": -36.01731601731602,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Crusader",
+            "parent": null,
+            "x": 1.66259765625,
+            "y": -22.71861471861472,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_LuckyBlueCap",
+            "parent": null,
+            "x": 6.650390625,
+            "y": -35.46320346320346,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_ConstructionHelmet",
+            "parent": null,
+            "x": 4.98779296875,
+            "y": -41.55844155844156,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_RedMage",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": -44.32900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_PixelCigarette",
+            "parent": null,
+            "x": 27.15576171875,
+            "y": 0.5541125541125541,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_GentlemanSPipe",
+            "parent": null,
+            "x": 33.251953125,
+            "y": 7.757575757575758,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_HubbaBubba",
+            "parent": null,
+            "x": 43.78173828125,
+            "y": -8.311688311688311,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Sucker",
+            "parent": null,
+            "x": 40.45654296875,
+            "y": -7.757575757575758,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Maverick",
+            "parent": null,
+            "x": 8.8671875,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_TopOfTheMorning",
+            "parent": null,
+            "x": 1.66259765625,
+            "y": -38.23376623376623,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Nerdlinger",
+            "parent": null,
+            "x": 8.31298828125,
+            "y": -18.83982683982684,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CoolDude69",
+            "parent": null,
+            "x": 11.63818359375,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_BlueMage",
+            "parent": null,
+            "x": -6.650390625,
+            "y": -47.099567099567096,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_BlackSweatband",
+            "parent": null,
+            "x": -0.55419921875,
+            "y": -28.813852813852815,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_SavageBeast",
+            "parent": null,
+            "x": 32.1435546875,
+            "y": 6.64935064935065,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Moustache",
+            "parent": null,
+            "x": 19.39697265625,
+            "y": -9.974025974025974,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Uniquehorn",
+            "parent": null,
+            "x": 21.0595703125,
+            "y": -41.004329004329,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_DealWithIt",
+            "parent": null,
+            "x": 9.42138671875,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_PurpleSweatband",
+            "parent": null,
+            "x": -1.1083984375,
+            "y": -27.151515151515152,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_CovidSafe",
+            "parent": null,
+            "x": 2.77099609375,
+            "y": -6.64935064935065,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Pillager",
+            "parent": null,
+            "x": -7.7587890625,
+            "y": -50.97835497835498,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Admiral",
+            "parent": null,
+            "x": -2.77099609375,
+            "y": -35.46320346320346,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_AvaxDegen",
+            "parent": null,
+            "x": 1.1083984375,
+            "y": 28.813852813852815,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_MimOg",
+            "parent": null,
+            "x": 0.55419921875,
+            "y": 23.826839826839826,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_BitcoinMaxi",
+            "parent": null,
+            "x": 0.0,
+            "y": 26.043290043290042,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_SecondHead",
+            "parent": null,
+            "x": 32.1435546875,
+            "y": 1.6623376623376624,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_EthereumGweiGuzzler",
+            "parent": null,
+            "x": -3.87939453125,
+            "y": 28.25974025974026,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_BlueBandana",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": 26.043290043290042,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_RedBandana",
+            "parent": null,
+            "x": -5.5419921875,
+            "y": 24.935064935064936,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_BlackBandana",
+            "parent": null,
+            "x": -6.650390625,
+            "y": 26.5974025974026,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_MimBling",
+            "parent": null,
+            "x": 0.0,
+            "y": 26.043290043290042,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_BitcoinBling",
+            "parent": null,
+            "x": -0.55419921875,
+            "y": 28.25974025974026,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_ChainsForDays",
+            "parent": null,
+            "x": -1.66259765625,
+            "y": 17.17748917748918,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_DollarChain",
+            "parent": null,
+            "x": -1.66259765625,
+            "y": 27.705627705627705,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_EthereumBling",
+            "parent": null,
+            "x": -3.87939453125,
+            "y": 27.151515151515152,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_ChickenChoker",
+            "parent": null,
+            "x": 0.55419921875,
+            "y": 13.852813852813853,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_AvaxBling",
+            "parent": null,
+            "x": 1.1083984375,
+            "y": 28.813852813852815,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_WageSlave",
+            "parent": null,
+            "x": 1.66259765625,
+            "y": 34.90909090909091,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_RedBowtie",
+            "parent": null,
+            "x": 2.77099609375,
+            "y": 14.406926406926408,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_PurpleBowtie",
+            "parent": null,
+            "x": 2.77099609375,
+            "y": 14.406926406926408,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_HairyOldMan",
+            "parent": null,
+            "x": 8.8671875,
+            "y": 6.095238095238095,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_BusinessBoy_A",
+            "parent": null,
+            "x": 12.1923828125,
+            "y": 6.64935064935065,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_BusinessBoy_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_KarateKid_A",
+            "parent": null,
+            "x": 13.85498046875,
+            "y": 6.095238095238095,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_KarateKid_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_ActionShorts_A",
+            "parent": null,
+            "x": 6.650390625,
+            "y": 31.03030303030303,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_ActionShorts_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_ActionShorts_C",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_NuggetWand",
+            "parent": null,
+            "x": 43.78173828125,
+            "y": 23.272727272727273,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_MidasMuscles_A",
+            "parent": null,
+            "x": 0.0,
+            "y": -31.584415584415584,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_MidasMuscles_B",
+            "parent": null,
+            "x": 62.62451171875,
+            "y": -31.03030303030303,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_CaptainChimerica",
+            "parent": null,
+            "x": -2.77099609375,
+            "y": 10.528138528138529,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_SpellWand",
+            "parent": null,
+            "x": 36.5771484375,
+            "y": 38.78787878787879,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_BigBagOfCash",
+            "parent": null,
+            "x": 8.31298828125,
+            "y": 6.64935064935065,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_Hentai_A",
+            "parent": null,
+            "x": 12.1923828125,
+            "y": -35.46320346320346,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_Hentai_B",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_Popsicle",
+            "parent": null,
+            "x": 30.48095703125,
+            "y": 24.935064935064936,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_Cutlass",
+            "parent": null,
+            "x": 53.203125,
+            "y": 19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_FreshFish",
+            "parent": null,
+            "x": 0.0,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_MightyBroadsword",
+            "parent": null,
+            "x": 60.40771484375,
+            "y": 0.0,
+            "rotation": 200.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_HumanGrowthHormones_A",
+            "parent": null,
+            "x": -3.3251953125,
+            "y": -32.13852813852814,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 11,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_HumanGrowthHormones_B",
+            "parent": null,
+            "x": 56.5283203125,
+            "y": -32.13852813852814,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_Peacemaker",
+            "parent": null,
+            "x": 26.04736328125,
+            "y": 21.61038961038961,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_BigOlCornCob",
+            "parent": null,
+            "x": -2.216796875,
+            "y": 6.095238095238095,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_SummerDays",
+            "parent": null,
+            "x": 29.37255859375,
+            "y": 31.03030303030303,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_AFreshBaguette",
+            "parent": null,
+            "x": -3.3251953125,
+            "y": 10.528138528138529,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_OldFashionedRomance",
+            "parent": null,
+            "x": 13.85498046875,
+            "y": 22.71861471861472,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Torso_BlueBag",
+            "parent": null,
+            "x": 9.9755859375,
+            "y": 3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RealFeet_A",
+            "parent": null,
+            "x": 9.42138671875,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RealFeet_B",
+            "parent": null,
+            "x": 8.31298828125,
+            "y": -18.83982683982684,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedLeatherBoots_A",
+            "parent": null,
+            "x": 4.43359375,
+            "y": -12.19047619047619,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedLeatherBoots_B",
+            "parent": null,
+            "x": 5.5419921875,
+            "y": -19.393939393939394,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_Swashbucklers_A",
+            "parent": null,
+            "x": 9.9755859375,
+            "y": -9.41991341991342,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_Swashbucklers_B",
+            "parent": null,
+            "x": 7.20458984375,
+            "y": -12.19047619047619,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_PurpleLeatherBoots_A",
+            "parent": null,
+            "x": 5.5419921875,
+            "y": -13.852813852813853,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_PurpleLeatherBoots_B",
+            "parent": null,
+            "x": 5.5419921875,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_ComfortableUggs_A",
+            "parent": null,
+            "x": 9.42138671875,
+            "y": 0.5541125541125541,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_ComfortableUggs_B",
+            "parent": null,
+            "x": 12.1923828125,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_Rollerderby_A",
+            "parent": null,
+            "x": 8.31298828125,
+            "y": -2.7705627705627704,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_Rollerderby_B",
+            "parent": null,
+            "x": 8.8671875,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_GreenKicks_A",
+            "parent": null,
+            "x": 7.7587890625,
+            "y": 0.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_GreenKicks_B",
+            "parent": null,
+            "x": 12.1923828125,
+            "y": -2.2164502164502164,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedVans_A",
+            "parent": null,
+            "x": 8.8671875,
+            "y": -3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedVans_B",
+            "parent": null,
+            "x": 12.74658203125,
+            "y": -6.095238095238095,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlackVans_A",
+            "parent": null,
+            "x": 6.650390625,
+            "y": 0.5541125541125541,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlackVans_B",
+            "parent": null,
+            "x": 11.083984375,
+            "y": -3.324675324675325,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlueKicks_A",
+            "parent": null,
+            "x": 9.9755859375,
+            "y": 2.2164502164502164,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlueKicks_B",
+            "parent": null,
+            "x": 11.63818359375,
+            "y": -1.1082251082251082,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_PurpleFeet_A",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_PurpleFeet_B",
+            "parent": null,
+            "x": -2.77099609375,
+            "y": -16.06926406926407,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedFeet_A",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_RedFeet_B",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -18.285714285714285,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_GreenFeet_A",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -16.623376623376622,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_GreenFeet_B",
+            "parent": null,
+            "x": -3.3251953125,
+            "y": -17.17748917748918,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlueFeet_A",
+            "parent": null,
+            "x": -3.3251953125,
+            "y": -17.17748917748918,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Feet_BlueFeet_B",
+            "parent": null,
+            "x": -4.43359375,
+            "y": -17.73160173160173,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_BigMamaFatPipes",
+            "parent": null,
+            "x": -26.6015625,
+            "y": -4.432900432900433,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_GoldenPlumage_A",
+            "parent": null,
+            "x": 8.31298828125,
+            "y": 22.164502164502164,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_GoldenPlumage_B",
+            "parent": null,
+            "x": -7.20458984375,
+            "y": -13.2987012987013,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_GoldenEgg",
+            "parent": null,
+            "x": -17.734375,
+            "y": 39.896103896103895,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_GasGuzzler",
+            "parent": null,
+            "x": -20.50537109375,
+            "y": -4.987012987012987,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_OrangePlumage_A",
+            "parent": null,
+            "x": -3.87939453125,
+            "y": 6.095238095238095,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_OrangePlumage_B",
+            "parent": null,
+            "x": -13.85498046875,
+            "y": -10.528138528138529,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_Led",
+            "parent": null,
+            "x": -34.91455078125,
+            "y": 37.125541125541126,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_RedPlumage_A",
+            "parent": null,
+            "x": -3.87939453125,
+            "y": 13.852813852813853,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_RedPlumage_B",
+            "parent": null,
+            "x": -16.07177734375,
+            "y": -12.19047619047619,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_Nyan",
+            "parent": null,
+            "x": -31.58935546875,
+            "y": 15.515151515151516,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_VeryFreshEgg",
+            "parent": null,
+            "x": -12.1923828125,
+            "y": 34.90909090909091,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 0,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Tail_Liarliar",
+            "parent": null,
+            "x": -8.31298828125,
+            "y": -9.41991341991342,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        }
+    ]
+}

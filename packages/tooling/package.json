@@ -1,0 +1,36 @@
+{
+  "name": "@roost2d/tooling",
+  "version": "0.1.0-rc.0",
+  "description": "Node-only manifest, inventory, integrity, and architecture tooling for Roost2D.",
+  "license": "Apache-2.0",
+  "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/tooling" },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "roost2d": "dist/cli.js",
+    "roost2d-tooling": "dist/cli.js"
+  },
+  "dependencies": {
+    "@roost2d/contracts": "0.1.0-rc.0",
+    "sharp": "^0.35.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "roost2d",
+  "version": "0.1.0-rc.0",
+  "private": true,
+  "description": "Framework-agnostic 2D game-engine packages.",
+  "type": "module",
+  "packageManager": "npm@11.5.2",
+  "engines": { "node": ">=22.14.0" },
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:effects && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling",
+    "build:contracts": "npm run build -w @roost2d/contracts",
+    "build:core": "npm run build -w @roost2d/core",
+    "build:assets": "npm run build -w @roost2d/assets",
+    "build:pixi": "npm run build -w @roost2d/pixi",
+    "build:rig2d": "npm run build -w @roost2d/rig2d",
+    "build:chikn-rigs": "npm run build -w @roost2d/chikn-rigs",
+    "build:input": "npm run build -w @roost2d/input",
+    "build:audio": "npm run build -w @roost2d/audio",
+    "build:effects": "npm run build -w @roost2d/effects",
+    "build:isometric": "npm run build -w @roost2d/isometric",
+    "build:net": "npm run build -w @roost2d/net",
+    "build:diagnostics": "npm run build -w @roost2d/diagnostics",
+    "build:tooling": "npm run build -w @roost2d/tooling",
+    "build:smoke": "npm run build -w roost2d-package-smoke",
+    "smoke": "npm run smoke -w roost2d-package-smoke",
+    "build:showcase": "npm run build -w roost2d-showcase",
+    "docs:build": "vitepress build docs",
+    "pages:build": "npm run build && npm run build:showcase && npm run docs:build && node scripts/assemble-pages.mjs",
+    "check": "npm run check --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "node scripts/clean.mjs",
+    "release:verify": "npm run clean && npm ci && npm run build && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "gsap": "^3.13.0",
+    "pixi.js": "^8.11.0",
+    "typescript": "^5.8.3",
+    "vite": "^8.2.0",
+    "vitepress": "^1.6.3"
+  }
+}

@@ -1,0 +1,220 @@
+{
+    "animations": {
+        "walk": {
+            "duration": 0.5,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "y": -8, "rotation": 0, "duration": 0.125 } },
+                { "target": "Torso", "at": 0.125, "properties": { "y": 0, "rotation": -1, "duration": 0.125 } },
+                { "target": "Torso", "at": 0.25, "properties": { "y": -8, "rotation": 0, "duration": 0.125 } },
+                { "target": "Torso", "at": 0.375, "properties": { "y": 0, "rotation": 1, "duration": 0.125 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -2, "duration": 0.25 } },
+                { "target": "Head", "at": 0.25, "properties": { "rotation": 8, "duration": 0.25 } },
+                { "target": "Tail", "at": 0.0, "properties": { "rotation": -5, "duration": 0.25 } },
+                { "target": "Tail", "at": 0.25, "properties": { "rotation": -15, "duration": 0.25 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": -10, "duration": 0.25 } },
+                { "target": "Wing A", "at": 0.25, "properties": { "rotation": 10, "duration": 0.25 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": 10, "duration": 0.25 } },
+                { "target": "Wing B", "at": 0.25, "properties": { "rotation": -10, "duration": 0.25 } },
+                { "target": "LegUpper A", "at": 0.0, "properties": { "rotation": 30, "duration": 0.25 } },
+                { "target": "LegUpper A", "at": 0.25, "properties": { "rotation": -30, "duration": 0.25 } },
+                { "target": "LegUpper B", "at": 0.0, "properties": { "rotation": -30, "duration": 0.25 } },
+                { "target": "LegUpper B", "at": 0.25, "properties": { "rotation": 30, "duration": 0.25 } }
+            ]
+        },
+        "slowed": {
+            "duration": 1.0,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "y": 8, "rotation": -8, "duration": 0.5 } },
+                { "target": "Torso", "at": 0.5, "properties": { "y": 5, "rotation": -6, "duration": 0.5 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -15, "duration": 0.5 } },
+                { "target": "Head", "at": 0.5, "properties": { "rotation": -12, "duration": 0.5 } },
+                { "target": "LegUpper A", "at": 0.0, "properties": { "rotation": -40, "duration": 0.5 } },
+                { "target": "LegUpper A", "at": 0.5, "properties": { "rotation": 20, "duration": 0.5 } },
+                { "target": "LegUpper B", "at": 0.0, "properties": { "rotation": 20, "duration": 0.5 } },
+                { "target": "LegUpper B", "at": 0.5, "properties": { "rotation": -40, "duration": 0.5 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 20, "duration": 0.5 } },
+                { "target": "Wing A", "at": 0.5, "properties": { "rotation": 10, "duration": 0.5 } }
+            ]
+        },
+        "hit": {
+            "duration": 0.35,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": -15, "x": -10, "duration": 0.08 } },
+                { "target": "Torso", "at": 0.08, "properties": { "rotation": 10, "x": 5, "duration": 0.12 } },
+                { "target": "Torso", "at": 0.2, "properties": { "rotation": 0, "x": 0, "duration": 0.15 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": 15, "duration": 0.08 } },
+                { "target": "Head", "at": 0.08, "properties": { "rotation": -5, "duration": 0.27 } }
+            ]
+        },
+        "fly": {
+            "duration": 0.4,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "y": -15, "duration": 0.2 } },
+                { "target": "Torso", "at": 0.2, "properties": { "y": 0, "duration": 0.2 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 40, "duration": 0.2 } },
+                { "target": "Wing A", "at": 0.2, "properties": { "rotation": -40, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": -40, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.2, "properties": { "rotation": 40, "duration": 0.2 } },
+                { "target": "LegUpper A", "at": 0.0, "properties": { "rotation": 78, "duration": 0.08 } },
+                { "target": "LegUpper A", "at": 0.08, "properties": { "rotation": 68, "duration": 0.12 } },
+                { "target": "LegUpper A", "at": 0.2, "properties": { "rotation": 78, "duration": 0.12 } },
+                { "target": "LegUpper A", "at": 0.32, "properties": { "rotation": 0, "duration": 0.08 } },
+                { "target": "LegUpper B", "at": 0.0, "properties": { "rotation": 70, "duration": 0.08 } },
+                { "target": "LegUpper B", "at": 0.08, "properties": { "rotation": 80, "duration": 0.12 } },
+                { "target": "LegUpper B", "at": 0.2, "properties": { "rotation": 70, "duration": 0.12 } },
+                { "target": "LegUpper B", "at": 0.32, "properties": { "rotation": 0, "duration": 0.08 } }
+            ]
+        },
+        "attack": {
+            "duration": 0.3,
+            "tweens": [
+                { "target": "Head", "at": 0.0, "properties": { "rotation": 45.0, "duration": 0.1 } },
+                { "target": "Head", "at": 0.1, "properties": { "rotation": -10.0, "duration": 0.08 } },
+                { "target": "Head", "at": 0.18, "properties": { "rotation": 5.0, "duration": 0.12 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 100, "duration": 0.2 } },
+                { "target": "Wing A", "at": 0.2, "properties": { "rotation": -100, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": -100, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.2, "properties": { "rotation": 100, "duration": 0.2 } }
+            ]
+        },
+        "peck": {
+            "duration": 0.64,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": -9, "duration": 0.14 } },
+                { "target": "Torso", "at": 0.14, "properties": { "rotation": -21, "duration": 0.14 } },
+                { "target": "Torso", "at": 0.28, "properties": { "rotation": -9, "duration": 0.16 } },
+                { "target": "Torso", "at": 0.44, "properties": { "rotation": 0, "duration": 0.2 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": 12, "duration": 0.14 } },
+                { "target": "Head", "at": 0.14, "properties": { "rotation": 118, "duration": 0.14 } },
+                { "target": "Head", "at": 0.28, "properties": { "rotation": -16, "duration": 0.12 } },
+                { "target": "Head", "at": 0.4, "properties": { "rotation": 18, "duration": 0.24 } },
+                { "target": "LegUpper A", "at": 0.0, "properties": { "rotation": 24, "duration": 0.28 } },
+                { "target": "LegUpper B", "at": 0.0, "properties": { "rotation": -20, "duration": 0.28 } }
+            ]
+        },
+        "attack_peck": {
+            "duration": 0.3,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": -6, "x": -4, "duration": 0.08 } },
+                { "target": "Torso", "at": 0.08, "properties": { "rotation": 5, "x": 9, "duration": 0.1 } },
+                { "target": "Torso", "at": 0.18, "properties": { "rotation": 0, "x": 0, "duration": 0.12 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -16, "duration": 0.08 } },
+                { "target": "Head", "at": 0.08, "properties": { "rotation": 62, "duration": 0.08 } },
+                { "target": "Head", "at": 0.16, "properties": { "rotation": 0, "duration": 0.14 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 26, "duration": 0.1 } },
+                { "target": "Wing A", "at": 0.1, "properties": { "rotation": 0, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": -26, "duration": 0.1 } },
+                { "target": "Wing B", "at": 0.1, "properties": { "rotation": 0, "duration": 0.2 } }
+            ]
+        },
+        "attack_heavy": {
+            "duration": 0.52,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": -22, "x": -12, "y": -4, "duration": 0.2 } },
+                { "target": "Torso", "at": 0.2, "properties": { "rotation": 18, "x": 14, "y": 2, "duration": 0.14 } },
+                { "target": "Torso", "at": 0.34, "properties": { "rotation": 0, "x": 0, "y": 0, "duration": 0.18 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -28, "duration": 0.2 } },
+                { "target": "Head", "at": 0.2, "properties": { "rotation": 40, "duration": 0.14 } },
+                { "target": "Head", "at": 0.34, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": -60, "duration": 0.2 } },
+                { "target": "Wing A", "at": 0.2, "properties": { "rotation": 96, "duration": 0.16 } },
+                { "target": "Wing A", "at": 0.36, "properties": { "rotation": 0, "duration": 0.16 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": 60, "duration": 0.2 } },
+                { "target": "Wing B", "at": 0.2, "properties": { "rotation": -96, "duration": 0.16 } },
+                { "target": "Wing B", "at": 0.36, "properties": { "rotation": 0, "duration": 0.16 } },
+                { "target": "Tail", "at": 0.0, "properties": { "rotation": 20, "duration": 0.2 } },
+                { "target": "Tail", "at": 0.2, "properties": { "rotation": -14, "duration": 0.32 } }
+            ]
+        },
+        "stagger": {
+            "duration": 0.34,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": 20, "x": 12, "duration": 0.09 } },
+                { "target": "Torso", "at": 0.09, "properties": { "rotation": -12, "x": -6, "duration": 0.12 } },
+                { "target": "Torso", "at": 0.21, "properties": { "rotation": 0, "x": 0, "duration": 0.13 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -24, "duration": 0.09 } },
+                { "target": "Head", "at": 0.09, "properties": { "rotation": 8, "duration": 0.25 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 36, "duration": 0.09 } },
+                { "target": "Wing A", "at": 0.09, "properties": { "rotation": 0, "duration": 0.25 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": -36, "duration": 0.09 } },
+                { "target": "Wing B", "at": 0.09, "properties": { "rotation": 0, "duration": 0.25 } }
+            ]
+        },
+        "death_burst": {
+            "duration": 0.42,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "rotation": -18, "y": -10, "duration": 0.12 } },
+                { "target": "Torso", "at": 0.12, "properties": { "rotation": 46, "y": 14, "duration": 0.3 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -30, "duration": 0.12 } },
+                { "target": "Head", "at": 0.12, "properties": { "rotation": 70, "duration": 0.3 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": 120, "duration": 0.14 } },
+                { "target": "Wing A", "at": 0.14, "properties": { "rotation": 60, "duration": 0.28 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": -120, "duration": 0.14 } },
+                { "target": "Wing B", "at": 0.14, "properties": { "rotation": -60, "duration": 0.28 } },
+                { "target": "LegUpper A", "at": 0.0, "properties": { "rotation": -50, "duration": 0.14 } },
+                { "target": "LegUpper B", "at": 0.0, "properties": { "rotation": 50, "duration": 0.14 } },
+                { "target": "Tail", "at": 0.0, "properties": { "rotation": 40, "duration": 0.2 } }
+            ]
+        },
+        "spawn_drop": {
+            "duration": 0.46,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "y": -46, "rotation": 8, "duration": 0.22 } },
+                { "target": "Torso", "at": 0.22, "properties": { "y": 6, "rotation": 0, "duration": 0.1 } },
+                { "target": "Torso", "at": 0.32, "properties": { "y": 0, "duration": 0.14 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -18, "duration": 0.22 } },
+                { "target": "Head", "at": 0.22, "properties": { "rotation": 10, "duration": 0.12 } },
+                { "target": "Head", "at": 0.34, "properties": { "rotation": 0, "duration": 0.12 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": -70, "duration": 0.22 } },
+                { "target": "Wing A", "at": 0.22, "properties": { "rotation": 30, "duration": 0.12 } },
+                { "target": "Wing A", "at": 0.34, "properties": { "rotation": 0, "duration": 0.12 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": 70, "duration": 0.22 } },
+                { "target": "Wing B", "at": 0.22, "properties": { "rotation": -30, "duration": 0.12 } },
+                { "target": "Wing B", "at": 0.34, "properties": { "rotation": 0, "duration": 0.12 } },
+                { "target": "LegUpper A", "at": 0.22, "properties": { "rotation": 40, "duration": 0.1 } },
+                { "target": "LegUpper A", "at": 0.32, "properties": { "rotation": 0, "duration": 0.14 } },
+                { "target": "LegUpper B", "at": 0.22, "properties": { "rotation": -40, "duration": 0.1 } },
+                { "target": "LegUpper B", "at": 0.32, "properties": { "rotation": 0, "duration": 0.14 } }
+            ]
+        },
+        "extraction_bow": {
+            "duration": 0.72,
+            "tweens": [
+                { "target": "Torso", "at": 0.2, "properties": { "rotation": 24, "y": 6, "duration": 0.2 } },
+                { "target": "Torso", "at": 0.4, "properties": { "rotation": 24, "y": 6, "duration": 0.14 } },
+                { "target": "Torso", "at": 0.54, "properties": { "rotation": 0, "y": 0, "duration": 0.18 } },
+                { "target": "Head", "at": 0.2, "properties": { "rotation": 40, "duration": 0.2 } },
+                { "target": "Head", "at": 0.4, "properties": { "rotation": 40, "duration": 0.14 } },
+                { "target": "Head", "at": 0.54, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Wing A", "at": 0.2, "properties": { "rotation": -30, "duration": 0.34 } },
+                { "target": "Wing A", "at": 0.54, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Wing B", "at": 0.2, "properties": { "rotation": 30, "duration": 0.34 } },
+                { "target": "Wing B", "at": 0.54, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Tail", "at": 0.2, "properties": { "rotation": -18, "duration": 0.34 } },
+                { "target": "Tail", "at": 0.54, "properties": { "rotation": 0, "duration": 0.18 } }
+            ]
+        },
+        "draft_cheer": {
+            "duration": 0.6,
+            "tweens": [
+                { "target": "Torso", "at": 0.0, "properties": { "y": 4, "duration": 0.1 } },
+                { "target": "Torso", "at": 0.1, "properties": { "y": -18, "duration": 0.16 } },
+                { "target": "Torso", "at": 0.26, "properties": { "y": 0, "duration": 0.16 } },
+                { "target": "Torso", "at": 0.42, "properties": { "y": -8, "duration": 0.1 } },
+                { "target": "Torso", "at": 0.52, "properties": { "y": 0, "duration": 0.08 } },
+                { "target": "Head", "at": 0.0, "properties": { "rotation": -16, "duration": 0.2 } },
+                { "target": "Head", "at": 0.2, "properties": { "rotation": 6, "duration": 0.4 } },
+                { "target": "Wing A", "at": 0.0, "properties": { "rotation": -80, "duration": 0.14 } },
+                { "target": "Wing A", "at": 0.14, "properties": { "rotation": 40, "duration": 0.14 } },
+                { "target": "Wing A", "at": 0.28, "properties": { "rotation": -60, "duration": 0.14 } },
+                { "target": "Wing A", "at": 0.42, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Wing B", "at": 0.0, "properties": { "rotation": 80, "duration": 0.14 } },
+                { "target": "Wing B", "at": 0.14, "properties": { "rotation": -40, "duration": 0.14 } },
+                { "target": "Wing B", "at": 0.28, "properties": { "rotation": 60, "duration": 0.14 } },
+                { "target": "Wing B", "at": 0.42, "properties": { "rotation": 0, "duration": 0.18 } },
+                { "target": "Tail", "at": 0.0, "properties": { "rotation": -20, "duration": 0.3 } },
+                { "target": "Tail", "at": 0.3, "properties": { "rotation": 0, "duration": 0.3 } }
+            ]
+        }
+    }
+}

@@ -1,0 +1,9 @@
+# Roost2D model context
+
+Canonical repository: https://github.com/Roost2D/roost2d
+Quick start: /getting-started
+Architecture: /architecture
+Packages: /packages
+Chikn asset integration: /chikn-assets
+
+Roost2D is an Apache-2.0 TypeScript ESM engine with 13 lockstep @roost2d packages. contracts owns serialized schemas; core is renderer-neutral deterministic runtime; pixi is the PixiJS v8 adapter; rig2d is renderer-neutral; assets resolves explicit-host manifests with SHA-256 integrity; tooling is Node-only. @roost2d/chikn-rigs contains Apache-2.0 metadata and no image rights or required content dependency. Roost2D does not include, license, or sublicense Chikn visual assets.

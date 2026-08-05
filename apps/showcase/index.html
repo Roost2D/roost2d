@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Roost2D Showcase</title></head>
+  <body>
+    <header><a href="../">Roost2D docs</a><span>Engine laboratory</span></header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">Roost2D · renderer-neutral core + PixiJS adapter</p>
+        <h1>Build the loop.<br>Bring your own art.</h1>
+        <p>This neutral scene exercises fixed-step simulation, isometric projection, input mapping, effects, diagnostics, camera layers, and Pixi rendering. Use arrow keys or WASD, click a tile to move, and press Space to pulse.</p>
+        <div class="metrics"><article><strong id="fps">—</strong><span>FPS</span></article><article><strong id="ticks">0</strong><span>fixed ticks</span></article><article><strong id="tile">3, 3</strong><span>grid cell</span></article></div>
+        <p id="input-state" class="status">Input ready: keyboard, pointer, touch, and gamepad polling.</p>
+      </section>
+      <section class="stage"><div id="canvas" aria-label="Interactive Roost2D engine preview"></div></section>
+      <section class="manifest-panel">
+        <div><p class="eyebrow">Manifest inspector</p><h2>Verify an external asset release</h2><p>Enter an explicit asset base. The engine never assumes a production host.</p></div>
+        <form id="asset-form"><label>Manifest base URL <input id="base-url" type="url" placeholder="https://assets.example.com/release/" required /></label><label>Profile <select id="profile"><option value="default">default · 2048</option><option value="high">high · 4096</option></select></label><button>Load manifest</button></form>
+        <p id="status" class="status" role="status">Awaiting an explicit manifest URL.</p><pre id="summary"></pre>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

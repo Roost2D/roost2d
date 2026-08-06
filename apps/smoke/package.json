@@ -5,19 +5,19 @@
   "type": "module",
   "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc --noEmit -p tsconfig.json", "smoke": "node dist/index.js" },
   "dependencies": {
-    "@roost2d/assets": "0.1.0-rc.0",
-    "@roost2d/audio": "0.1.0-rc.0",
-    "@roost2d/chikn-rigs": "0.1.0-rc.0",
-    "@roost2d/contracts": "0.1.0-rc.0",
-    "@roost2d/core": "0.1.0-rc.0",
-    "@roost2d/diagnostics": "0.1.0-rc.0",
-    "@roost2d/effects": "0.1.0-rc.0",
-    "@roost2d/input": "0.1.0-rc.0",
-    "@roost2d/isometric": "0.1.0-rc.0",
-    "@roost2d/net": "0.1.0-rc.0",
-    "@roost2d/pixi": "0.1.0-rc.0",
-    "@roost2d/rig2d": "0.1.0-rc.0",
-    "@roost2d/tooling": "0.1.0-rc.0"
+    "@roost2d/assets": "0.1.0-rc.1",
+    "@roost2d/audio": "0.1.0-rc.1",
+    "@roost2d/chikn-rigs": "0.1.0-rc.1",
+    "@roost2d/contracts": "0.1.0-rc.1",
+    "@roost2d/core": "0.1.0-rc.1",
+    "@roost2d/diagnostics": "0.1.0-rc.1",
+    "@roost2d/effects": "0.1.0-rc.1",
+    "@roost2d/input": "0.1.0-rc.1",
+    "@roost2d/isometric": "0.1.0-rc.1",
+    "@roost2d/net": "0.1.0-rc.1",
+    "@roost2d/pixi": "0.1.0-rc.1",
+    "@roost2d/rig2d": "0.1.0-rc.1",
+    "@roost2d/tooling": "0.1.0-rc.1"
   },
   "devDependencies": { "typescript": "^5.8.3" }
 }

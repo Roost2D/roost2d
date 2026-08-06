@@ -1,7 +1,7 @@
 import { Application, Container, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode } from '@roost2d/rig2d';
-import type { TextureRef } from '@roost2d/contracts';
+import type { AtlasFrameV1, TextureRef } from '@roost2d/contracts';
 
 export interface PixiHostOptions extends Partial<ApplicationOptions> {
   mount: HTMLElement;
@@ -132,7 +132,7 @@ export class PixiAssetLoader {
     const source = await page.pending;
     const settled = this.textures.get(canonicalId); if (settled) return settled; // a concurrent load won the race
     const frame = resolved.variant.frame;
-    const texture = new Texture(frame ? { source, frame: new Rectangle(frame.x, frame.y, frame.width, frame.height) } : { source });
+    const texture = new Texture(frame ? textureOptions(source, frame, resolved.variant.scale) : { source });
     texture.label = resolved.variant.frameId ?? canonicalId;
     page.refCount += 1; this.textures.set(canonicalId, texture); this.pageUrls.set(canonicalId, url);
     return texture;
@@ -174,7 +174,7 @@ export class PixiAssetLoader {
     const { bytes, asset } = await this.integrityLoader.load(assetId);
     const bitmap = await createImageBitmap(new Blob([bytes], { type: asset.file.mediaType }));
     let source: TextureSource;
-    try { source = new ImageSource({ resource: bitmap }); }
+    try { source = new ImageSource({ resource: bitmap, resolution: asset.variant.scale }); }
     catch (error) { bitmap.close(); throw error; }
     page.bitmap = bitmap; page.source = source;
     return source;
@@ -197,6 +197,21 @@ export class PixiRigNode implements RigDisplayNode {
   get visible(): boolean { return this.display.visible; } set visible(value: boolean) { this.display.visible = value; }
   get zIndex(): number { return this.display.zIndex; } set zIndex(value: number) { this.display.zIndex = value; }
   get tint(): number | undefined { return this.display instanceof Sprite ? this.display.tint : undefined; } set tint(value: number | undefined) { if (this.display instanceof Sprite) this.display.tint = value ?? 0xffffff; }
+  get anchorX(): number | undefined { return this.display instanceof Sprite ? this.display.anchor.x : undefined; } set anchorX(value: number | undefined) { if (this.display instanceof Sprite && value !== undefined) this.display.anchor.x = value; }
+  get anchorY(): number | undefined { return this.display instanceof Sprite ? this.display.anchor.y : undefined; } set anchorY(value: number | undefined) { if (this.display instanceof Sprite && value !== undefined) this.display.anchor.y = value; }
+}
+
+function textureOptions(source: TextureSource, frame: AtlasFrameV1, scale: number) {
+  if (!(scale > 0)) throw new Error('Asset variant scale must be positive');
+  const logical = (value: number) => value / scale;
+  const pixiFrame = frame.rotated
+    ? new Rectangle(logical(frame.x), logical(frame.y), logical(frame.height), logical(frame.width))
+    : new Rectangle(logical(frame.x), logical(frame.y), logical(frame.width), logical(frame.height));
+  const orig = new Rectangle(0, 0, frame.sourceWidth, frame.sourceHeight);
+  const trim = frame.trimmed || frame.offsetX !== undefined || frame.offsetY !== undefined
+    ? new Rectangle(frame.offsetX ?? 0, frame.offsetY ?? 0, logical(frame.width), logical(frame.height))
+    : undefined;
+  return { source, frame: pixiFrame, orig, trim, rotate: frame.rotated ? 2 : 0 };
 }
 
 /** Pixi display adapter for renderer-neutral RigRuntime. Textures must be preloaded. */

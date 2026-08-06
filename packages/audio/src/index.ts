@@ -32,6 +32,7 @@ export interface SoundDefinition {
   maxConcurrent?: number;
   loop?: boolean;
 }
+export interface SoundRegistrationOptions { replace?: boolean; }
 export interface PlayOptions { volume?: number; rate?: number; loop?: boolean; channel?: AudioChannelId; }
 export interface PlayingSound { id: string; stop(): void; readonly ended: Promise<void>; }
 
@@ -45,8 +46,26 @@ export class AudioManager {
   private removeResumeListeners?: () => void;
 
   constructor(readonly context: AudioContext, private readonly fetcher: typeof fetch = fetch) { this.mixer = new AudioMixer(context); }
-  register(definition: SoundDefinition): this { if (this.definitions.has(definition.id)) throw new Error(`Duplicate sound: ${definition.id}`); this.definitions.set(definition.id, definition); return this; }
-  registerMany(definitions: readonly SoundDefinition[]): this { for (const definition of definitions) this.register(definition); return this; }
+  register(definition: SoundDefinition, options: SoundRegistrationOptions = {}): this {
+    if (this.definitions.has(definition.id)) {
+      if (!options.replace) throw new Error(`Duplicate sound: ${definition.id}`);
+      this.unload(definition.id);
+    }
+    this.definitions.set(definition.id, { ...definition }); return this;
+  }
+  registerMany(definitions: readonly SoundDefinition[], options: SoundRegistrationOptions = {}): this { for (const definition of definitions) this.register(definition, options); return this; }
+  replace(definition: SoundDefinition): this { return this.register(definition, { replace: true }); }
+  has(id: string): boolean { return this.definitions.has(id); }
+  definition(id: string): Readonly<SoundDefinition> | undefined { const definition = this.definitions.get(id); return definition ? { ...definition } : undefined; }
+  unregister(id: string): boolean {
+    if (!this.definitions.has(id)) return false;
+    this.unload(id); this.definitions.delete(id); this.lastPlayed.delete(id);
+    for (const [playlistId, playlist] of this.playlists) {
+      const tracks = playlist.tracks.filter((track) => track !== id);
+      if (!tracks.length) this.playlists.delete(playlistId); else this.playlists.set(playlistId, { tracks, index: playlist.index % tracks.length });
+    }
+    return true;
+  }
   async load(id: string): Promise<AudioBuffer> {
     const definition = this.requireDefinition(id); let pending = this.buffers.get(id);
     if (!pending) {

@@ -2,10 +2,20 @@ export interface PointerState {
   x: number; y: number; startX: number; startY: number; deltaX: number; deltaY: number;
   buttons: number; down: boolean; dragging: boolean; pointerId?: number; pointerType?: string;
 }
-export interface GestureState { tap: boolean; hold: boolean; drag: boolean; pinchScale: number; panX: number; panY: number; }
+export interface GestureState { tap: boolean; hold: boolean; drag: boolean; pinchScale: number; pinchX: number; pinchY: number; panX: number; panY: number; }
+export interface WheelState { x: number; y: number; deltaX: number; deltaY: number; }
 export interface ActionState { down: boolean; pressed: boolean; released: boolean; value: number; }
 export interface InputContext { id: string; enabled?: boolean; blocksLower?: boolean; actions: ReadonlySet<string>; }
 export interface InputManagerOptions { holdMs?: number; dragThreshold?: number; gamepadDeadZone?: number; now?: () => number; }
+export interface InputTargets {
+  keyboardTarget?: EventTarget;
+  pointerTarget?: EventTarget;
+  /** Receives up/cancel events when pointer capture is unavailable. Defaults to the pointer target. */
+  outsidePointerTarget?: EventTarget;
+  /** Converts browser client coordinates to the game surface's local coordinates. */
+  toLocalPoint?: (event: PointerEvent | WheelEvent) => { x: number; y: number };
+  capturePointer?: boolean;
+}
 
 interface Binding { action: string; codes: Set<string>; contextId?: string; }
 interface TrackedPointer { x: number; y: number; startX: number; startY: number; buttons: number; pointerType?: string; }
@@ -24,7 +34,13 @@ export class InputManager {
   private previousPinchDistance = 0;
   private readonly now: () => number;
   readonly pointer: PointerState = { x: 0, y: 0, startX: 0, startY: 0, deltaX: 0, deltaY: 0, buttons: 0, down: false, dragging: false };
-  readonly gestures: GestureState = { tap: false, hold: false, drag: false, pinchScale: 1, panX: 0, panY: 0 };
+  readonly gestures: GestureState = { tap: false, hold: false, drag: false, pinchScale: 1, pinchX: 0, pinchY: 0, panX: 0, panY: 0 };
+  readonly wheel: WheelState = { x: 0, y: 0, deltaX: 0, deltaY: 0 };
+  private readonly keyboardTarget: EventTarget;
+  private readonly pointerTarget: EventTarget;
+  private readonly outsidePointerTarget: EventTarget;
+  private readonly toLocalPoint?: InputTargets['toLocalPoint'];
+  private readonly capturePointer: boolean;
 
   private readonly onKeyDown = (event: Event) => {
     if (!this.enabled || this.blocked || !(event instanceof KeyboardEvent)) return;
@@ -40,34 +56,54 @@ export class InputManager {
   };
   private readonly onPointerDown = (event: Event) => {
     if (!this.enabled || this.blocked || !(event instanceof PointerEvent)) return;
-    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, buttons: event.buttons, pointerType: event.pointerType });
+    const point = this.point(event);
+    this.pointers.set(event.pointerId, { x: point.x, y: point.y, startX: point.x, startY: point.y, buttons: event.buttons, pointerType: event.pointerType });
+    if (this.capturePointer && hasPointerCapture(this.pointerTarget)) this.pointerTarget.setPointerCapture?.(event.pointerId);
     if (this.primaryPointerId === undefined) this.promotePrimary(event.pointerId);
     this.updatePinch();
   };
   private readonly onPointerMove = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
     const tracked = this.pointers.get(event.pointerId);
-    if (!tracked) return; // Hover-only pointers are not active gesture participants.
-    const previousX = tracked.x; const previousY = tracked.y;
-    tracked.x = event.clientX; tracked.y = event.clientY; tracked.buttons = event.buttons;
+    if (!tracked) {
+      // Mouse/pen hover is positional input (for aim cursors and tooltips), but it must not
+      // become a gesture participant or affect touch pointer counts/pinch calculations.
+      if (!this.enabled || this.blocked || event.pointerType === 'touch') return;
+      const point = this.point(event);
+      this.pointer.deltaX += point.x - this.pointer.x;
+      this.pointer.deltaY += point.y - this.pointer.y;
+      this.pointer.x = point.x;
+      this.pointer.y = point.y;
+      this.pointer.buttons = event.buttons;
+      this.pointer.pointerType = event.pointerType;
+      return;
+    }
+    const point = this.point(event); const previousX = tracked.x; const previousY = tracked.y;
+    tracked.x = point.x; tracked.y = point.y; tracked.buttons = event.buttons;
     // Pan is a whole-surface gesture; the public pointer state tracks only the primary pointer.
-    this.gestures.panX += event.clientX - previousX; this.gestures.panY += event.clientY - previousY;
+    this.gestures.panX += point.x - previousX; this.gestures.panY += point.y - previousY;
     if (this.primaryPointerId === event.pointerId) {
-      this.pointer.x = event.clientX; this.pointer.y = event.clientY; this.pointer.buttons = event.buttons;
-      this.pointer.deltaX += event.clientX - previousX; this.pointer.deltaY += event.clientY - previousY;
-      const distance = Math.hypot(event.clientX - this.pointer.startX, event.clientY - this.pointer.startY);
+      this.pointer.x = point.x; this.pointer.y = point.y; this.pointer.buttons = event.buttons;
+      this.pointer.deltaX += point.x - previousX; this.pointer.deltaY += point.y - previousY;
+      const distance = Math.hypot(point.x - this.pointer.startX, point.y - this.pointer.startY);
       if (this.pointer.down && distance >= this.options.dragThreshold) this.pointer.dragging = this.gestures.drag = true;
     }
     this.updatePinch();
   };
   private readonly onPointerUp = (event: Event) => {
     if (!(event instanceof PointerEvent)) return;
+    if (this.capturePointer && hasPointerCapture(this.pointerTarget)) this.pointerTarget.releasePointerCapture?.(event.pointerId);
     this.pointers.delete(event.pointerId); this.previousPinchDistance = 0;
     if (this.primaryPointerId !== event.pointerId) return; // A second finger lifting must not cancel the primary drag.
     if (this.pointer.down && !this.pointer.dragging && this.now() - this.pointerDownAt < this.options.holdMs) this.gestures.tap = true;
     this.pointer.down = false; this.pointer.dragging = false; this.pointer.buttons = event.buttons; this.primaryPointerId = undefined;
     const [next] = this.pointers.keys();
     if (next !== undefined) this.promotePrimary(next); // A still-down finger continues the gesture.
+  };
+  private readonly onWheel = (event: Event) => {
+    if (!this.enabled || this.blocked || !(event instanceof WheelEvent)) return;
+    const point = this.point(event); this.wheel.x = point.x; this.wheel.y = point.y;
+    this.wheel.deltaX += event.deltaX; this.wheel.deltaY += event.deltaY;
   };
 
   private promotePrimary(pointerId: number): void {
@@ -77,13 +113,25 @@ export class InputManager {
   }
 
   private readonly options: Required<Omit<InputManagerOptions, 'now'>>;
-  constructor(private readonly target: EventTarget = globalThis.window, options: InputManagerOptions = {}) {
-    if (!target) throw new Error('An input EventTarget is required');
+  constructor(target: EventTarget, options?: InputManagerOptions);
+  constructor(targets: InputTargets, options?: InputManagerOptions);
+  constructor(targetOrTargets: EventTarget | InputTargets = globalThis.window, options: InputManagerOptions = {}) {
+    if (!targetOrTargets) throw new Error('An input EventTarget is required');
+    const targets = isInputTargets(targetOrTargets)
+      ? targetOrTargets
+      : { keyboardTarget: targetOrTargets, pointerTarget: targetOrTargets };
+    this.keyboardTarget = targets.keyboardTarget ?? targets.pointerTarget!;
+    this.pointerTarget = targets.pointerTarget ?? targets.keyboardTarget!;
+    if (!this.keyboardTarget || !this.pointerTarget) throw new Error('Input targets require keyboardTarget or pointerTarget');
+    this.outsidePointerTarget = targets.outsidePointerTarget ?? this.pointerTarget;
+    this.toLocalPoint = targets.toLocalPoint;
+    this.capturePointer = targets.capturePointer ?? true;
     this.options = { holdMs: options.holdMs ?? 450, dragThreshold: options.dragThreshold ?? 8, gamepadDeadZone: options.gamepadDeadZone ?? 0.15 };
     this.now = options.now ?? (() => performance.now());
-    target.addEventListener('keydown', this.onKeyDown); target.addEventListener('keyup', this.onKeyUp);
-    target.addEventListener('pointerdown', this.onPointerDown); target.addEventListener('pointermove', this.onPointerMove);
-    target.addEventListener('pointerup', this.onPointerUp); target.addEventListener('pointercancel', this.onPointerUp);
+    this.keyboardTarget.addEventListener('keydown', this.onKeyDown); this.keyboardTarget.addEventListener('keyup', this.onKeyUp);
+    this.pointerTarget.addEventListener('pointerdown', this.onPointerDown); this.pointerTarget.addEventListener('pointermove', this.onPointerMove); this.pointerTarget.addEventListener('wheel', this.onWheel);
+    this.pointerTarget.addEventListener('pointerup', this.onPointerUp); this.pointerTarget.addEventListener('pointercancel', this.onPointerUp);
+    if (this.outsidePointerTarget !== this.pointerTarget) { this.outsidePointerTarget.addEventListener('pointerup', this.onPointerUp); this.outsidePointerTarget.addEventListener('pointercancel', this.onPointerUp); }
   }
 
   /**
@@ -131,12 +179,13 @@ export class InputManager {
   endFrame(): void {
     for (const state of this.actions.values()) { state.pressed = false; state.released = false; }
     Object.assign(this.gestures, { tap: false, hold: false, drag: false, pinchScale: 1, panX: 0, panY: 0 });
-    this.pointer.deltaX = 0; this.pointer.deltaY = 0;
+    this.pointer.deltaX = 0; this.pointer.deltaY = 0; this.wheel.deltaX = 0; this.wheel.deltaY = 0;
   }
   dispose(): void {
-    this.target.removeEventListener('keydown', this.onKeyDown); this.target.removeEventListener('keyup', this.onKeyUp);
-    this.target.removeEventListener('pointerdown', this.onPointerDown); this.target.removeEventListener('pointermove', this.onPointerMove);
-    this.target.removeEventListener('pointerup', this.onPointerUp); this.target.removeEventListener('pointercancel', this.onPointerUp);
+    this.keyboardTarget.removeEventListener('keydown', this.onKeyDown); this.keyboardTarget.removeEventListener('keyup', this.onKeyUp);
+    this.pointerTarget.removeEventListener('pointerdown', this.onPointerDown); this.pointerTarget.removeEventListener('pointermove', this.onPointerMove); this.pointerTarget.removeEventListener('wheel', this.onWheel);
+    this.pointerTarget.removeEventListener('pointerup', this.onPointerUp); this.pointerTarget.removeEventListener('pointercancel', this.onPointerUp);
+    if (this.outsidePointerTarget !== this.pointerTarget) { this.outsidePointerTarget.removeEventListener('pointerup', this.onPointerUp); this.outsidePointerTarget.removeEventListener('pointercancel', this.onPointerUp); }
     this.bindings.clear(); this.actions.clear(); this.contexts.length = 0; this.pointers.clear(); this.primaryPointerId = undefined;
   }
 
@@ -168,11 +217,17 @@ export class InputManager {
   private updatePinch(): void {
     if (this.pointers.size !== 2) { this.previousPinchDistance = 0; return; }
     const [a, b] = [...this.pointers.values()]; const distance = Math.hypot(a!.x - b!.x, a!.y - b!.y);
+    this.gestures.pinchX = (a!.x + b!.x) / 2; this.gestures.pinchY = (a!.y + b!.y) / 2;
     if (this.previousPinchDistance > 0) this.gestures.pinchScale *= distance / this.previousPinchDistance;
     this.previousPinchDistance = distance;
   }
   private releaseAll(): void { for (const state of this.actions.values()) { if (state.down) state.released = true; state.down = false; state.value = 0; } }
+  get pointerCount(): number { return this.pointers.size; }
+  private point(event: PointerEvent | WheelEvent): { x: number; y: number } { return this.toLocalPoint?.(event) ?? { x: event.clientX, y: event.clientY }; }
 }
+
+function isInputTargets(value: EventTarget | InputTargets): value is InputTargets { return !('addEventListener' in value); }
+function hasPointerCapture(value: EventTarget): value is EventTarget & { setPointerCapture?: (pointerId: number) => void; releasePointerCapture?: (pointerId: number) => void } { return 'setPointerCapture' in value || 'releasePointerCapture' in value; }
 
 /** Backwards-compatible name for the initial action-map API. */
 export class InputMap extends InputManager {}

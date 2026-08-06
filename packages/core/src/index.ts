@@ -134,15 +134,34 @@ export class SeededRandom implements RandomSource {
   }
 }
 
+export interface ObjectPoolOptions<T> {
+  reset?: (value: T) => void;
+  destroy?: (value: T) => void;
+  maximumRetained?: number;
+  prewarm?: number;
+}
+
 export class ObjectPool<T> {
   private readonly available: T[] = [];
   private readonly active = new Set<T>();
+  private readonly reset: (value: T) => void;
+  private readonly destroy: (value: T) => void;
+  private readonly maximumRetained: number;
   constructor(
     private readonly create: () => T,
-    private readonly reset: (value: T) => void = () => undefined,
-    private readonly destroy: (value: T) => void = () => undefined,
-    private readonly maximumRetained = 256
-  ) {}
+    resetOrOptions: ((value: T) => void) | ObjectPoolOptions<T> = () => undefined,
+    destroy: (value: T) => void = () => undefined,
+    maximumRetained = 256
+  ) {
+    const options = typeof resetOrOptions === 'function'
+      ? { reset: resetOrOptions, destroy, maximumRetained }
+      : resetOrOptions;
+    this.reset = options.reset ?? (() => undefined);
+    this.destroy = options.destroy ?? (() => undefined);
+    this.maximumRetained = options.maximumRetained ?? 256;
+    if (!Number.isInteger(this.maximumRetained) || this.maximumRetained < 0) throw new Error('ObjectPool maximumRetained must be a non-negative integer');
+    this.prewarm(options.prewarm ?? 0);
+  }
 
   acquire(): T {
     const value = this.available.pop() ?? this.create();
@@ -157,12 +176,26 @@ export class ObjectPool<T> {
     return true;
   }
   releaseAll(): void { for (const value of [...this.active]) this.release(value); }
+  prewarm(count: number): void {
+    if (!Number.isInteger(count) || count < 0) throw new Error('ObjectPool prewarm count must be a non-negative integer');
+    while (this.available.length < Math.min(count, this.maximumRetained)) this.available.push(this.create());
+  }
+  /** Stable snapshot so callers may safely release entries while iterating. */
+  activeValues(): readonly T[] { return [...this.active]; }
+  retainedValues(): readonly T[] { return [...this.available]; }
+  trim(maximumRetained = 0): number {
+    if (!Number.isInteger(maximumRetained) || maximumRetained < 0) throw new Error('ObjectPool trim limit must be a non-negative integer');
+    let removed = 0;
+    while (this.available.length > maximumRetained) { this.destroy(this.available.pop()!); removed += 1; }
+    return removed;
+  }
   dispose(): void {
     for (const value of [...this.active, ...this.available]) this.destroy(value);
     this.active.clear(); this.available.length = 0;
   }
   get activeCount(): number { return this.active.size; }
   get retainedCount(): number { return this.available.length; }
+  get totalCount(): number { return this.active.size + this.available.length; }
 }
 
 interface ScheduledTask { id: number; remainingMs: number; intervalMs?: number; callback: () => void; }
@@ -199,7 +232,19 @@ export interface SceneContext {
   readonly scheduler: Scheduler;
   readonly random: RandomSource;
   readonly runtime: GameRuntime;
+  /** Present only while a scene lifecycle callback is running. */
+  readonly transition?: SceneTransitionContext;
 }
+
+export interface SceneTransitionContext<TData = unknown> {
+  readonly fromId?: string;
+  readonly toId: string;
+  readonly data?: TData;
+}
+
+export type SceneLifetime = 'cached' | 'transient';
+export interface SceneRegistrationOptions { lifetime?: SceneLifetime; }
+export type SceneFactory = (transition: SceneTransitionContext, context: SceneContext) => Scene | Promise<Scene>;
 
 export interface Scene {
   readonly id: string;
@@ -236,7 +281,8 @@ export const browserFrameDriver: FrameDriver | undefined = typeof globalThis.req
 
 export interface RuntimeEvents extends Record<string, unknown> {
   'runtime:paused': { paused: boolean };
-  'scene:changed': { previousId?: string; currentId: string };
+  'scene:changing': SceneTransitionContext;
+  'scene:changed': SceneTransitionContext & { previousId?: string; currentId: string };
 }
 
 export interface GameRuntimeOptions {
@@ -253,7 +299,7 @@ export class GameRuntime implements Disposable {
   readonly random: RandomSource;
   readonly events = new EventBus<RuntimeEvents>();
   readonly context: SceneContext;
-  private readonly sceneFactories = new Map<string, () => Scene | Promise<Scene>>();
+  private readonly sceneFactories = new Map<string, { factory: SceneFactory; lifetime: SceneLifetime }>();
   private readonly loadedScenes = new Map<string, Scene>();
   private readonly systems = new Map<string, System>();
   private readonly plugins = new Map<string, Plugin>();
@@ -274,9 +320,11 @@ export class GameRuntime implements Disposable {
     this.context = { services: this.services, events: this.events as unknown as EventBus<Record<string, unknown>>, scheduler: this.scheduler, random: this.random, runtime: this };
   }
 
-  registerScene(id: string, factory: () => Scene | Promise<Scene>): this {
+  registerScene(id: string, factory: SceneFactory, options: SceneRegistrationOptions = {}): this {
     if (!id || this.sceneFactories.has(id)) throw new Error(`Duplicate or empty scene id: ${id}`);
-    this.sceneFactories.set(id, factory); return this;
+    const lifetime = options.lifetime ?? 'cached';
+    if (lifetime !== 'cached' && lifetime !== 'transient') throw new Error(`Unknown scene lifetime: ${String(lifetime)}`);
+    this.sceneFactories.set(id, { factory, lifetime }); return this;
   }
 
   addSystem(system: System): this {
@@ -289,20 +337,36 @@ export class GameRuntime implements Disposable {
     await plugin.install(this.context); this.plugins.set(plugin.id, plugin); return this;
   }
 
-  switchScene(id: string): Promise<Scene> {
+  switchScene<TData = unknown>(id: string, data?: TData): Promise<Scene> {
     const operation = this.switching.then(async () => {
       if (this.disposing) throw new Error('GameRuntime is disposed');
-      const factory = this.sceneFactories.get(id);
-      if (!factory) throw new Error(`Unknown scene: ${id}`);
+      const registration = this.sceneFactories.get(id);
+      if (!registration) throw new Error(`Unknown scene: ${id}`);
       const previous = this.current;
       if (previous?.id === id) return previous;
-      const next = this.loadedScenes.get(id) ?? await factory();
+      const transition: SceneTransitionContext<TData> = { fromId: previous?.id, toId: id, ...(data === undefined ? {} : { data }) };
+      const context = this.contextFor(transition);
+      const cached = registration.lifetime === 'cached' ? this.loadedScenes.get(id) : undefined;
+      const next = cached ?? await registration.factory(transition, context);
       if (next.id !== id) throw new Error(`Scene factory for ${id} returned ${next.id}`);
-      if (!this.loadedScenes.has(id)) { await next.load?.(this.context); this.loadedScenes.set(id, next); }
-      await previous?.exit?.(this.context);
-      this.current = next;
-      await next.enter?.(this.context);
-      this.events.emit('scene:changed', { previousId: previous?.id, currentId: id });
+      // Preparation completes before the active scene is disturbed. A failed factory/load leaves it active.
+      if (!cached) {
+        await next.load?.(context);
+        if (registration.lifetime === 'cached') this.loadedScenes.set(id, next);
+      }
+      this.events.emit('scene:changing', transition);
+      await previous?.exit?.(context);
+      try {
+        this.current = next;
+        await next.enter?.(context);
+      } catch (error) {
+        this.current = previous;
+        await previous?.enter?.(this.contextFor({ fromId: id, toId: previous?.id ?? '' }));
+        if (registration.lifetime === 'transient') await next.dispose?.();
+        throw error;
+      }
+      if (previous && this.sceneFactories.get(previous.id)?.lifetime === 'transient') await previous.dispose?.();
+      this.events.emit('scene:changed', { ...transition, previousId: previous?.id, currentId: id });
       return next;
     });
     this.switching = operation.then(() => undefined, () => undefined);
@@ -356,6 +420,10 @@ export class GameRuntime implements Disposable {
     this.current?.render?.(deltaMs, this.clock.alpha, this.context);
   }
 
+  private contextFor(transition: SceneTransitionContext): SceneContext {
+    return { ...this.context, transition };
+  }
+
   async dispose(): Promise<void> {
     if (this.disposing) return;
     this.disposing = true;
@@ -363,7 +431,8 @@ export class GameRuntime implements Disposable {
     // Settle any in-flight switchScene first, or it repopulates loadedScenes after teardown.
     await this.switching;
     await this.current?.exit?.(this.context);
-    for (const scene of [...this.loadedScenes.values()].reverse()) await scene.dispose?.();
+    const scenes = new Set<Scene>([...this.loadedScenes.values(), ...(this.current ? [this.current] : [])]);
+    for (const scene of [...scenes].reverse()) await scene.dispose?.();
     for (const system of [...this.systems.values()].reverse()) await system.dispose?.();
     for (const plugin of [...this.plugins.values()].reverse()) await plugin.dispose?.();
     this.loadedScenes.clear(); this.systems.clear(); this.plugins.clear(); this.sceneFactories.clear();

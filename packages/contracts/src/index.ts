@@ -4,6 +4,7 @@ export interface TextureRef { assetId: string; frameId?: string; }
 export interface TransformV1 {
   x?: number;
   y?: number;
+  /** Rotation in radians. */
   rotation?: number;
   scaleX?: number;
   scaleY?: number;
@@ -13,6 +14,11 @@ export interface TransformV1 {
 export interface RigBoneV1 {
   id: string;
   parentId?: string;
+  /**
+   * Reparents this bone to the active attachment transform in a slot. A follower cannot also
+   * declare a static parent: its parent is resolved whenever the active skin changes.
+   */
+  followSlotId?: string;
   x: number;
   y: number;
   rotation: number;
@@ -28,6 +34,9 @@ export interface AttachmentDefinitionV1 extends TransformV1 {
   zIndex: number;
   visible?: boolean;
   tint?: number;
+  /** Normalized texture anchor, where 0 is left/top and 1 is right/bottom. */
+  anchorX?: number;
+  anchorY?: number;
 }
 
 export interface RigSlotV1 {
@@ -426,6 +435,8 @@ export function validateRigDefinition(rig: unknown): string[] {
     const label = isNonEmptyString(bone.id) ? bone.id : 'bone';
     for (const key of ['x', 'y', 'rotation', 'scaleX', 'scaleY'] as const) if (!isFiniteNumber(bone[key])) errors.push(`${label}: bone ${key} must be a finite number`);
     if (bone.parentId !== undefined && !isNonEmptyString(bone.parentId)) { errors.push(`${label}: parentId must be a string`); continue; }
+    if (bone.followSlotId !== undefined && !isNonEmptyString(bone.followSlotId)) errors.push(`${label}: followSlotId must be a string`);
+    if (bone.parentId !== undefined && bone.followSlotId !== undefined) errors.push(`${label}: parentId and followSlotId are mutually exclusive`);
     if (isNonEmptyString(bone.parentId) && !bones.has(bone.parentId)) errors.push(`${label}: unknown parent bone ${bone.parentId}`);
     if (isNonEmptyString(bone.id)) parentById.set(bone.id, isNonEmptyString(bone.parentId) ? bone.parentId : undefined);
   }
@@ -442,6 +453,11 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (slot.defaultAttachmentId !== undefined && (!isNonEmptyString(slot.defaultAttachmentId) || !attachments.has(slot.defaultAttachmentId))) errors.push(`${label}: unknown default attachment ${String(slot.defaultAttachmentId)}`);
   }
 
+  for (const bone of boneEntries) {
+    const label = isNonEmptyString(bone.id) ? bone.id : 'bone';
+    if (bone.followSlotId !== undefined && (!isNonEmptyString(bone.followSlotId) || !slots.has(bone.followSlotId))) errors.push(`${label}: unknown follow slot ${String(bone.followSlotId)}`);
+  }
+
   for (const attachment of attachmentEntries) {
     const label = isNonEmptyString(attachment.id) ? attachment.id : 'attachment';
     if (!isNonEmptyString(attachment.slotId) || !slots.has(attachment.slotId)) errors.push(`${label}: unknown slot ${String(attachment.slotId)}`);
@@ -452,6 +468,7 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (!isFiniteNumber(attachment.zIndex)) errors.push(`${label}: attachment zIndex must be a finite number`);
     if (attachment.visible !== undefined && typeof attachment.visible !== 'boolean') errors.push(`${label}: visible must be a boolean`);
     if (attachment.tint !== undefined && !isTint(attachment.tint)) errors.push(`${label}: tint must be an integer colour`);
+    for (const key of ['anchorX', 'anchorY'] as const) if (attachment[key] !== undefined && (!isFiniteNumber(attachment[key]) || attachment[key] < 0 || attachment[key] > 1)) errors.push(`${label}: ${key} must be a number in [0, 1]`);
     errors.push(...transformErrors(attachment, label));
   }
 

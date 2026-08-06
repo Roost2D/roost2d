@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, realpath, stat, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve, sep } from 'node:path';
 import sharp from 'sharp';
-import type { AssetManifestV1, AtlasManifestV1, RightsManifestV1 } from '@roost2d/contracts';
+import type { AssetFileV1, AssetManifestV1, AssetVariantV1, AtlasFrameV1, AtlasManifestV1, RightsManifestV1 } from '@roost2d/contracts';
 import { isSha256SRI, validateAnimationClip, validateAssetManifest, validateAtlasManifest, validateRigDefinition, validateRightsManifest } from '@roost2d/contracts';
 
 export type JsonReadResult = { ok: true; value: unknown } | { ok: false; errors: string[] };
@@ -18,6 +18,109 @@ export interface InventoryEntry { path: string; bytes: number; sha256: string; }
 export interface ImageInspection extends InventoryEntry { width: number; height: number; alpha: boolean; pixelsSha256: string; }
 export function sha256Hex(bytes: Uint8Array): string { return createHash('sha256').update(bytes).digest('hex'); }
 export function sha256SRI(bytes: Uint8Array): string { return `sha256-${createHash('sha256').update(bytes).digest('base64')}`; }
+
+export interface PixiAtlasImportOptions { profile: string; imagePath?: string; }
+export interface PixiAtlasImportResult { atlas: AtlasManifestV1; frames: ReadonlyMap<string, AtlasFrameV1>; }
+
+/**
+ * Imports Pixi's v7/v8 spritesheet JSON without depending on Pixi at runtime. The generated
+ * contract keeps source extents, trim offsets, and rotation so browser adapters do not need to
+ * guess how a packer represented a frame.
+ */
+export async function importPixiAtlas(atlasFile: string, options: PixiAtlasImportOptions): Promise<PixiAtlasImportResult> {
+  const parsed = await readJsonFile(atlasFile);
+  if (!parsed.ok) throw new Error(parsed.errors.join('\n'));
+  const source = record(parsed.value, 'Pixi atlas');
+  const rawFrames = record(source.frames, 'Pixi atlas frames');
+  const meta = record(source.meta ?? {}, 'Pixi atlas metadata');
+  const requestedImage = options.imagePath ?? meta.image;
+  if (typeof requestedImage !== 'string' || !requestedImage) throw new Error('Pixi atlas requires meta.image or imagePath');
+  const imagePath = await containedPath(dirname(resolve(atlasFile)), requestedImage);
+  if (!imagePath) throw new Error(`Pixi atlas image escapes its directory: ${requestedImage}`);
+  const [imageBytes, metadata] = await Promise.all([readFile(imagePath), sharp(imagePath).metadata()]);
+  if (!metadata.width || !metadata.height) throw new Error(`Unable to inspect atlas image: ${imagePath}`);
+  const frames = new Map<string, AtlasFrameV1>();
+  for (const [id, rawFrame] of Object.entries(rawFrames)) {
+    const entry = record(rawFrame, `Pixi frame ${id}`);
+    const rect = record(entry.frame, `Pixi frame ${id}.frame`);
+    const sourceSize = record(entry.sourceSize ?? rect, `Pixi frame ${id}.sourceSize`);
+    const spriteSourceSize = entry.spriteSourceSize === undefined ? undefined : record(entry.spriteSourceSize, `Pixi frame ${id}.spriteSourceSize`);
+    const x = number(rect.x, `${id}.frame.x`); const y = number(rect.y, `${id}.frame.y`); const width = number(rect.w ?? rect.width, `${id}.frame.width`); const height = number(rect.h ?? rect.height, `${id}.frame.height`);
+    const sourceWidth = number(sourceSize.w ?? sourceSize.width, `${id}.sourceSize.width`); const sourceHeight = number(sourceSize.h ?? sourceSize.height, `${id}.sourceSize.height`);
+    if (x < 0 || y < 0 || width <= 0 || height <= 0 || sourceWidth <= 0 || sourceHeight <= 0) throw new Error(`Pixi frame ${id} has invalid dimensions`);
+    frames.set(id, {
+      x, y, width, height, sourceWidth, sourceHeight,
+      ...(spriteSourceSize ? { offsetX: number(spriteSourceSize.x, `${id}.spriteSourceSize.x`), offsetY: number(spriteSourceSize.y, `${id}.spriteSourceSize.y`) } : {}),
+      ...(entry.rotated === true ? { rotated: true } : {}),
+      ...(entry.trimmed === true ? { trimmed: true } : {})
+    });
+  }
+  const atlas: AtlasManifestV1 = { schema: 'roost2d.atlas/v1', profile: options.profile, image: requestedImage.split('\\').join('/'), integrity: { algorithm: 'sha256', value: sha256SRI(imageBytes) }, width: metadata.width, height: metadata.height, frames: Object.fromEntries(frames) };
+  const errors = validateAtlasManifest(atlas); if (errors.length) throw new Error(`Invalid imported Pixi atlas:\n${errors.join('\n')}`);
+  return { atlas, frames };
+}
+
+export interface AssetManifestVariantInput extends Omit<AssetVariantV1, 'bytes' | 'integrity' | 'scale' | 'width' | 'height' | 'frame'> {
+  scale?: number;
+  frame?: AtlasFrameV1;
+  /** Resolve the frame from a Pixi v7/v8 atlas JSON stored under the same manifest root. */
+  atlas?: { file: string; frameId: string };
+}
+export interface AssetManifestFileInput extends Omit<AssetFileV1, 'variants'> { variants: AssetManifestVariantInput[]; }
+export interface AssetManifestBuildConfig {
+  root: string;
+  version: string;
+  generatedAt: string;
+  rightsDocumentPath: string;
+  profiles: AssetManifestV1['profiles'];
+  files: AssetManifestFileInput[];
+  bundles: AssetManifestV1['bundles'];
+}
+
+/** Builds an integrity-complete `roost2d.assets/v1` manifest from checked-in asset inputs. */
+export async function buildAssetManifest(config: AssetManifestBuildConfig): Promise<AssetManifestV1> {
+  if (!config || typeof config !== 'object') throw new Error('Asset manifest config is required');
+  const root = resolve(config.root);
+  const rightsPath = await containedPath(root, config.rightsDocumentPath);
+  if (!rightsPath) throw new Error(`rightsDocumentPath escapes manifest root: ${config.rightsDocumentPath}`);
+  const atlasCache = new Map<string, PixiAtlasImportResult>();
+  const files: AssetFileV1[] = [];
+  for (const input of config.files) {
+    const variants: AssetVariantV1[] = [];
+    for (const variant of input.variants) {
+      const absolute = await containedPath(root, variant.path);
+      if (!absolute) throw new Error(`${input.id}: asset path escapes manifest root: ${variant.path}`);
+      const bytes = await readFile(absolute);
+      const profile = config.profiles[variant.profile];
+      if (!profile) throw new Error(`${input.id}: unknown profile ${variant.profile}`);
+      let frame = variant.frame;
+      if (variant.atlas) {
+        const atlasPath = await containedPath(root, variant.atlas.file);
+        if (!atlasPath) throw new Error(`${input.id}: atlas path escapes manifest root: ${variant.atlas.file}`);
+        const cacheKey = `${atlasPath}\u0000${variant.profile}`;
+        const imported = atlasCache.get(cacheKey) ?? await importPixiAtlas(atlasPath, { profile: variant.profile });
+        atlasCache.set(cacheKey, imported); frame = imported.frames.get(variant.atlas.frameId);
+        if (!frame) throw new Error(`${input.id}: missing Pixi atlas frame ${variant.atlas.frameId}`);
+      }
+      const dimensions = input.mediaType.startsWith('image/') ? await sharp(bytes).metadata() : undefined;
+      variants.push({
+        profile: variant.profile,
+        path: variant.path,
+        bytes: bytes.byteLength,
+        integrity: { algorithm: 'sha256', value: sha256SRI(bytes) },
+        scale: variant.scale ?? profile.scale,
+        ...(dimensions?.width ? { width: dimensions.width } : {}),
+        ...(dimensions?.height ? { height: dimensions.height } : {}),
+        ...(variant.frameId ? { frameId: variant.frameId } : {}),
+        ...(frame ? { frame } : {})
+      });
+    }
+    files.push({ ...input, variants });
+  }
+  const manifest: AssetManifestV1 = { schema: 'roost2d.assets/v1', version: config.version, generatedAt: config.generatedAt, rightsDocumentSha256: sha256Hex(await readFile(rightsPath)), profiles: config.profiles, files, bundles: config.bundles };
+  const errors = validateAssetManifest(manifest); if (errors.length) throw new Error(`Invalid generated asset manifest:\n${errors.join('\n')}`);
+  return manifest;
+}
 
 /** Rights hashes for portable text sources use UTF-8 LF bytes, independent of checkout EOLs. */
 export function sourceSha256Hex(bytes: Uint8Array, sourcePath: string): string {
@@ -183,6 +286,8 @@ function pack(inputs: AtlasInput[], profile: AtlasProfileConfig): Array<{ width:
 function finishPage(page: { usedWidth: number; usedHeight: number; items: PackedItem[] }, profile: AtlasProfileConfig) { const size = (value: number) => profile.powerOfTwo ? 2 ** Math.ceil(Math.log2(value)) : value; return { width: Math.min(profile.maxSize, size(page.usedWidth)), height: Math.min(profile.maxSize, size(page.usedHeight)), items: page.items }; }
 async function walk(directory: string): Promise<string[]> { const result: string[] = []; for (const entry of await readdir(directory, { withFileTypes: true })) { const absolute = resolve(directory, entry.name); if (entry.isDirectory()) result.push(...await walk(absolute)); else if (entry.isFile()) result.push(absolute); } return result; }
 function isInside(root: string, path: string): boolean { return path === root || path.startsWith(root + sep); }
+function record(value: unknown, label: string): Record<string, unknown> { if (typeof value !== 'object' || value === null || Array.isArray(value)) throw new Error(`${label} must be an object`); return value as Record<string, unknown>; }
+function number(value: unknown, label: string): number { if (typeof value !== 'number' || !Number.isFinite(value)) throw new Error(`${label} must be a finite number`); return value; }
 
 /**
  * Resolves `relativePath` under `root` and returns it only when it is genuinely contained. A lexical

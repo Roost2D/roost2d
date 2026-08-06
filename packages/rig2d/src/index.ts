@@ -12,6 +12,8 @@ export interface RigDisplayNode {
   visible?: boolean;
   zIndex?: number;
   tint?: number;
+  anchorX?: number;
+  anchorY?: number;
 }
 
 export interface RigDisplayFactory {
@@ -44,6 +46,9 @@ export class RigRuntime {
   private readonly timelines = new Map<string, gsap.core.Timeline>();
   private readonly activeGroups = new Map<string, RigAttachmentGroupV1>();
   private readonly manualAttachments = new Map<string, string>();
+  private readonly visibilityOverrides = new Map<string, boolean>();
+  private readonly layerSpeeds = new Map<string, number>();
+  private runtimeSpeed = 1;
   private skinId?: string;
   private disposed = false;
 
@@ -52,10 +57,10 @@ export class RigRuntime {
     for (const bone of definition.bones) {
       const node = factory.createBone(bone.id); this.applyTransform(node, bone); this.bones.set(bone.id, node);
     }
-    for (const bone of definition.bones) factory.attach(bone.parentId ? this.bones.get(bone.parentId) : undefined, this.bones.get(bone.id)!);
+    for (const bone of definition.bones) if (!bone.followSlotId) factory.attach(bone.parentId ? this.bones.get(bone.parentId) : undefined, this.bones.get(bone.id)!);
     for (const attachment of definition.attachments) {
       const node = factory.createAttachment(attachment.id, attachment.texture); this.applyTransform(node, attachment);
-      node.zIndex = attachment.zIndex; node.tint = attachment.tint; node.visible = false;
+      node.zIndex = attachment.zIndex; node.tint = attachment.tint; node.anchorX = attachment.anchorX ?? 0; node.anchorY = attachment.anchorY ?? 0; node.visible = false;
       this.attachments.set(attachment.id, node);
       const slot = this.slotAttachments.get(attachment.slotId) ?? []; slot.push(node); this.slotAttachments.set(attachment.slotId, slot);
       const slotDefinition = definition.slots.find(({ id }) => id === attachment.slotId);
@@ -110,7 +115,7 @@ export class RigRuntime {
     const timeline = gsap.timeline({ repeat: clip.loop ? (options.repeat ?? -1) : (options.repeat ?? 0), onComplete: () => { this.timelines.delete(layer); options.onComplete?.(); } });
     const mask = new Set(options.mask ?? clip.mask ?? []);
     for (const track of clip.tracks) if (!mask.size || mask.has(track.targetId)) this.addTrack(timeline, track);
-    timeline.timeScale(Math.max(0.01, options.speed ?? 1)); this.timelines.set(layer, timeline); return timeline;
+    timeline.timeScale(this.normaliseSpeed(options.speed ?? this.layerSpeeds.get(layer) ?? this.runtimeSpeed)); this.timelines.set(layer, timeline); return timeline;
   }
 
   playOneShot(clipOrId: AnimationClipV1 | string, layer = 'reaction', onComplete?: () => void): RigAnimationHandle {
@@ -121,6 +126,33 @@ export class RigRuntime {
     if (layer !== undefined) { this.timelines.get(layer)?.kill(); this.timelines.delete(layer); return; }
     for (const timeline of this.timelines.values()) timeline.kill(); this.timelines.clear();
   }
+
+  /** Sets the default speed for future clips and updates every matching live timeline. */
+  setSpeed(speed: number, layer?: string): void {
+    const value = this.normaliseSpeed(speed);
+    if (layer === undefined) {
+      this.runtimeSpeed = value;
+      for (const timeline of this.timelines.values()) timeline.timeScale(value);
+      return;
+    }
+    this.layerSpeeds.set(layer, value);
+    this.timelines.get(layer)?.timeScale(value);
+  }
+
+  /** Overrides visibility without changing the selected skin, trait group, or manual attachment. */
+  setAttachmentVisible(attachmentId: string, visible?: boolean): void {
+    if (!this.attachments.has(attachmentId)) throw new Error(`Unknown attachment: ${attachmentId}`);
+    if (visible === undefined) this.visibilityOverrides.delete(attachmentId);
+    else this.visibilityOverrides.set(attachmentId, visible);
+    this.applyVisibility();
+  }
+
+  activeAttachmentId(slotId: string): string | undefined {
+    if (!this.slotAttachments.has(slotId)) throw new Error(`Unknown slot: ${slotId}`);
+    return this.selectedAttachmentId(slotId);
+  }
+
+  activeAttachmentIds(): readonly string[] { return [...this.selectedAttachmentIds()]; }
 
   setMirrored(mirrored: boolean): void {
     const root = this.definition.bones.find(({ parentId }) => !parentId); if (!root) return;
@@ -144,7 +176,7 @@ export class RigRuntime {
   dispose(): void {
     if (this.disposed) return; this.disposed = true; this.stop();
     for (const node of [...this.attachments.values(), ...this.bones.values()]) this.factory.destroy(node);
-    this.attachments.clear(); this.slotAttachments.clear(); this.bones.clear(); this.clips.clear(); this.activeGroups.clear(); this.manualAttachments.clear();
+    this.attachments.clear(); this.slotAttachments.clear(); this.bones.clear(); this.clips.clear(); this.activeGroups.clear(); this.manualAttachments.clear(); this.visibilityOverrides.clear(); this.layerSpeeds.clear();
   }
 
   /** Clips handed straight to `play` skip `registerClip`, so they are validated here instead. */
@@ -164,19 +196,20 @@ export class RigRuntime {
   }
 
   private applyVisibility(): void {
-    const selected = new Set<string>();
-    const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
-    for (const attachmentId of Object.values(skin ?? {})) if (attachmentId) selected.add(attachmentId);
-    if (!skin) for (const slot of this.definition.slots) {
-      const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId; if (id) selected.add(id);
+    const selected = this.selectedAttachmentIds();
+    for (const attachment of this.definition.attachments) {
+      const visible = this.visibilityOverrides.get(attachment.id) ?? selected.has(attachment.id);
+      this.attachments.get(attachment.id)!.visible = visible;
     }
-    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
-    for (const [slotId, id] of this.manualAttachments) { for (const attachment of this.definition.attachments) if (attachment.slotId === slotId) selected.delete(attachment.id); selected.add(id); }
-    for (const attachment of this.definition.attachments) this.attachments.get(attachment.id)!.visible = selected.has(attachment.id);
+    this.resolveFollowerParents();
   }
 
   private addTrack(timeline: gsap.core.Timeline, track: AnimationTrackV1): void {
-    const targets = track.target === 'bone' ? [this.bones.get(track.targetId)] : track.target === 'attachment' ? [this.attachments.get(track.targetId)] : this.slotAttachments.get(track.targetId);
+    const targets = track.target === 'bone'
+      ? [this.bones.get(track.targetId)]
+      : track.target === 'attachment'
+        ? [this.attachments.get(track.targetId)]
+        : [this.slotAnimationTarget(track.targetId)];
     if (!targets?.length || targets.some((target) => !target)) throw new Error(`Animation target not found: ${track.target}:${track.targetId}`);
     for (const keyframe of track.keyframes) for (const target of targets) {
       // Explicit pick, never a spread of the keyframe: clip data must not be able to reach GSAP's
@@ -189,5 +222,49 @@ export class RigRuntime {
   private applyTransform(node: RigDisplayNode, transform: { x?: number; y?: number; rotation?: number; scaleX?: number; scaleY?: number; alpha?: number }): void {
     node.x = transform.x ?? 0; node.y = transform.y ?? 0; node.rotation = transform.rotation ?? 0;
     node.scaleX = transform.scaleX ?? 1; node.scaleY = transform.scaleY ?? 1; node.alpha = transform.alpha ?? 1;
+  }
+
+  private selectedAttachmentIds(): Set<string> {
+    const selected = new Set<string>();
+    const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
+    if (skin) for (const attachmentId of Object.values(skin)) if (attachmentId) selected.add(attachmentId);
+    else for (const slot of this.definition.slots) {
+      const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId;
+      if (id) selected.add(id);
+    }
+    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
+    for (const [slotId, id] of this.manualAttachments) {
+      for (const attachment of this.definition.attachments) if (attachment.slotId === slotId) selected.delete(attachment.id);
+      selected.add(id);
+    }
+    return selected;
+  }
+
+  private selectedAttachmentId(slotId: string): string | undefined {
+    const manual = this.manualAttachments.get(slotId); if (manual) return manual;
+    const group = this.activeGroups.get(slotId); if (group) return group.attachmentIds[0];
+    const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
+    const skinned = skin?.[slotId]; if (skinned) return skinned;
+    return this.definition.slots.find((slot) => slot.id === slotId)?.defaultAttachmentId;
+  }
+
+  private slotAnimationTarget(slotId: string): RigDisplayNode | undefined {
+    const attachmentId = this.selectedAttachmentId(slotId);
+    const attachment = attachmentId ? this.definition.attachments.find(({ id }) => id === attachmentId) : undefined;
+    return attachment?.boneId ? this.bones.get(attachment.boneId) : attachment ? this.attachments.get(attachment.id) : this.definition.slots.find(({ id }) => id === slotId)?.boneId ? this.bones.get(this.definition.slots.find(({ id }) => id === slotId)!.boneId!) : undefined;
+  }
+
+  private resolveFollowerParents(): void {
+    for (const bone of this.definition.bones) {
+      if (!bone.followSlotId) continue;
+      const attachmentId = this.selectedAttachmentId(bone.followSlotId);
+      const attachment = attachmentId ? this.definition.attachments.find(({ id }) => id === attachmentId) : undefined;
+      this.factory.attach(attachment?.boneId ? this.bones.get(attachment.boneId) : undefined, this.bones.get(bone.id)!);
+    }
+  }
+
+  private normaliseSpeed(speed: number): number {
+    if (!Number.isFinite(speed) || speed < 0) throw new Error('Rig speed must be a finite non-negative number');
+    return speed;
   }
 }

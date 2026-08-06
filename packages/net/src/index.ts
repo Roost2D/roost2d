@@ -1,11 +1,16 @@
 export interface Envelope<T = unknown> { version: 1; type: string; id: string; sentAt: number; payload: T; }
 export type ConnectionState = 'idle' | 'connecting' | 'open' | 'closed' | 'error';
+export type TransportLifecycleEvent =
+  | { type: 'open' }
+  | { type: 'error'; error?: unknown }
+  | { type: 'close'; code?: number; reason?: string; wasClean?: boolean };
 export interface MessageTransport {
   readonly state: ConnectionState;
   connect?(): void | Promise<void>;
   send(message: string): void;
   subscribe(listener: (message: string) => void): () => void;
   subscribeState?(listener: (state: ConnectionState) => void): () => void;
+  subscribeLifecycle?(listener: (event: TransportLifecycleEvent) => void): () => void;
   close(): void;
 }
 
@@ -38,7 +43,7 @@ export class LocalWorkerTransport implements MessageTransport {
 
 export interface SocketLike extends EventTarget { readonly readyState: number; send(message: string): void; close(code?: number, reason?: string): void; }
 export class SocketTransport implements MessageTransport {
-  state: ConnectionState = 'idle'; private socket?: SocketLike; private readonly listeners = new Set<(message: string) => void>(); private readonly stateListeners = new Set<(state: ConnectionState) => void>();
+  state: ConnectionState = 'idle'; private socket?: SocketLike; private readonly listeners = new Set<(message: string) => void>(); private readonly stateListeners = new Set<(state: ConnectionState) => void>(); private readonly lifecycleListeners = new Set<(event: TransportLifecycleEvent) => void>();
   private connecting?: Promise<void>; private abortConnect?: (reason: Error) => void; private unbindSocket?: () => void; private generation = 0;
   constructor(private readonly url: string, private readonly createSocket: (url: string) => SocketLike = (value) => new WebSocket(value)) {}
   connect(): Promise<void> {
@@ -47,7 +52,7 @@ export class SocketTransport implements MessageTransport {
     this.setState('connecting');
     let socket: SocketLike;
     try { socket = this.createSocket(this.url); }
-    catch (error) { this.setState('error'); return Promise.reject(error instanceof Error ? error : new Error(String(error))); }
+    catch (error) { this.setState('error'); this.emitLifecycle({ type: 'error', error }); return Promise.reject(error instanceof Error ? error : new Error(String(error))); }
     const generation = ++this.generation; this.socket = socket;
     let connecting: Promise<void>;
     connecting = new Promise((resolve, reject) => {
@@ -59,11 +64,11 @@ export class SocketTransport implements MessageTransport {
       const open = () => {
         settle();
         if (this.socket !== socket || this.generation !== generation) { reject(new Error(`WebSocket connection was superseded: ${this.url}`)); return; }
-        this.bind(socket, generation); this.setState('open'); resolve();
+        this.bind(socket, generation); this.setState('open'); this.emitLifecycle({ type: 'open' }); resolve();
       };
       const error = () => {
         settle();
-        if (this.socket === socket && this.generation === generation) { this.socket = undefined; socket.close(); this.setState('error'); }
+        if (this.socket === socket && this.generation === generation) { this.socket = undefined; socket.close(); this.setState('error'); this.emitLifecycle({ type: 'error' }); }
         reject(new Error(`WebSocket connection failed: ${this.url}`));
       };
       this.abortConnect = (reason) => { settle(); reject(reason); };
@@ -75,23 +80,30 @@ export class SocketTransport implements MessageTransport {
   send(message: string): void { if (this.state !== 'open' || !this.socket) throw new Error('Socket transport is not open'); this.socket.send(message); }
   subscribe(listener: (message: string) => void): () => void { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   subscribeState(listener: (state: ConnectionState) => void): () => void { this.stateListeners.add(listener); return () => this.stateListeners.delete(listener); }
+  subscribeLifecycle(listener: (event: TransportLifecycleEvent) => void): () => void { this.lifecycleListeners.add(listener); return () => this.lifecycleListeners.delete(listener); }
   /** Settles a pending `connect()` rather than leaving its promise unresolved forever. */
   close(code = 1000, reason = 'closed'): void {
     const socket = this.socket; this.generation += 1;
     this.abortConnect?.(new Error(`WebSocket closed before opening: ${this.url}`)); this.abortConnect = undefined;
     this.unbindSocket?.(); this.unbindSocket = undefined; this.socket = undefined;
-    socket?.close(code, reason); this.setState('closed');
+    socket?.close(code, reason); this.setState('closed'); this.emitLifecycle({ type: 'close', code, reason, wasClean: true });
   }
   private bind(socket: SocketLike, generation: number): void {
     const current = () => this.socket === socket && this.generation === generation;
     const message = (event: Event) => { if (!current()) return; const data = (event as MessageEvent).data; if (typeof data !== 'string') return; for (const listener of this.listeners) listener(data); };
-    const close = () => { if (!current()) return; cleanup(); this.socket = undefined; this.setState('closed'); };
-    const error = () => { if (current()) this.setState('error'); };
+    const close = (event: Event) => { if (!current()) return; cleanup(); this.socket = undefined; this.setState('closed'); this.emitLifecycle(closeLifecycle(event)); };
+    const error = (event: Event) => { if (current()) { this.setState('error'); this.emitLifecycle({ type: 'error', error: event }); } };
     const cleanup = () => { socket.removeEventListener('message', message); socket.removeEventListener('close', close); socket.removeEventListener('error', error); if (this.unbindSocket === cleanup) this.unbindSocket = undefined; };
     this.unbindSocket?.(); this.unbindSocket = cleanup;
     socket.addEventListener('message', message); socket.addEventListener('close', close); socket.addEventListener('error', error);
   }
   private setState(state: ConnectionState): void { this.state = state; for (const listener of this.stateListeners) listener(state); }
+  private emitLifecycle(event: TransportLifecycleEvent): void { for (const listener of this.lifecycleListeners) listener(event); }
+}
+
+function closeLifecycle(event: Event): TransportLifecycleEvent {
+  const close = event as Event & Partial<{ code: number; reason: string; wasClean: boolean }>;
+  return { type: 'close', ...(typeof close.code === 'number' ? { code: close.code } : {}), ...(typeof close.reason === 'string' ? { reason: close.reason } : {}), ...(typeof close.wasClean === 'boolean' ? { wasClean: close.wasClean } : {}) };
 }
 
 export interface TimedSnapshot<T> { timeMs: number; value: T; }

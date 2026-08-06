@@ -1,22 +1,24 @@
 #!/usr/bin/env node
 import { writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import {
-  buildAtlases, createInventory, createProject, findDuplicateImages, inspectImages, readJsonFile,
+  buildAssetManifest, buildAtlases, createInventory, createProject, findDuplicateImages, inspectImages, readJsonFile,
   validateAnimationFile, validateAtlasFiles, validateRigFile, verifyManifestFiles,
-  verifyRightsFiles, verifyToolingBoundary, verifyToolingPackageGraph, type AtlasBuildConfig
+  verifyRightsFiles, verifyToolingBoundary, verifyToolingPackageGraph, type AssetManifestBuildConfig, type AtlasBuildConfig
 } from './index.js';
 
 const [area, action, ...args] = process.argv.slice(2);
 
-if (area === 'assets' && action === 'scan') {
+if (area === 'assets' && (action === 'scan' || action === 'inventory')) {
   const [directory, output = 'asset-inventory.json'] = args; requireValue(directory, 'roost2d assets scan <directory> [output]');
   const images = await inspectImages(resolve(directory)); await writeJson(output, { files: await createInventory(resolve(directory)), images, duplicates: findDuplicateImages(images) });
 } else if (area === 'assets' && action === 'validate') {
   const [manifestFile, assetRoot] = args; requireValue(manifestFile && assetRoot, 'roost2d assets validate <manifest.json> <asset-root>');
   fail(await verifyManifestFiles(await readJson(resolve(manifestFile)), resolve(assetRoot)));
 } else if (area === 'assets' && action === 'manifest') {
-  const [directory, output = 'asset-inventory.json'] = args; requireValue(directory, 'roost2d assets manifest <directory> [output]'); await writeJson(output, await createInventory(resolve(directory)));
+  const [configFile, output = 'asset-manifest.json'] = args; requireValue(configFile, 'roost2d assets manifest <config.json> [output]');
+  const config = await readJson(resolve(configFile)) as AssetManifestBuildConfig;
+  await writeJson(output, await buildAssetManifest({ ...config, root: resolve(dirname(resolve(configFile)), config.root) }));
 } else if (area === 'atlas' && action === 'build') {
   const [configFile] = args; requireValue(configFile, 'roost2d atlas build <config.json> [--dry-run]'); const config = await readJson(resolve(configFile)) as AtlasBuildConfig; console.log(JSON.stringify(await buildAtlases(config, { dryRun: args.includes('--dry-run') }), null, 2));
 } else if (area === 'atlas' && action === 'validate') {
@@ -34,7 +36,7 @@ if (area === 'assets' && action === 'scan') {
 } else if (area === 'verify-package-boundary') {
   const [packageFile] = [action, ...args]; requireValue(packageFile, 'roost2d verify-package-boundary <package.json>'); fail(await verifyToolingPackageGraph(resolve(packageFile)));
 } else {
-  throw new Error('commands: assets scan|validate|manifest, atlas build|validate, rig validate, animation validate, licenses validate, project create');
+  throw new Error('commands: assets scan|inventory|validate|manifest, atlas build|validate, rig validate, animation validate, licenses validate, project create');
 }
 
 function requireValue(value: unknown, usage: string): asserts value { if (!value) throw new Error(`usage: ${usage}`); }

@@ -102,6 +102,9 @@ test('releasing the primary pointer promotes a finger that is still down', () =>
 test('hover movement is not tracked as a down pointer or pinch participant', () => {
   const target = new EventTarget(); const input = new InputManager(target);
   target.dispatchEvent(new PointerEventMock('pointermove', { pointerId: 99, clientX: 500, clientY: 500, buttons: 0, pointerType: 'mouse' }));
+  assert.deepEqual({ x: input.pointer.x, y: input.pointer.y, buttons: input.pointer.buttons }, { x: 500, y: 500, buttons: 0 });
+  assert.equal(input.pointer.down, false, 'hover position must not become an active pointer');
+  assert.equal(input.pointerCount, 0, 'hover must not participate in gestures');
   target.dispatchEvent(new PointerEventMock('pointerdown', { pointerId: 1, clientX: 10, clientY: 10 }));
   target.dispatchEvent(new PointerEventMock('pointermove', { pointerId: 1, clientX: 20, clientY: 10 }));
   assert.equal(input.gestures.pinchScale, 1);

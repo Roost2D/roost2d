@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/diagnostics",
-  "version": "0.1.0-rc.3",
+  "version": "0.1.0-rc.4",
   "description": "Opt-in diagnostics and performance counters for Roost2D.",
   "license": "Apache-2.0",
   "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/diagnostics" },

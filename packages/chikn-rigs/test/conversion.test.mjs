@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
-import { convertLegacyAnimations, convertLegacyRig, loadChiknRig } from '../dist/index.js';
+import { readFile } from 'node:fs/promises';
+import { convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix } from '../dist/index.js';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -19,6 +20,30 @@ test('browser fetch implementations retain the global invocation context', async
     return Promise.resolve(new Response(JSON.stringify({ rig: [] }), { status: 200 }));
   }
   assert.equal((await loadChiknRig(browserFetch)).id, 'chikn');
+});
+
+test('all unique skins merge, including compactly named auxiliary limb parts', async () => {
+  const sources = {
+    chikn: JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8')),
+    roostr: JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8')),
+  };
+  const auxiliaryParts = new Map([
+    ['chikn:8312', 'legupperaextra1'],
+    ['roostr:4433', 'wingaextra1'],
+    ['roostr:7467', 'wingaextra1'],
+  ]);
+  for (const species of ['chikn', 'roostr']) {
+    let rig = convertLegacyRig(sources[species], species, species === 'chikn' ? 'Chikn' : 'Roostr');
+    for (const unique of UNIQUE_SKINS.filter((entry) => entry.species === species)) {
+      const assets = rig.slots
+        .filter(({ id }) => !id.startsWith('unique:'))
+        .map(({ id }) => uniqueAssetId(unique, id));
+      const auxiliary = auxiliaryParts.get(`${species}:${unique.token}`);
+      if (auxiliary) assets.push(`${uniqueAssetPrefix(unique)}${auxiliary}`);
+      rig = mergeUniqueSkin(rig, unique, assets);
+    }
+    assert.deepEqual(validateRigDefinition(rig), []);
+  }
 });
 
 test('converts legacy traits into exclusive attachment groups', () => {

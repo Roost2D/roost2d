@@ -38,6 +38,9 @@ export function mergeUniqueSkin(base: RigDefinitionV1, unique: UniqueSkinDefinit
   const attachments = [...base.attachments]; const slots = [...base.slots]; const skins = Object.fromEntries(Object.entries(base.skins ?? {}).map(([id, skin]) => [id, { ...skin }]));
   if (Object.hasOwn(skins, unique.skinId)) throw new Error(`Unique skin already merged: ${unique.skinId}`);
   const templateByToken = new Map(base.slots.map((slot) => [assetToken(slot.id), slot]));
+  const compactTemplates = [...templateByToken.entries()]
+    .map(([token, slot]) => [compactAssetToken(token), slot] as const)
+    .sort(([left], [right]) => right.length - left.length);
   const templateAttachment = (slotId: string) => {
     const slot = base.slots.find((candidate) => candidate.id === slotId);
     const skinAttachmentId = base.defaultSkinId ? base.skins?.[base.defaultSkinId]?.[slotId] : undefined;
@@ -45,7 +48,9 @@ export function mergeUniqueSkin(base: RigDefinitionV1, unique: UniqueSkinDefinit
   };
   const skin: Record<string, string> = Object.create(null);
   for (const assetId of assetIds) {
-    const token = assetId.slice(prefix.length); const standard = templateByToken.get(token) ?? [...templateByToken.entries()].find(([candidate]) => token.startsWith(candidate))?.[1];
+    const token = assetId.slice(prefix.length);
+    const compactToken = compactAssetToken(token);
+    const standard = templateByToken.get(token) ?? compactTemplates.find(([candidate]) => compactToken.startsWith(candidate))?.[1];
     if (!standard) throw new Error(`Cannot map unique part ${assetId} to a base rig slot`);
     const template = templateAttachment(standard.id);
     if (!template) throw new Error(`Base rig has no attachment template for ${standard.id}`);
@@ -157,6 +162,7 @@ function defined<T extends Record<string, unknown>>(values: T): Partial<T> {
 }
 
 function assetToken(value: string): string { return value.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase(); }
+function compactAssetToken(value: string): string { return assetToken(value).replaceAll('-', ''); }
 function slug(value: string): string { return value.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase(); }
 function slotName(value: string): string { return value.replace(/^[^_]+_/, '').replace(/([a-z])([AB])$/, '$1 $2'); }
 function radians(degrees: number): number { return degrees * Math.PI / 180; }

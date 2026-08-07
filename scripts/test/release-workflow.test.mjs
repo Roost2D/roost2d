@@ -12,7 +12,7 @@ test('trusted publishing keeps dependency execution outside the OIDC job', async
   assert.match(publishJob, /environment: npm-publish/);
   assert.match(publishJob, /id-token: write/);
   assert.doesNotMatch(publishJob, /actions\/checkout@|npm ci|npm install/);
-  assert.match(publishJob, /npm publish "dist-pack\/\$tarball" --access public --tag "\$RELEASE_TAG"/);
+  assert.match(publishJob, /npm publish "\.\/dist-pack\/\$tarball" --access public --tag "\$RELEASE_TAG"/);
   assert.doesNotMatch(publishJob, /--provenance/, 'OIDC publishes generate provenance automatically');
 });
 

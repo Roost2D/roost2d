@@ -68,5 +68,5 @@ jobs:
               printf 'Unsafe tarball name: %s\n' "$tarball" >&2
               exit 1
             fi
-            npm publish "dist-pack/$tarball" --access public --tag "$RELEASE_TAG"
+            npm publish "./dist-pack/$tarball" --access public --tag "$RELEASE_TAG"
           done

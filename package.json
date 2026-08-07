@@ -28,7 +28,7 @@
     "docs:build": "vitepress build docs",
     "pages:build": "npm run build && npm run build:showcase && npm run docs:build && node scripts/assemble-pages.mjs",
     "check": "npm run check --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "test": "node --test scripts/test/*.test.mjs && npm run test --workspaces --if-present",
     "clean": "node scripts/clean.mjs",
     "release:verify": "npm run clean && npm ci && npm run build && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
   },
@@ -39,5 +39,10 @@
     "typescript": "^5.8.3",
     "vite": "^8.2.0",
     "vitepress": "^1.6.3"
+  },
+  "overrides": {
+    "vitepress": {
+      "vite": "6.4.3"
+    }
   }
 }

@@ -44,7 +44,12 @@ trusted publisher on **each** package:
 - allowed action: `npm publish`
 
 The workflow uses npm 11.5.2, GitHub-hosted runners, and `id-token: write`; it does not need an
-`NPM_TOKEN` or a maintainer's local npm login.
+`NPM_TOKEN` or a maintainer's local npm login. The OIDC permission exists only in the final publish
+job. Dependency installation, builds, tests, and tarball creation happen in a separate job without
+an npm publishing credential. npm trusted publishing adds provenance automatically.
+
+The npm-side trusted publisher must be configured separately for all 13 `@roost2d/*` packages.
+Configuring only one package does not grant the workflow access to the other package records.
 
 ### Release candidate
 

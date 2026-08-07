@@ -11,16 +11,17 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
-  publish:
+  # Dependency installation, builds, tests and packing run without an OIDC token in scope.
+  verify:
     runs-on: ubuntu-latest
-    environment: npm-publish
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with: { node-version: 22.14.0, cache: npm, registry-url: https://registry.npmjs.org }
+        with: { node-version: 22.14.0, cache: npm }
       - run: npm install --global npm@11.5.2
       - run: npm --version
       - run: npm ci
@@ -28,5 +29,44 @@ jobs:
       - run: node scripts/assert-release-channel.mjs "$RELEASE_TAG"
         env: { RELEASE_TAG: "${{ inputs.tag }}" }
       - run: npm run release:verify
-      - run: node scripts/publish-packages.mjs "$RELEASE_TAG"
-        env: { RELEASE_TAG: "${{ inputs.tag }}" }
+      - run: node scripts/pack-packages.mjs dist-pack
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: package-tarballs
+          path: dist-pack/
+          if-no-files-found: error
+          retention-days: 1
+
+  # Minimal privileged job: only the already-verified tarballs reach npm's OIDC exchange.
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22.14.0, registry-url: https://registry.npmjs.org }
+      - run: npm --version
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with: { name: package-tarballs, path: dist-pack }
+      - name: Publish verified packages in dependency order
+        shell: bash
+        run: |
+          mapfile -t ordered_tarballs < dist-pack/publish-order.txt
+          mapfile -t actual_tarballs < <(find dist-pack -maxdepth 1 -type f -name '*.tgz' -printf '%f\n' | sort)
+          mapfile -t expected_tarballs < <(printf '%s\n' "${ordered_tarballs[@]}" | sort)
+          if [[ "${#ordered_tarballs[@]}" -ne 13 ]] || ! diff -u <(printf '%s\n' "${expected_tarballs[@]}") <(printf '%s\n' "${actual_tarballs[@]}"); then
+            printf 'Expected exactly the 13 verified Roost2D package tarballs.\n' >&2
+            exit 1
+          fi
+          for tarball in "${ordered_tarballs[@]}"; do
+            if [[ ! "$tarball" =~ ^[A-Za-z0-9._-]+\.tgz$ ]]; then
+              printf 'Unsafe tarball name: %s\n' "$tarball" >&2
+              exit 1
+            fi
+            npm publish "dist-pack/$tarball" --access public --tag "$RELEASE_TAG"
+          done

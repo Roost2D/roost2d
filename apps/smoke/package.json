@@ -19,5 +19,5 @@
     "@roost2d/rig2d": "0.1.0-rc.4",
     "@roost2d/tooling": "0.1.0-rc.4"
   },
-  "devDependencies": { "typescript": "^5.8.3" }
+  "devDependencies": { "typescript": "^7.0.2" }
 }

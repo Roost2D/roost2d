@@ -33,10 +33,10 @@
     "release:verify": "npm run clean && npm ci && npm run build && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^26.1.2",
     "gsap": "^3.13.0",
     "pixi.js": "^8.11.0",
-    "typescript": "^5.8.3",
+    "typescript": "^7.0.2",
     "vite": "^8.2.0",
     "vitepress": "^1.6.3"
   },

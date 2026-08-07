@@ -5,13 +5,13 @@
   "type": "module",
   "scripts": { "build": "vite build", "dev": "vite", "check": "tsc --noEmit" },
   "dependencies": {
-    "@roost2d/assets": "0.1.0-rc.1",
-    "@roost2d/core": "0.1.0-rc.1",
-    "@roost2d/diagnostics": "0.1.0-rc.1",
-    "@roost2d/effects": "0.1.0-rc.1",
-    "@roost2d/input": "0.1.0-rc.1",
-    "@roost2d/isometric": "0.1.0-rc.1",
-    "@roost2d/pixi": "0.1.0-rc.1",
+    "@roost2d/assets": "0.1.0-rc.2",
+    "@roost2d/core": "0.1.0-rc.2",
+    "@roost2d/diagnostics": "0.1.0-rc.2",
+    "@roost2d/effects": "0.1.0-rc.2",
+    "@roost2d/input": "0.1.0-rc.2",
+    "@roost2d/isometric": "0.1.0-rc.2",
+    "@roost2d/pixi": "0.1.0-rc.2",
     "pixi.js": "^8.0.0"
   },
   "devDependencies": { "vite": "^8.2.0", "typescript": "^5.8.3" }

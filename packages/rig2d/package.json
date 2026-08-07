@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/rig2d",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "description": "GSAP-powered, renderer-neutral 2D rig runtime.",
   "license": "Apache-2.0",
   "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/rig2d" },
@@ -8,7 +8,7 @@
   "sideEffects": false,
   "files": ["dist", "README.md", "LICENSE"],
   "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "dependencies": { "@roost2d/contracts": "0.1.0-rc.1" },
+  "dependencies": { "@roost2d/contracts": "0.1.0-rc.2" },
   "peerDependencies": { "gsap": "^3.0.0" },
   "publishConfig": { "access": "public" },
   "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc --noEmit -p tsconfig.json", "test": "node --test test/*.test.mjs" }

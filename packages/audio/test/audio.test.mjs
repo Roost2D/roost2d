@@ -24,6 +24,18 @@ test('audio mixer controls named channels and mute state', async () => {
   await mixer.dispose(); assert.equal(context.state, 'closed');
 });
 
+test('browser fetch implementations retain the global invocation context', async () => {
+  const context = new Context();
+  function browserFetch() {
+    assert.equal(this, globalThis);
+    return Promise.resolve(new Response(new Uint8Array(4), { status: 200 }));
+  }
+  const manager = new AudioManager(context, browserFetch);
+  manager.register({ id: 'beep', url: 'https://assets.example/beep.wav' });
+  await manager.load('beep');
+  await manager.dispose();
+});
+
 // B3 — the maxConcurrent check and the active-set write straddled `await this.load(id)`, so
 // concurrent plays exceeded the cap and the second call's Set orphaned the first source.
 test('concurrent plays respect maxConcurrent and stay stoppable', async () => {

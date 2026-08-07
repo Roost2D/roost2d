@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
-import { convertLegacyAnimations, convertLegacyRig } from '../dist/index.js';
+import { convertLegacyAnimations, convertLegacyRig, loadChiknRig } from '../dist/index.js';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -11,6 +11,14 @@ test('converts attachment texture metadata into a manifest alias', () => {
   assert.equal(rig.slots[0].id, 'Torso');
   assert.equal(rig.defaultSkinId, 'Gold');
   assert.equal(rig.attachments[0].visible, false);
+});
+
+test('browser fetch implementations retain the global invocation context', async () => {
+  function browserFetch() {
+    assert.equal(this, globalThis);
+    return Promise.resolve(new Response(JSON.stringify({ rig: [] }), { status: 200 }));
+  }
+  assert.equal((await loadChiknRig(browserFetch)).id, 'chikn');
 });
 
 test('converts legacy traits into exclusive attachment groups', () => {

@@ -69,7 +69,7 @@ export class AudioManager {
   async load(id: string): Promise<AudioBuffer> {
     const definition = this.requireDefinition(id); let pending = this.buffers.get(id);
     if (!pending) {
-      pending = this.fetcher(definition.url).then(async (response) => { if (!response.ok) throw new Error(`Failed to load sound ${id}: ${response.status}`); return this.context.decodeAudioData(await response.arrayBuffer()); }).catch((error) => { this.buffers.delete(id); throw error; });
+      pending = this.fetcher.call(globalThis, definition.url).then(async (response) => { if (!response.ok) throw new Error(`Failed to load sound ${id}: ${response.status}`); return this.context.decodeAudioData(await response.arrayBuffer()); }).catch((error) => { this.buffers.delete(id); throw error; });
       this.buffers.set(id, pending);
     }
     return pending;

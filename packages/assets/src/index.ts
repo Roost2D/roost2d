@@ -148,7 +148,7 @@ export class LazyAssetLoader {
   }
 
   private download(url: string, assetId: string, limitBytes: number): Promise<ArrayBuffer> {
-    const pending = this.fetcher(url).then(async (response) => {
+    const pending = this.fetcher.call(globalThis, url).then(async (response) => {
       if (!response.ok) throw new Error(`Failed to load ${assetId}: ${response.status} ${response.statusText}`);
       return readCappedBody(response, assetId, limitBytes);
     }).catch((error) => { this.downloaded.delete(url); throw error; });
@@ -204,7 +204,7 @@ export function selectAssetProfile(manifest: AssetManifestV1, maximumTextureSize
 
 export async function fetchAssetManifest(url: string | URL, fetcher: typeof globalThis.fetch = globalThis.fetch): Promise<AssetManifestV1> {
   if (!fetcher) throw new Error('A fetch implementation is required');
-  const response = await fetcher(url);
+  const response = await fetcher.call(globalThis, url);
   if (!response.ok) throw new Error(`Failed to load asset manifest: ${response.status} ${response.statusText}`);
   const manifest = await response.json() as AssetManifestV1;
   const errors = validateAssetManifest(manifest);

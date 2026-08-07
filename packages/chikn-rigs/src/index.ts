@@ -171,4 +171,4 @@ function traitFollowSlot(name: string): string | undefined {
   if (category === 'Wings') return suffix === 'A' || suffix === 'B' ? `Wing ${suffix}` : 'Wing A';
   return undefined;
 }
-async function loadJson<T>(url: URL, fetcher: typeof fetch): Promise<T> { const response = await fetcher(url); if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`); return response.json() as Promise<T>; }
+async function loadJson<T>(url: URL, fetcher: typeof fetch): Promise<T> { const response = await fetcher.call(globalThis, url); if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`); return response.json() as Promise<T>; }

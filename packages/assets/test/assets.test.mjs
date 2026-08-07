@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { AssetManifestResolver, LazyAssetLoader, selectAssetProfile } from '../dist/index.js';
+import { AssetManifestResolver, LazyAssetLoader, fetchAssetManifest, selectAssetProfile } from '../dist/index.js';
 
 const content = new TextEncoder().encode('atlas');
 const sri = `sha256-${createHash('sha256').update(content).digest('base64')}`;
@@ -34,6 +34,21 @@ test('resolves aliases and verifies fetched atlas bytes', async () => {
   const [loaded] = await loader.loadBundle('core');
   assert.equal(loaded.asset.variant.frameId, 'atlas.one');
   assert.equal(fetches, 1);
+});
+
+test('browser fetch implementations retain the global invocation context', async () => {
+  function assetFetch() {
+    assert.equal(this, globalThis);
+    return Promise.resolve(new Response(content, { status: 200 }));
+  }
+  const loader = new LazyAssetLoader(resolverFor(), assetFetch);
+  await loader.load('atlas.one');
+
+  function manifestFetch() {
+    assert.equal(this, globalThis);
+    return Promise.resolve(new Response(JSON.stringify(manifest), { status: 200 }));
+  }
+  assert.equal((await fetchAssetManifest('https://assets.example/manifest.json', manifestFetch)).version, manifest.version);
 });
 
 // S4 — the loader used to buffer the entire body and only then compare it to `variant.bytes`.

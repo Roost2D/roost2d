@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/net",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0-rc.3",
   "description": "Transport-neutral versioned message primitives for Roost2D.",
   "license": "Apache-2.0",
   "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/net" },

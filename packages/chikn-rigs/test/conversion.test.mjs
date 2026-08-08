@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 import { readFile } from 'node:fs/promises';
-import { convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix } from '../dist/index.js';
+import { CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix } from '../dist/index.js';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -12,6 +12,8 @@ test('converts attachment texture metadata into a manifest alias', () => {
   assert.equal(rig.slots[0].id, 'Torso');
   assert.equal(rig.defaultSkinId, 'Gold');
   assert.equal(rig.attachments[0].visible, false);
+  assert.equal(rig.attachments[0].texture.layoutScale, CHIKN_RIG_ART_SCALE.chikn);
+  assert.equal(rig.attachments[0].depthTarget, 'bone');
 });
 
 test('browser fetch implementations retain the global invocation context', async () => {
@@ -41,9 +43,33 @@ test('all unique skins merge, including compactly named auxiliary limb parts', a
       const auxiliary = auxiliaryParts.get(`${species}:${unique.token}`);
       if (auxiliary) assets.push(`${uniqueAssetPrefix(unique)}${auxiliary}`);
       rig = mergeUniqueSkin(rig, unique, assets);
+      const merged = rig.attachments.filter(({ id }) => id.startsWith(`unique:${species}:${unique.token}:`));
+      assert.ok(merged.length, `${species} ${unique.token} must add attachments`);
+      assert.ok(merged.every(({ texture }) => texture.layoutScale === undefined), 'unique artwork is already authored at rig scale');
     }
     assert.deepEqual(validateRigDefinition(rig), []);
   }
+});
+
+test('every converted rig attachment carries the species layout scale and legacy bone depth', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const rig = convertLegacyRig(source, species, species === 'chikn' ? 'Chikn' : 'Roostr');
+    assert.ok(rig.attachments.length > 0);
+    assert.ok(rig.attachments.every(({ texture }) => texture.layoutScale === CHIKN_RIG_ART_SCALE[species]));
+    assert.ok(rig.attachments.every(({ depthTarget }) => depthTarget === 'bone'));
+  }
+});
+
+test('trait follower slots preserve paired limbs and neck-to-head behavior', () => {
+  const parts = ['Trait_Neck_Scarf', 'Trait_Feet_Boot_A', 'Trait_Feet_Boot_B', 'Trait_Wings_Cape_A', 'Trait_Wings_Cape_B'];
+  const rig = convertLegacyRig({ rig: parts.map((name) => ({ name })) }, 'chikn', 'Chikn');
+  const follow = Object.fromEntries(rig.bones.filter(({ followSlotId }) => followSlotId).map(({ id, followSlotId }) => [id, followSlotId]));
+  assert.equal(follow['bone:Trait_Neck_Scarf'], 'Head');
+  assert.equal(follow['bone:Trait_Feet_Boot_A'], 'LegFoot A');
+  assert.equal(follow['bone:Trait_Feet_Boot_B'], 'LegFoot B');
+  assert.equal(follow['bone:Trait_Wings_Cape_A'], 'Wing A');
+  assert.equal(follow['bone:Trait_Wings_Cape_B'], 'Wing B');
 });
 
 test('converts legacy traits into exclusive attachment groups', () => {

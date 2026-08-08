@@ -1,12 +1,17 @@
 {
   "name": "roost2d",
-  "version": "0.1.0-rc.4",
+  "version": "0.1.0-rc.5",
   "private": true,
   "description": "Framework-agnostic 2D game-engine packages.",
   "type": "module",
   "packageManager": "npm@11.5.2",
-  "engines": { "node": ">=22.14.0" },
-  "workspaces": ["packages/*", "apps/*"],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:effects && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling",
     "build:contracts": "npm run build -w @roost2d/contracts",

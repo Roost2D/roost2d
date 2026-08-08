@@ -81,6 +81,64 @@ Never calculate atlas rectangles yourself. The resolver chooses the requested pr
 
 The Chikn/Roostr/FarmLand artwork remains owned and controlled by the Chikn rights-holder under Chikn's existing community terms. Rig structure, transforms, and animation timing are separate Apache-2.0 project metadata.
 
+```ts
+import { loadChiknPack } from '@chikn-game-assets/runtime';
+import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
+import {
+  loadChiknAnimations,
+  loadChiknRig,
+  mergeUniqueSkin,
+  resolveUniqueSkin,
+  uniqueAssetPrefix,
+} from '@roost2d/chikn-rigs';
+import { PixiApplicationHost, PixiAssetLoader, PixiRigFactory } from '@roost2d/pixi';
+import { RigRuntime } from '@roost2d/rig2d';
+
+const baseUrl = new URL('/vendor/chikn-vX.Y.Z/', window.location.origin);
+const pack = await loadChiknPack({ baseUrl, profile: 'default' });
+const resolver = new AssetManifestResolver(pack.manifest, { baseUrl, profile: pack.profile });
+const textureLoader = new PixiAssetLoader(resolver, new LazyAssetLoader(resolver));
+const host = await PixiApplicationHost.create({
+  mount: document.querySelector<HTMLDivElement>('#app')!,
+  resizeTo: window,
+});
+
+let definition = await loadChiknRig();
+const clips = await loadChiknAnimations();
+
+// Optional: merge one assembled unique skin. Its asset IDs come from the manifest.
+const unique = resolveUniqueSkin('chikn', 1231)!;
+definition = mergeUniqueSkin(
+  definition,
+  unique,
+  pack.assetIds.filter((id) => id.startsWith(uniqueAssetPrefix(unique))),
+);
+
+const textureEntries = await Promise.all(
+  [...new Map(definition.attachments.map(({ texture }) => [
+    texture.frameId ? `${texture.assetId}#${texture.frameId}` : texture.assetId,
+    texture,
+  ])).entries()].map(async ([key, texture]) => [key, await textureLoader.load(texture.assetId)] as const),
+);
+const factory = new PixiRigFactory(new Map(textureEntries));
+const rig = new RigRuntime(definition, factory, clips);
+host.app.stage.addChild(factory.root);
+factory.root.position.set(320, 360);
+
+rig.applySkin(unique.skinId); // Or use definition.defaultSkinId for a normal skin.
+rig.attachGroup('head/daft-punk');
+rig.play('chikn.idle', { layer: 'base' });
+
+window.addEventListener('beforeunload', () => {
+  rig.dispose();
+  factory.destroyRoot();
+  void textureLoader.clear();
+  host.dispose();
+});
+```
+
+Application code does not apply Chikn/Roostr scale constants, move trait bones, or rewrite z-order. `@roost2d/chikn-rigs` records those adapter details in the portable rig definition, while `RigRuntime` and `PixiRigFactory` enforce them.
+
 ## 5. Replace the content pack
 
 The engine does not require Chikn content. To use different or commercially cleared artwork, publish a `roost2d.assets/v1` manifest whose logical files point to your independently licensed images, then supply that manifest's base URL to the same `AssetManifestResolver` and `PixiAssetLoader` flow.

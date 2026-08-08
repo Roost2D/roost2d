@@ -111,6 +111,19 @@ test('a defaultSkinId cannot resolve through the prototype chain', () => {
   assert.match(validateRigDefinition({ ...rig, skins: {}, defaultSkinId: 'toString' }).join('\n'), /unknown default skin/);
 });
 
+test('rig texture layout scale and depth targets are validated', () => {
+  const attachment = rig.attachments[0];
+  assert.deepEqual(validateRigDefinition({
+    ...rig,
+    attachments: [{ ...attachment, boneId: 'root', texture: { ...attachment.texture, layoutScale: 0.5 }, depthTarget: 'bone' }],
+  }), []);
+  for (const layoutScale of [0, -1, Number.POSITIVE_INFINITY, Number.NaN, 'small']) {
+    assert.match(validateRigDefinition({ ...rig, attachments: [{ ...attachment, texture: { ...attachment.texture, layoutScale } }] }).join('\n'), /layoutScale/);
+  }
+  assert.match(validateRigDefinition({ ...rig, attachments: [{ ...attachment, depthTarget: 'slot' }] }).join('\n'), /depthTarget/);
+  assert.match(validateRigDefinition({ ...rig, attachments: [{ ...attachment, depthTarget: 'bone' }] }).join('\n'), /requires boneId/);
+});
+
 test('animation validation rejects unknown targets and missing keyframes without throwing', () => {
   assert.deepEqual(validateAnimationClip(clip), []);
   assert.deepEqual(validateAnimationClip(clip, rig), []);

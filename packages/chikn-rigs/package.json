@@ -1,14 +1,35 @@
 {
   "name": "@roost2d/chikn-rigs",
-  "version": "0.1.0-rc.4",
+  "version": "0.1.0-rc.5",
   "description": "Apache-2.0 Chikn and Roostr rig and animation metadata for Roost2D.",
   "license": "Apache-2.0",
-  "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/chikn-rigs" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roost2D/roost2d.git",
+    "directory": "packages/chikn-rigs"
+  },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "README.md", "LICENSE"],
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "dependencies": { "@roost2d/contracts": "0.1.0-rc.4" },
-  "publishConfig": { "access": "public" },
-  "scripts": { "build": "tsc -p tsconfig.json && node scripts/copy-metadata.mjs", "check": "tsc --noEmit -p tsconfig.json", "test": "node --test test/*.test.mjs" }
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@roost2d/contracts": "0.1.0-rc.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/copy-metadata.mjs",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  }
 }

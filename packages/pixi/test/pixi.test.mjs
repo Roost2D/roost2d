@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
-import { Camera2D, LayerStack, PixiAssetLoader } from '../dist/index.js';
+import { Rectangle, Texture } from 'pixi.js';
+import { Camera2D, LayerStack, PixiAssetLoader, PixiRigFactory } from '../dist/index.js';
 
 const verified = new TextEncoder().encode('verified-atlas-bytes');
 const sri = `sha256-${createHash('sha256').update(verified).digest('base64')}`;
@@ -108,4 +109,45 @@ test('a failed decode does not poison the page cache', async (t) => {
   const texture = await loader.load('atlas.head');
   assert.equal(texture.label, 'head');
   assert.equal(fetches, 2);
+});
+
+test('rig layoutScale changes logical bounds without changing sampled pixels or shared source', () => {
+  const shared = Texture.WHITE;
+  const source = new Texture({
+    source: shared.source,
+    frame: new Rectangle(1, 2, 8, 6),
+    orig: new Rectangle(0, 0, 20, 16),
+    trim: new Rectangle(4, 2, 8, 6),
+    rotate: 2,
+  });
+  const factory = new PixiRigFactory(new Map([['part', source]]));
+  const node = factory.createAttachment('scaled', { assetId: 'part', layoutScale: 0.25 });
+  const derived = node.display.texture;
+
+  assert.notEqual(derived, source);
+  assert.equal(derived.source, source.source);
+  assert.deepEqual([derived.frame.x, derived.frame.y, derived.frame.width, derived.frame.height], [1, 2, 8, 6]);
+  assert.deepEqual([derived.orig.x, derived.orig.y, derived.orig.width, derived.orig.height], [0, 0, 5, 4]);
+  assert.deepEqual([derived.trim.x, derived.trim.y, derived.trim.width, derived.trim.height], [1, 0.5, 2, 1.5]);
+  assert.equal(derived.rotate, source.rotate);
+
+  factory.destroy(node);
+  assert.equal(derived.destroyed, true);
+  assert.equal(source.destroyed, false, 'destroying a rig-derived texture must preserve the shared atlas texture');
+  source.destroy(false);
+  factory.destroyRoot();
+});
+
+test('rig layoutScale 1 reuses the preloaded texture', () => {
+  const source = new Texture({ source: Texture.WHITE.source });
+  const factory = new PixiRigFactory(new Map([['part', source]]));
+  const implicit = factory.createAttachment('implicit', { assetId: 'part' });
+  const explicit = factory.createAttachment('explicit', { assetId: 'part', layoutScale: 1 });
+  assert.equal(implicit.display.texture, source);
+  assert.equal(explicit.display.texture, source);
+  factory.destroy(implicit);
+  factory.destroy(explicit);
+  assert.equal(source.destroyed, false);
+  source.destroy(false);
+  factory.destroyRoot();
 });

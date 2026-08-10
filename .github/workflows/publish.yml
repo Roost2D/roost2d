@@ -66,10 +66,64 @@ jobs:
             printf 'Expected exactly the 13 verified Roost2D package tarballs.\n' >&2
             exit 1
           fi
+          package_field() {
+            tar -xOf "$1" package/package.json | node -e '
+              let input = "";
+              process.stdin.setEncoding("utf8");
+              process.stdin.on("data", (chunk) => { input += chunk; });
+              process.stdin.on("end", () => console.log(JSON.parse(input)[process.argv[1]]));
+            ' "$2"
+          }
+          tarball_integrity() {
+            node -e '
+              const { createHash } = require("node:crypto");
+              const { readFileSync } = require("node:fs");
+              console.log(`sha512-${createHash("sha512").update(readFileSync(process.argv[1])).digest("base64")}`);
+            ' "$1"
+          }
           for tarball in "${ordered_tarballs[@]}"; do
             if [[ ! "$tarball" =~ ^[A-Za-z0-9._-]+\.tgz$ ]]; then
               printf 'Unsafe tarball name: %s\n' "$tarball" >&2
               exit 1
             fi
-            npm publish "./dist-pack/$tarball" --access public --tag "$RELEASE_TAG"
+            tarball_path="./dist-pack/$tarball"
+            package_name="$(package_field "$tarball_path" name)"
+            package_version="$(package_field "$tarball_path" version)"
+            package_spec="$package_name@$package_version"
+            local_integrity="$(tarball_integrity "$tarball_path")"
+            published_integrity="$(npm view "$package_spec" dist.integrity 2>/dev/null || true)"
+            if [[ -n "$published_integrity" ]]; then
+              if [[ "$published_integrity" != "$local_integrity" ]]; then
+                printf 'Refusing to resume: %s exists with different integrity.\n' "$package_spec" >&2
+                exit 1
+              fi
+              published_tag="$(npm view "$package_name" "dist-tags.$RELEASE_TAG" 2>/dev/null || true)"
+              if [[ "$published_tag" != "$package_version" ]]; then
+                printf 'Refusing to resume: %s exists but tag %s points to %s. Repair the tag through an authorized operator.\n' "$package_spec" "$RELEASE_TAG" "${published_tag:-nothing}" >&2
+                exit 1
+              fi
+              printf 'Verified existing %s; continuing resumable publish.\n' "$package_spec"
+            else
+              npm publish "$tarball_path" --access public --tag "$RELEASE_TAG"
+            fi
+          done
+          for tarball in "${ordered_tarballs[@]}"; do
+            tarball_path="./dist-pack/$tarball"
+            package_name="$(package_field "$tarball_path" name)"
+            package_version="$(package_field "$tarball_path" version)"
+            verified=false
+            for attempt in {1..6}; do
+              published_version="$(npm view "$package_name@$package_version" version 2>/dev/null || true)"
+              published_tag="$(npm view "$package_name" "dist-tags.$RELEASE_TAG" 2>/dev/null || true)"
+              if [[ "$published_version" == "$package_version" && "$published_tag" == "$package_version" ]]; then
+                verified=true
+                break
+              fi
+              sleep 5
+            done
+            if [[ "$verified" != true ]]; then
+              printf 'Registry postflight failed for %s@%s on tag %s.\n' "$package_name" "$package_version" "$RELEASE_TAG" >&2
+              exit 1
+            fi
+            printf 'Registry postflight passed for %s@%s (%s).\n' "$package_name" "$package_version" "$RELEASE_TAG"
           done

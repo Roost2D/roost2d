@@ -1,13 +1,32 @@
 {
   "name": "@roost2d/effects",
-  "version": "0.1.0-rc.4",
+  "version": "0.1.0",
   "description": "Renderer-neutral effect lifecycle and pooling utilities.",
   "license": "Apache-2.0",
-  "repository": { "type": "git", "url": "git+https://github.com/Roost2D/roost2d.git", "directory": "packages/effects" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roost2D/roost2d.git",
+    "directory": "packages/effects"
+  },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "README.md", "LICENSE"],
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
-  "publishConfig": { "access": "public" },
-  "scripts": { "build": "tsc -p tsconfig.json", "check": "tsc --noEmit -p tsconfig.json", "test": "node --test test/*.test.mjs" }
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test test/*.test.mjs"
+  }
 }

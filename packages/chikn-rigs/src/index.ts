@@ -13,6 +13,9 @@ export const roostrAnimationMetadataUrl = new URL('./data/roostr-anims.json', im
 export type ChiknSpecies = 'chikn' | 'roostr';
 export interface UniqueSkinDefinition { species: ChiknSpecies; token: number; skinId: string; bundleId: string; }
 
+/** Source artwork to legacy rig-coordinate scale. Unique assembled skins are already rig-sized. */
+export const CHIKN_RIG_ART_SCALE = { chikn: 0.1219, roostr: 0.0929 } as const;
+
 /** Apache metadata only. Artwork remains resolved from the separately governed asset manifest. */
 export const UNIQUE_SKINS: readonly UniqueSkinDefinition[] = [
   ['chikn', 1231, 'UniqueChiknCryptopunk1231'], ['chikn', 2138, 'UniqueChiknDirtybird2138'], ['chikn', 2757, 'UniqueChiknPepe2757'], ['chikn', 3604, 'UniqueChiknBayc3604'], ['chikn', 4386, 'UniqueChiknElon4386'], ['chikn', 6969, 'UniqueChiknDegen6969'], ['chikn', 8312, 'UniqueChiknSpace8312'], ['chikn', 9117, 'UniqueChiknSweatymeatchikn9117'], ['chikn', 10000, 'UniqueChiknKernel10000'],
@@ -72,6 +75,7 @@ export async function loadRoostrAnimations(fetcher: typeof fetch = fetch): Promi
 
 export function convertLegacyRig(source: LegacyRig, id: string, displayName: string): RigDefinitionV1 {
   if (!source || !Array.isArray(source.rig)) throw new Error('Legacy rig source must provide a rig array');
+  const layoutScale = id === 'chikn' || id === 'roostr' ? CHIKN_RIG_ART_SCALE[id] : undefined;
   const textureByAttachment = new Map<string, string>();
   const slotByAttachment = new Map<string, string>();
   // Null-prototype accumulators: source ids are untrusted strings, and `__proto__` as a plain-object
@@ -96,7 +100,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   const attachments: AttachmentDefinitionV1[] = source.rig.map((part, index) => ({
     id: part.name,
     slotId: slotByAttachment.get(part.name) ?? slotName(part.name),
-    texture: { assetId: `${id}.rig.${assetToken(textureByAttachment.get(part.name) ?? part.name)}` },
+    texture: { assetId: `${id}.rig.${assetToken(textureByAttachment.get(part.name) ?? part.name)}`, ...(layoutScale ? { layoutScale } : {}) },
     boneId: `bone:${part.name}`,
     x: 0,
     y: 0,
@@ -104,6 +108,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     scaleX: 1,
     scaleY: 1,
     zIndex: part.z_index ?? index,
+    depthTarget: 'bone',
     visible: false,
     anchorX: part.pivot_x ?? 0.5,
     anchorY: part.pivot_y ?? 0.5

@@ -60,7 +60,10 @@ export class RigRuntime {
     for (const bone of definition.bones) if (!bone.followSlotId) factory.attach(bone.parentId ? this.bones.get(bone.parentId) : undefined, this.bones.get(bone.id)!);
     for (const attachment of definition.attachments) {
       const node = factory.createAttachment(attachment.id, attachment.texture); this.applyTransform(node, attachment);
-      node.zIndex = attachment.zIndex; node.tint = attachment.tint; node.anchorX = attachment.anchorX ?? 0; node.anchorY = attachment.anchorY ?? 0; node.visible = false;
+      const depthTarget = attachment.depthTarget ?? 'attachment';
+      node.zIndex = depthTarget === 'attachment' ? attachment.zIndex : 0;
+      if (depthTarget === 'bone') this.bones.get(attachment.boneId!)!.zIndex = attachment.zIndex;
+      node.tint = attachment.tint; node.anchorX = attachment.anchorX ?? 0; node.anchorY = attachment.anchorY ?? 0; node.visible = false;
       this.attachments.set(attachment.id, node);
       const slot = this.slotAttachments.get(attachment.slotId) ?? []; slot.push(node); this.slotAttachments.set(attachment.slotId, slot);
       const slotDefinition = definition.slots.find(({ id }) => id === attachment.slotId);
@@ -248,8 +251,18 @@ export class RigRuntime {
     return this.definition.slots.find((slot) => slot.id === slotId)?.defaultAttachmentId;
   }
 
+  /** Resolves the base transform for a slot without letting a visible overlay redefine the slot. */
+  private slotTransformAttachmentId(slotId: string): string | undefined {
+    const manual = this.manualAttachments.get(slotId); if (manual) return manual;
+    const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
+    const skinned = skin?.[slotId]; if (skinned) return skinned;
+    const fallback = this.definition.slots.find((slot) => slot.id === slotId)?.defaultAttachmentId;
+    if (fallback) return fallback;
+    return this.activeGroups.get(slotId)?.attachmentIds[0];
+  }
+
   private slotAnimationTarget(slotId: string): RigDisplayNode | undefined {
-    const attachmentId = this.selectedAttachmentId(slotId);
+    const attachmentId = this.slotTransformAttachmentId(slotId);
     const attachment = attachmentId ? this.definition.attachments.find(({ id }) => id === attachmentId) : undefined;
     return attachment?.boneId ? this.bones.get(attachment.boneId) : attachment ? this.attachments.get(attachment.id) : this.definition.slots.find(({ id }) => id === slotId)?.boneId ? this.bones.get(this.definition.slots.find(({ id }) => id === slotId)!.boneId!) : undefined;
   }
@@ -257,7 +270,7 @@ export class RigRuntime {
   private resolveFollowerParents(): void {
     for (const bone of this.definition.bones) {
       if (!bone.followSlotId) continue;
-      const attachmentId = this.selectedAttachmentId(bone.followSlotId);
+      const attachmentId = this.slotTransformAttachmentId(bone.followSlotId);
       const attachment = attachmentId ? this.definition.attachments.find(({ id }) => id === attachmentId) : undefined;
       this.factory.attach(attachment?.boneId ? this.bones.get(attachment.boneId) : undefined, this.bones.get(bone.id)!);
     }

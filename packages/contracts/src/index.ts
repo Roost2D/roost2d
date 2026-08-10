@@ -1,5 +1,10 @@
 /** A reference to a complete image asset or a named frame in an atlas. */
-export interface TextureRef { assetId: string; frameId?: string; }
+export interface TextureRef {
+  assetId: string;
+  frameId?: string;
+  /** Display size in rig/layout coordinates without changing the sampled source pixels. */
+  layoutScale?: number;
+}
 
 export interface TransformV1 {
   x?: number;
@@ -32,6 +37,8 @@ export interface AttachmentDefinitionV1 extends TransformV1 {
   texture: TextureRef;
   boneId?: string;
   zIndex: number;
+  /** Whether legacy depth belongs to the attachment display or its transform bone. */
+  depthTarget?: 'attachment' | 'bone';
   visible?: boolean;
   tint?: number;
   /** Normalized texture anchor, where 0 is left/top and 1 is right/bottom. */
@@ -464,8 +471,13 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (attachment.boneId !== undefined && (!isNonEmptyString(attachment.boneId) || !bones.has(attachment.boneId))) errors.push(`${label}: unknown bone ${String(attachment.boneId)}`);
     const texture = attachment.texture;
     if (!isRecord(texture) || !isNonEmptyString(texture.assetId)) errors.push(`${label}: texture assetId is required`);
-    else if (texture.frameId !== undefined && !isNonEmptyString(texture.frameId)) errors.push(`${label}: texture frameId must be a string`);
+    else {
+      if (texture.frameId !== undefined && !isNonEmptyString(texture.frameId)) errors.push(`${label}: texture frameId must be a string`);
+      if (texture.layoutScale !== undefined && (!isFiniteNumber(texture.layoutScale) || texture.layoutScale <= 0)) errors.push(`${label}: texture layoutScale must be a positive finite number`);
+    }
     if (!isFiniteNumber(attachment.zIndex)) errors.push(`${label}: attachment zIndex must be a finite number`);
+    if (attachment.depthTarget !== undefined && attachment.depthTarget !== 'attachment' && attachment.depthTarget !== 'bone') errors.push(`${label}: depthTarget must be attachment or bone`);
+    if (attachment.depthTarget === 'bone' && !isNonEmptyString(attachment.boneId)) errors.push(`${label}: bone depthTarget requires boneId`);
     if (attachment.visible !== undefined && typeof attachment.visible !== 'boolean') errors.push(`${label}: visible must be a boolean`);
     if (attachment.tint !== undefined && !isTint(attachment.tint)) errors.push(`${label}: tint must be an integer colour`);
     for (const key of ['anchorX', 'anchorY'] as const) if (attachment[key] !== undefined && (!isFiniteNumber(attachment[key]) || attachment[key] < 0 || attachment[key] > 1)) errors.push(`${label}: ${key} must be a number in [0, 1]`);

@@ -217,14 +217,45 @@ function textureOptions(source: TextureSource, frame: AtlasFrameV1, scale: numbe
 /** Pixi display adapter for renderer-neutral RigRuntime. Textures must be preloaded. */
 export class PixiRigFactory implements RigDisplayFactory {
   readonly root = new Container();
+  private readonly derivedTextures = new Set<Texture>();
   constructor(private readonly textures: ReadonlyMap<string, Texture>) { this.root.sortableChildren = true; }
   createBone(id: string): PixiRigNode { const display = new Container(); display.label = id; display.sortableChildren = true; return new PixiRigNode(display); }
   createAttachment(id: string, texture: TextureRef): PixiRigNode {
     const resolved = this.textures.get(texture.frameId ? `${texture.assetId}#${texture.frameId}` : texture.assetId) ?? this.textures.get(texture.assetId);
     if (!resolved) throw new Error(`Rig texture is not preloaded: ${texture.assetId}${texture.frameId ? `#${texture.frameId}` : ''}`);
-    const display = new Sprite(resolved); display.label = id; return new PixiRigNode(display);
+    const layoutScale = texture.layoutScale ?? 1;
+    if (!Number.isFinite(layoutScale) || layoutScale <= 0) throw new Error('Rig texture layoutScale must be a positive finite number');
+    const displayTexture = layoutScale === 1 ? resolved : this.deriveLayoutTexture(resolved, layoutScale);
+    const display = new Sprite(displayTexture); display.label = id; return new PixiRigNode(display);
   }
   attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void { const parentDisplay = parent instanceof PixiRigNode ? parent.display : this.root; const childDisplay = child instanceof PixiRigNode ? child.display : undefined; if (!childDisplay) throw new Error('PixiRigFactory received a foreign display node'); parentDisplay.addChild(childDisplay); }
-  destroy(node: RigDisplayNode): void { if (node instanceof PixiRigNode) node.display.destroy({ children: false, texture: false, textureSource: false }); }
-  destroyRoot(): void { this.root.destroy({ children: true, texture: false, textureSource: false }); }
+  destroy(node: RigDisplayNode): void {
+    if (!(node instanceof PixiRigNode)) return;
+    const texture = node.display instanceof Sprite ? node.display.texture : undefined;
+    node.display.destroy({ children: false, texture: false, textureSource: false });
+    if (texture && this.derivedTextures.delete(texture)) texture.destroy(false);
+  }
+  destroyRoot(): void {
+    this.root.destroy({ children: true, texture: false, textureSource: false });
+    for (const texture of this.derivedTextures) texture.destroy(false);
+    this.derivedTextures.clear();
+  }
+
+  private deriveLayoutTexture(texture: Texture, layoutScale: number): Texture {
+    const scaled = (rectangle: Rectangle) => new Rectangle(
+      rectangle.x * layoutScale,
+      rectangle.y * layoutScale,
+      rectangle.width * layoutScale,
+      rectangle.height * layoutScale,
+    );
+    const derived = new Texture({
+      source: texture.source,
+      frame: texture.frame.clone(),
+      orig: scaled(texture.orig),
+      trim: texture.trim ? scaled(texture.trim) : undefined,
+      rotate: texture.rotate,
+    });
+    this.derivedTextures.add(derived);
+    return derived;
+  }
 }

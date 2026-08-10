@@ -1,12 +1,17 @@
 {
   "name": "roost2d",
-  "version": "0.1.0-rc.4",
+  "version": "0.1.0",
   "private": true,
   "description": "Framework-agnostic 2D game-engine packages.",
   "type": "module",
   "packageManager": "npm@11.5.2",
-  "engines": { "node": ">=22.14.0" },
-  "workspaces": ["packages/*", "apps/*"],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:effects && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling",
     "build:contracts": "npm run build -w @roost2d/contracts",
@@ -27,10 +32,12 @@
     "build:showcase": "npm run build -w roost2d-showcase",
     "docs:build": "vitepress build docs",
     "pages:build": "npm run build && npm run build:showcase && npm run docs:build && node scripts/assemble-pages.mjs",
+    "api:snapshot": "node scripts/public-api-snapshot.mjs --write",
+    "api:verify": "node scripts/public-api-snapshot.mjs",
     "check": "npm run check --workspaces --if-present",
     "test": "node --test scripts/test/*.test.mjs && npm run test --workspaces --if-present",
     "clean": "node scripts/clean.mjs",
-    "release:verify": "npm run clean && npm ci && npm run build && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
+    "release:verify": "npm run clean && npm ci && npm run build && npm run api:verify && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

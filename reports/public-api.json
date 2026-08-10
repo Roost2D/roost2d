@@ -1,0 +1,282 @@
+{
+  "schema": "roost2d.public-api/v1",
+  "packages": {
+    "@roost2d/assets": {
+      "entrypoint": ".",
+      "exports": [
+        "AssetCatalog",
+        "AssetFailure",
+        "AssetLoadProgress",
+        "AssetLoaderOptions",
+        "AssetManifestResolver",
+        "AssetResolverOptions",
+        "BundleLoadResult",
+        "DEFAULT_MAX_ASSET_BYTES",
+        "LazyAssetLoader",
+        "LoadedAsset",
+        "ResolvedAsset",
+        "fetchAssetManifest",
+        "selectAssetProfile"
+      ],
+      "declarationSha256": "025ad8daf0e7001899cf47bff0f7751ac0cb7cda1b99d147fdb288d490ec14fa"
+    },
+    "@roost2d/audio": {
+      "entrypoint": ".",
+      "exports": [
+        "AudioChannelId",
+        "AudioManager",
+        "AudioMixer",
+        "PlayOptions",
+        "PlayingSound",
+        "SoundDefinition",
+        "SoundRegistrationOptions"
+      ],
+      "declarationSha256": "5baa6e5b0048ba3f2d47dbf28a7a440318270eb7c56d8fb5bde18faa9dafd64b"
+    },
+    "@roost2d/chikn-rigs": {
+      "entrypoint": ".",
+      "exports": [
+        "CHIKN_RIG_ART_SCALE",
+        "ChiknSpecies",
+        "UNIQUE_SKINS",
+        "UniqueSkinDefinition",
+        "chiknAnimationMetadataUrl",
+        "chiknRigMetadataUrl",
+        "convertLegacyAnimations",
+        "convertLegacyRig",
+        "loadChiknAnimations",
+        "loadChiknRig",
+        "loadRoostrAnimations",
+        "loadRoostrRig",
+        "mergeUniqueSkin",
+        "resolveUniqueSkin",
+        "roostrAnimationMetadataUrl",
+        "roostrRigMetadataUrl",
+        "uniqueAssetId",
+        "uniqueAssetPrefix"
+      ],
+      "declarationSha256": "99e42d9b2239d1c12beaf02ade6484826422bcc07160c5021e825ee06fdd9191"
+    },
+    "@roost2d/contracts": {
+      "entrypoint": ".",
+      "exports": [
+        "ANIMATION_KEYFRAME_KEYS",
+        "AnimationClipV1",
+        "AnimationKeyframeKey",
+        "AnimationKeyframeV1",
+        "AnimationKeyframeValues",
+        "AnimationTrackV1",
+        "AssetBundleItemV1",
+        "AssetBundleV1",
+        "AssetFileV1",
+        "AssetIntegrityV1",
+        "AssetKind",
+        "AssetLicense",
+        "AssetManifestV1",
+        "AssetProfileId",
+        "AssetVariantV1",
+        "AtlasFrameV1",
+        "AtlasManifestV1",
+        "AttachmentDefinitionV1",
+        "ProtectedAssetRights",
+        "RigAttachmentGroupV1",
+        "RigBoneV1",
+        "RigDefinitionV1",
+        "RigSlotV1",
+        "RightsAssetV1",
+        "RightsManifestV1",
+        "TextureRef",
+        "TransformV1",
+        "isContainedRelativePath",
+        "isSha256SRI",
+        "pickAnimationKeyframeValues",
+        "validateAnimationClip",
+        "validateAssetManifest",
+        "validateAtlasManifest",
+        "validateRigDefinition",
+        "validateRightsManifest"
+      ],
+      "declarationSha256": "9d15907b005e6fea455d3db2e15ebf2de7d93c842041d4bab6fa537ff2b647be"
+    },
+    "@roost2d/core": {
+      "entrypoint": ".",
+      "exports": [
+        "Disposable",
+        "DisposalScope",
+        "EventBus",
+        "FixedStepClock",
+        "FrameDriver",
+        "GameRuntime",
+        "GameRuntimeOptions",
+        "ObjectPool",
+        "ObjectPoolOptions",
+        "Plugin",
+        "RandomSource",
+        "Rect",
+        "RuntimeEvents",
+        "Scene",
+        "SceneContext",
+        "SceneFactory",
+        "SceneLifetime",
+        "SceneRegistrationOptions",
+        "SceneTransitionContext",
+        "Scheduler",
+        "SeededRandom",
+        "ServiceRegistry",
+        "System",
+        "Tick",
+        "Unsubscribe",
+        "Vec2",
+        "browserFrameDriver"
+      ],
+      "declarationSha256": "eb6e964d0c13078aa96c72a52bb38b571211696a2dff6e570a659fc254648f3f"
+    },
+    "@roost2d/diagnostics": {
+      "entrypoint": ".",
+      "exports": [
+        "Diagnostics",
+        "DiagnosticsOverlay",
+        "DiagnosticsSnapshot",
+        "browserMemoryBytes"
+      ],
+      "declarationSha256": "69adcb6e2b162acd48a9475ed26f33fca988ec432e2950e2706e4b912b24e59f"
+    },
+    "@roost2d/effects": {
+      "entrypoint": ".",
+      "exports": [
+        "Easing",
+        "EffectPool",
+        "Particle",
+        "ParticleEmitter",
+        "ScreenShake",
+        "TimedEffect",
+        "Trail",
+        "TransformTarget",
+        "Updatable",
+        "easing",
+        "fade",
+        "scalePop",
+        "tintFlash"
+      ],
+      "declarationSha256": "b23ecb5d2e31aa2bb5500eae0730795edfa6df32b09718b3d3726eaa29bd3959"
+    },
+    "@roost2d/input": {
+      "entrypoint": ".",
+      "exports": [
+        "ActionState",
+        "GestureState",
+        "InputContext",
+        "InputManager",
+        "InputManagerOptions",
+        "InputMap",
+        "InputTargets",
+        "PointerState",
+        "WheelState"
+      ],
+      "declarationSha256": "9914739b88e1a0c359c9e791f670dee3310437150e7899910975976c7cd8278b"
+    },
+    "@roost2d/isometric": {
+      "entrypoint": ".",
+      "exports": [
+        "GridBounds",
+        "GridPoint",
+        "IsometricProjection",
+        "ScreenPoint",
+        "TileAnchor",
+        "clampToGrid",
+        "depthFor",
+        "gridToScreen",
+        "isInsideGrid",
+        "pickTile",
+        "screenToCell",
+        "screenToGrid",
+        "subTilePosition",
+        "tileDiamond",
+        "worldBounds"
+      ],
+      "declarationSha256": "d5ced46c022839e051618b8f01440278030fd6c7b5a56ad4c7935ddb34cc16b8"
+    },
+    "@roost2d/net": {
+      "entrypoint": ".",
+      "exports": [
+        "ClockSynchronizer",
+        "ConnectionState",
+        "Envelope",
+        "LocalWorkerTransport",
+        "MessageChannel",
+        "MessageTransport",
+        "SnapshotBuffer",
+        "SnapshotInterpolator",
+        "SocketLike",
+        "SocketTransport",
+        "TimedSnapshot",
+        "TransportLifecycleEvent",
+        "decodeEnvelope",
+        "encodeEnvelope"
+      ],
+      "declarationSha256": "20b005fc4054d43dc459f51ddec92885bc040fda336b2de20c497ae97422d6b6"
+    },
+    "@roost2d/pixi": {
+      "entrypoint": ".",
+      "exports": [
+        "Camera2D",
+        "CameraBounds",
+        "LayerDefinition",
+        "LayerStack",
+        "PixiApplicationHost",
+        "PixiAssetLoader",
+        "PixiHostOptions",
+        "PixiRigFactory",
+        "PixiRigNode"
+      ],
+      "declarationSha256": "1fd922c8aee44fdaaac16bf18186041214a0b163dbcd611dc367b6548e3441b2"
+    },
+    "@roost2d/rig2d": {
+      "entrypoint": ".",
+      "exports": [
+        "RigAnimationHandle",
+        "RigDisplayFactory",
+        "RigDisplayNode",
+        "RigPlayOptions",
+        "RigRuntime"
+      ],
+      "declarationSha256": "9e63609a85d27503e45d67cdf59c0914827f9aa1bb3ed62f659c98cb5b2f3c87"
+    },
+    "@roost2d/tooling": {
+      "entrypoint": ".",
+      "exports": [
+        "AssetManifestBuildConfig",
+        "AssetManifestFileInput",
+        "AssetManifestVariantInput",
+        "AtlasBuildConfig",
+        "AtlasProfileConfig",
+        "AtlasSourceConfig",
+        "ImageInspection",
+        "InventoryEntry",
+        "JsonReadResult",
+        "PixiAtlasImportOptions",
+        "PixiAtlasImportResult",
+        "assertBudgets",
+        "buildAssetManifest",
+        "buildAtlases",
+        "createInventory",
+        "createProject",
+        "findDuplicateImages",
+        "importPixiAtlas",
+        "inspectImages",
+        "readJsonFile",
+        "sha256Hex",
+        "sha256SRI",
+        "sourceSha256Hex",
+        "validateAnimationFile",
+        "validateAtlasFiles",
+        "validateRigFile",
+        "verifyManifestFiles",
+        "verifyRightsFiles",
+        "verifyToolingBoundary",
+        "verifyToolingPackageGraph"
+      ],
+      "declarationSha256": "9e7b2347770d063cdba9043f8e877ec699b40995430b825d02cfdc19b9434a04"
+    }
+  }
+}

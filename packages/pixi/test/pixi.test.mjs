@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
-import { Rectangle, Texture } from 'pixi.js';
+import { Container, Rectangle, Texture } from 'pixi.js';
+import { RigRuntime } from '@roost2d/rig2d';
 import { Camera2D, LayerStack, PixiAssetLoader, PixiRigFactory } from '../dist/index.js';
 
 const verified = new TextEncoder().encode('verified-atlas-bytes');
@@ -150,4 +151,46 @@ test('rig layoutScale 1 reuses the preloaded texture', () => {
   assert.equal(source.destroyed, false);
   source.destroy(false);
   factory.destroyRoot();
+});
+
+test('a pooled rig can change skins and traits inside a live Pixi render group without forming a display-tree cycle', () => {
+  const definition = {
+    schema: 'roost2d.rig/v1', id: 'pooled-bird', displayName: 'Pooled bird', defaultSkinId: 'white',
+    bones: [
+      { id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      { id: 'bone:head-white', parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      { id: 'bone:head-red', parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      { id: 'bone:hat', followSlotId: 'Head', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+    ],
+    slots: [{ id: 'Head', zIndex: 0, defaultAttachmentId: 'head-white' }],
+    attachments: [
+      { id: 'head-white', slotId: 'Head', boneId: 'bone:head-white', texture: { assetId: 'head-white' }, zIndex: 0 },
+      { id: 'head-red', slotId: 'Head', boneId: 'bone:head-red', texture: { assetId: 'head-red' }, zIndex: 0 },
+      { id: 'hat', slotId: 'Head', boneId: 'bone:hat', texture: { assetId: 'hat' }, zIndex: 1 },
+    ],
+    skins: { white: { Head: 'head-white' }, red: { Head: 'head-red' } },
+    attachmentGroups: { 'head/hat': { id: 'head/hat', slotId: 'Head', attachmentIds: ['hat'], exclusive: true } },
+  };
+  const textures = new Map(['head-white', 'head-red', 'hat'].map((id) => [id, Texture.EMPTY]));
+  const factory = new PixiRigFactory(textures);
+  const rig = new RigRuntime(definition, factory);
+  const liveRoot = new Container({ isRenderGroup: true });
+  liveRoot.addChild(factory.root);
+
+  // This is the production pooling order that previously made a follower bone parent itself and
+  // sent Pixi RenderGroup.addChild into unbounded recursion.
+  rig.applySkin('white');
+  rig.attachGroup('head/hat');
+  rig.removeGroup('Head');
+  rig.applySkin('red');
+  rig.attachGroup('head/hat');
+
+  const traitBone = rig.node('bone', 'bone:hat').display;
+  const activeHeadBone = rig.node('bone', 'bone:head-red').display;
+  assert.equal(traitBone.parent, activeHeadBone);
+  assert.notEqual(traitBone.parent, traitBone);
+
+  rig.dispose();
+  factory.destroyRoot();
+  liveRoot.destroy({ children: true });
 });

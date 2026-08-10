@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/net",
-  "version": "0.1.0-rc.5",
+  "version": "0.1.0",
   "description": "Transport-neutral versioned message primitives for Roost2D.",
   "license": "Apache-2.0",
   "repository": {

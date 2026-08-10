@@ -17,6 +17,7 @@ jobs:
         with: { node-version: 22.14.0, cache: npm }
       - run: npm ci
       - run: npm run build
+      - run: npm run api:verify
       - run: npm run check
       - run: npm run test
       - run: npm run build:smoke

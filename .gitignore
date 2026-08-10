@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+dist-pack/
 *.tsbuildinfo
 .DS_Store
 docs/.vitepress/.temp/

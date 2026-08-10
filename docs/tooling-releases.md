@@ -46,7 +46,11 @@ trusted publisher on **each** package:
 The workflow uses npm 11.5.2, GitHub-hosted runners, and `id-token: write`; it does not need an
 `NPM_TOKEN` or a maintainer's local npm login. The OIDC permission exists only in the final publish
 job. Dependency installation, builds, tests, and tarball creation happen in a separate job without
-an npm publishing credential. npm trusted publishing adds provenance automatically.
+an npm publishing credential. npm trusted publishing adds provenance automatically. A retry after a
+partial 13-package publish skips only versions whose registry integrity exactly matches the verified
+tarball and whose requested dist-tag is already correct, then checks every package/version/tag before
+succeeding. Dist-tag repair remains an explicit operator action rather than expanding the OIDC job's
+authority beyond publishing.
 
 The npm-side trusted publisher must be configured separately for all 13 `@roost2d/*` packages.
 Configuring only one package does not grant the workflow access to the other package records.
@@ -65,6 +69,8 @@ Configuring only one package does not grant the workflow access to the other pac
 2. Dispatch **Publish packages** with `tag=latest`.
 3. Publish the stable Chikn runtime to `latest`, then run its cross-repository verification with
    both tags set to `latest`.
+4. Create the matching annotated `vX.Y.Z` tag and GitHub release notes from `CHANGELOG.md` only after
+   both registries and the Roost Rift consumer canary pass.
 
 An npm name/version pair is immutable. Never try to reuse an RC version for stable; publish a new
 version without the prerelease suffix.

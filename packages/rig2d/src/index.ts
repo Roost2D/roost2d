@@ -130,6 +130,15 @@ export class RigRuntime {
     for (const timeline of this.timelines.values()) timeline.kill(); this.timelines.clear();
   }
 
+  /** Pauses and seeks a live animation layer to an exact clip time for previews or frame export. */
+  seek(timeMs: number, layer = 'base'): void {
+    if (!Number.isFinite(timeMs) || timeMs < 0) throw new Error('Rig seek time must be a finite non-negative number');
+    const timeline = this.timelines.get(layer);
+    if (!timeline) throw new Error(`Animation layer is not playing: ${layer}`);
+    timeline.pause();
+    timeline.seek(Math.min(timeMs / 1000, timeline.duration()), true);
+  }
+
   /** Sets the default speed for future clips and updates every matching live timeline. */
   setSpeed(speed: number, layer?: string): void {
     const value = this.normaliseSpeed(speed);
@@ -235,11 +244,13 @@ export class RigRuntime {
       const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId;
       if (id) selected.add(id);
     }
-    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
     for (const [slotId, id] of this.manualAttachments) {
       for (const attachment of this.definition.attachments) if (attachment.slotId === slotId) selected.delete(attachment.id);
       selected.add(id);
     }
+    const replacedSlotIds = new Set([...this.activeGroups.values()].flatMap(({ replacesSlotIds }) => replacesSlotIds ?? []));
+    for (const attachment of this.definition.attachments) if (replacedSlotIds.has(attachment.slotId)) selected.delete(attachment.id);
+    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
     return selected;
   }
 

@@ -7,8 +7,23 @@ npm install @roost2d/contracts @roost2d/rig2d @roost2d/chikn-rigs
 ```
 
 ```ts
-import { loadChiknAnimations, loadChiknRig } from '@roost2d/chikn-rigs';
+import {
+  applyCharacterRecipe,
+  CHARACTER_RECIPE_SCHEMA,
+  loadChiknAnimations,
+  loadChiknRig,
+} from '@roost2d/chikn-rigs';
 const [definition, clips] = await Promise.all([loadChiknRig(), loadChiknAnimations()]);
+
+const recipe = {
+  schema: CHARACTER_RECIPE_SCHEMA,
+  species: 'chikn',
+  skinId: 'Celestial',
+  traitGroupIds: ['head/admiral', 'tail/golden-plumage'],
+  animationId: 'chikn.walk',
+};
+
+applyCharacterRecipe(rig, recipe, definition, clips);
 ```
 
 Resolve each `definition.attachments[].texture.assetId` through a separately hosted Chikn runtime manifest before creating the display factory. [Chikn integration tutorial](https://github.com/Roost2D/roost2d/blob/main/docs/chikn-assets.md).

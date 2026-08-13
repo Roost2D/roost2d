@@ -57,6 +57,8 @@ export interface RigAttachmentGroupV1 {
   id: string;
   slotId: string;
   attachmentIds: string[];
+  /** Base slots hidden while this group is active. The hidden bones remain animation targets. */
+  replacesSlotIds?: string[];
   exclusive?: boolean;
   metadata?: Record<string, string | number | boolean>;
 }
@@ -502,6 +504,10 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (!isNonEmptyString(group.slotId) || !slots.has(group.slotId)) errors.push(`${groupId}: unknown slot ${String(group.slotId)}`);
     if (!Array.isArray(group.attachmentIds)) { errors.push(`${groupId}: attachmentIds must be an array`); continue; }
     for (const attachmentId of group.attachmentIds as unknown[]) if (!isNonEmptyString(attachmentId) || !attachments.has(attachmentId)) errors.push(`${groupId}: unknown attachment ${String(attachmentId)}`);
+    if (group.replacesSlotIds !== undefined) {
+      if (!Array.isArray(group.replacesSlotIds)) errors.push(`${groupId}: replacesSlotIds must be an array`);
+      else for (const slotId of group.replacesSlotIds as unknown[]) if (!isNonEmptyString(slotId) || !slots.has(slotId)) errors.push(`${groupId}: unknown replacement slot ${String(slotId)}`);
+    }
   }
   return errors;
 }

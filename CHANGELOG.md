@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add portable Chikn/Roostr character recipes for multi-trait builders and animation exports.
+- Let attachment groups declare the base slots they replace, so tail, feet, and full-head traits do not retain default feathers underneath.
+- Add deterministic animation seeking for previews and sprite-sheet capture.
+
 ## 0.1.0
 
 First stable-channel release of the 13 lockstep Roost2D packages.

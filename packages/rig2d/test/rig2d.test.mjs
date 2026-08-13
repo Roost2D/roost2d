@@ -22,6 +22,22 @@ test('skins and trait groups expose only selected attachments', () => {
   rig.removeGroup('head'); assert.equal(nodes.get('hat').visible, false); rig.dispose();
 });
 
+test('a replacement trait hides its owned base slot and restores it when removed', () => {
+  const replacement = structuredClone(definition);
+  replacement.attachmentGroups['head/hat'].replacesSlotIds = ['body'];
+  const nodes = new Map();
+  const factory = { createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; }, attach() {}, destroy() {} };
+  const rig = new RigRuntime(replacement, factory);
+  rig.attachGroup('head/hat');
+  assert.equal(nodes.get('body-white').visible, false);
+  assert.equal(nodes.get('hat').visible, true);
+  rig.applySkin('red');
+  assert.equal(nodes.get('body-red').visible, false, 'replacement ownership survives a skin change');
+  rig.removeGroup('head/hat');
+  assert.equal(nodes.get('body-red').visible, true);
+  rig.dispose();
+});
+
 test('inherited object keys are not accepted as skin or attachment group ids', () => {
   const { rig } = runtime();
   assert.throws(() => rig.applySkin('toString'), /Unknown skin/);
@@ -33,7 +49,7 @@ test('inherited object keys are not accepted as skin or attachment group ids', (
 function runtime() {
   const nodes = new Map();
   const factory = {
-    createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }),
+    createBone: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; },
     createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; },
     attach() {}, destroy() {}
   };
@@ -60,6 +76,16 @@ test('a valid clip still plays and only touches contract properties', () => {
   assert.equal('onComplete' in node, false);
   assert.equal(Object.getPrototypeOf(node), Object.prototype, 'the display node prototype must be intact');
   rig.stop();
+  rig.dispose();
+});
+
+test('seek pauses a live layer at a deterministic clip time', () => {
+  const { rig, nodes } = runtime();
+  rig.play(clip([{ timeMs: 0, durationMs: 100, x: 10 }]), { layer: 'preview', repeat: 0 });
+  rig.seek(50, 'preview');
+  assert.ok(nodes.get('root').x > 0 && nodes.get('root').x < 10);
+  assert.throws(() => rig.seek(-1, 'preview'), /finite non-negative/);
+  assert.throws(() => rig.seek(0, 'missing'), /not playing/);
   rig.dispose();
 });
 

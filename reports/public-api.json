@@ -36,10 +36,14 @@
     "@roost2d/chikn-rigs": {
       "entrypoint": ".",
       "exports": [
+        "CHARACTER_RECIPE_SCHEMA",
         "CHIKN_RIG_ART_SCALE",
+        "CharacterRecipeRuntime",
+        "CharacterRecipeV1",
         "ChiknSpecies",
         "UNIQUE_SKINS",
         "UniqueSkinDefinition",
+        "applyCharacterRecipe",
         "chiknAnimationMetadataUrl",
         "chiknRigMetadataUrl",
         "convertLegacyAnimations",
@@ -53,9 +57,10 @@
         "roostrAnimationMetadataUrl",
         "roostrRigMetadataUrl",
         "uniqueAssetId",
-        "uniqueAssetPrefix"
+        "uniqueAssetPrefix",
+        "validateCharacterRecipe"
       ],
-      "declarationSha256": "99e42d9b2239d1c12beaf02ade6484826422bcc07160c5021e825ee06fdd9191"
+      "declarationSha256": "42437429c2f0a24d01f80d946d8d78c963931278b9d5cdcb90eae1afaf8ef94d"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
@@ -96,7 +101,7 @@
         "validateRigDefinition",
         "validateRightsManifest"
       ],
-      "declarationSha256": "9d15907b005e6fea455d3db2e15ebf2de7d93c842041d4bab6fa537ff2b647be"
+      "declarationSha256": "7f3d7065c8704688f8035aeae77d891e339276048e5d780f7e5ae20a34a79ed5"
     },
     "@roost2d/core": {
       "entrypoint": ".",
@@ -240,7 +245,7 @@
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "9e63609a85d27503e45d67cdf59c0914827f9aa1bb3ed62f659c98cb5b2f3c87"
+      "declarationSha256": "427e327f96d4f90220e6d983f11fa6aaa9d36e35388f79c5d8710182924ef097"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",

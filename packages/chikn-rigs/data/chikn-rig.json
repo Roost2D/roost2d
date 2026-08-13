@@ -465,6 +465,7 @@
         "Head": {
             "daft punk": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_DaftPunk",
@@ -474,6 +475,7 @@
             },
             "tungsten cube": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_TungstenCube",
@@ -483,6 +485,7 @@
             },
             "golden bone daddy": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_GoldenBoneDaddy",
@@ -492,6 +495,7 @@
             },
             "boxhead": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Boxhead_A",
@@ -514,6 +518,7 @@
             },
             "hamlet": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Hamlet",
@@ -532,6 +537,7 @@
             },
             "pineapple": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Pineapple",
@@ -550,6 +556,7 @@
             },
             "golden crusader": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_GoldenCrusader",
@@ -675,6 +682,7 @@
             },
             "mfd": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Mfd",
@@ -724,6 +732,7 @@
             },
             "crusader": {
                 "slot": "Head",
+                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Crusader",

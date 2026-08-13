@@ -124,6 +124,13 @@ test('rig texture layout scale and depth targets are validated', () => {
   assert.match(validateRigDefinition({ ...rig, attachments: [{ ...attachment, depthTarget: 'bone' }] }).join('\n'), /requires boneId/);
 });
 
+test('attachment group replacement slots are validated', () => {
+  const attachmentGroups = { body: { id: 'body', slotId: 'body', attachmentIds: ['body.a'], replacesSlotIds: ['body'] } };
+  assert.deepEqual(validateRigDefinition({ ...rig, attachmentGroups }), []);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, replacesSlotIds: 'body' } } }).join('\n'), /replacesSlotIds must be an array/);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, replacesSlotIds: ['missing'] } } }).join('\n'), /unknown replacement slot/);
+});
+
 test('animation validation rejects unknown targets and missing keyframes without throwing', () => {
   assert.deepEqual(validateAnimationClip(clip), []);
   assert.deepEqual(validateAnimationClip(clip, rig), []);

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 import { readFile } from 'node:fs/promises';
-import { CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix } from '../dist/index.js';
+import { applyCharacterRecipe, CHARACTER_RECIPE_SCHEMA, CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix, validateCharacterRecipe } from '../dist/index.js';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -76,6 +76,64 @@ test('converts legacy traits into exclusive attachment groups', () => {
   const rig = convertLegacyRig({ rig: [{ name: 'Trait_Head_Hat' }], traits: { Head: { Hat: { slot: 'Head', attachments: [{ name: 'Trait_Head_Hat' }] } } } }, 'chikn', 'Chikn');
   assert.equal(rig.attachments[0].slotId, 'Head');
   assert.deepEqual(rig.attachmentGroups['head/hat'].attachmentIds, ['Trait_Head_Hat']);
+});
+
+test('replacement traits declare the base feather slots they own', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const rig = convertLegacyRig(source, species, species);
+    const groups = Object.values(rig.attachmentGroups);
+    const tails = groups.filter(({ metadata }) => metadata.category === 'Tail');
+    const feet = groups.filter(({ metadata }) => metadata.category === 'Feet');
+    assert.ok(tails.length > 0 && tails.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'Tail'));
+    assert.ok(feet.length > 0 && feet.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'LegFoot A|LegFoot B'));
+  }
+  const chiknSource = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
+  const chikn = convertLegacyRig(chiknSource, 'chikn', 'Chikn');
+  for (const groupId of ['head/daft-punk', 'head/tungsten-cube', 'head/golden-bone-daddy', 'head/boxhead', 'head/hamlet', 'head/pineapple', 'head/golden-crusader', 'head/mfd', 'head/crusader']) {
+    assert.deepEqual(chikn.attachmentGroups[groupId].replacesSlotIds, ['Head'], groupId);
+  }
+  assert.equal(chikn.attachmentGroups['head/goose'].replacesSlotIds, undefined, 'glasses remain an overlay on the base head');
+
+  const roostrSource = JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8'));
+  const roostr = convertLegacyRig(roostrSource, 'roostr', 'Roostr');
+  for (const groupId of ['head/boxhead', 'head/hole-in-one', 'head/panic-buy', 'head/smol-brain-in-jar', 'head/robocoq', 'head/quarter-pounder', 'head/feed-bag', 'head/crt', 'head/golden-templar', 'head/plague-doctor', 'head/jell-o', 'head/golden-bone-daddy', 'head/templar', 'head/mfd', 'head/supervillain']) {
+    assert.deepEqual(roostr.attachmentGroups[groupId].replacesSlotIds, ['Head'], groupId);
+  }
+  assert.equal(roostr.attachmentGroups['head/golden-comb'].replacesSlotIds, undefined, 'comb colour remains an overlay on the base head');
+  assert.equal(roostr.attachmentGroups['head/beaker'].replacesSlotIds, undefined, 'transparent beaker keeps the selected base head visible');
+});
+
+test('character recipes validate and apply one trait per category', () => {
+  const definition = convertLegacyRig({
+    skins: { Gold: { Head: { name: 'Gold_Head' }, Tail: { name: 'Gold_Tail' } } },
+    traits: {
+      Head: { Hat: { slot: 'Head', attachments: [{ name: 'Trait_Head_Hat' }] } },
+      Tail: { Leaves: { slot: 'Tail', attachments: [{ name: 'Trait_Tail_Leaves' }] } },
+    },
+    rig: [{ name: 'Gold_Head' }, { name: 'Gold_Tail' }, { name: 'Trait_Head_Hat' }, { name: 'Trait_Tail_Leaves' }],
+  }, 'chikn', 'Chikn');
+  const clips = [{ schema: 'roost2d.animation/v1', id: 'chikn.walk', durationMs: 100, tracks: [] }];
+  const recipe = { schema: CHARACTER_RECIPE_SCHEMA, species: 'chikn', skinId: 'Gold', traitGroupIds: ['head/hat', 'tail/leaves'], animationId: 'chikn.walk', mirrored: true, tint: 0xffffff, renderScale: 1 };
+  assert.deepEqual(validateCharacterRecipe(recipe, definition, clips), []);
+
+  const calls = [];
+  const runtime = {
+    applySkin: (id) => calls.push(`skin:${id}`),
+    attachGroup: (id) => calls.push(`attach:${id}`),
+    removeGroup: (id) => { calls.push(`remove:${id}`); return true; },
+    setMirrored: (value) => calls.push(`mirror:${value}`),
+    setTint: (value) => calls.push(`tint:${value}`),
+    stop: (layer) => calls.push(`stop:${layer}`),
+    play: (id, options) => calls.push(`play:${id}:${options.layer}`),
+  };
+  applyCharacterRecipe(runtime, recipe, definition, clips);
+  assert.deepEqual(calls, [
+    'remove:Head', 'remove:Tail', 'skin:Gold', 'attach:head/hat', 'attach:tail/leaves',
+    'mirror:true', 'tint:16777215', 'stop:base', 'play:chikn.walk:base',
+  ]);
+  assert.match(validateCharacterRecipe({ ...recipe, traitGroupIds: ['head/hat', 'head/hat'] }, definition, clips).join('\n'), /multiple trait groups/);
+  assert.match(validateCharacterRecipe({ ...recipe, skinId: 'missing' }, definition, clips).join('\n'), /unknown skin/);
 });
 
 test('converts legacy GSAP tween timings into slot tracks', () => {

@@ -1,9 +1,10 @@
 import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigDefinitionV1 } from '@roost2d/contracts';
 
 interface LegacyPart { name: string; texture?: string; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; z_index?: number; pivot_x?: number; pivot_y?: number; }
-interface LegacyRig { skins?: Record<string, Record<string, LegacyPart>>; traits?: Record<string, Record<string, { slot: string; attachments: LegacyPart[] }>>; rig: LegacyPart[]; }
+interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; }
+interface LegacyRig { skins?: Record<string, Record<string, LegacyPart>>; traits?: Record<string, Record<string, LegacyTrait>>; rig: LegacyPart[]; }
 interface LegacyTween { target: string; at: number; properties: { x?: number; y?: number; rotation?: number; scale?: number; alpha?: number; duration?: number; ease?: string }; }
-interface LegacyAnimations { animations: Record<string, { duration?: number; loop?: boolean; tweens?: LegacyTween[] }>; }
+interface LegacyAnimations { animations: Record<string, { duration?: number; loop?: boolean; loopMode?: 'repeat' | 'ping-pong'; tweens?: LegacyTween[] }>; }
 
 export const chiknRigMetadataUrl = new URL('./data/chikn-rig.json', import.meta.url);
 export const roostrRigMetadataUrl = new URL('./data/roostr-rig.json', import.meta.url);
@@ -13,8 +14,32 @@ export const roostrAnimationMetadataUrl = new URL('./data/roostr-anims.json', im
 export type ChiknSpecies = 'chikn' | 'roostr';
 export interface UniqueSkinDefinition { species: ChiknSpecies; token: number; skinId: string; bundleId: string; }
 
+export const CHARACTER_RECIPE_SCHEMA = 'roost2d.chikn-character/v1' as const;
+export interface CharacterRecipeV1 {
+  schema: typeof CHARACTER_RECIPE_SCHEMA;
+  species: ChiknSpecies;
+  skinId: string;
+  traitGroupIds: string[];
+  animationId?: string;
+  mirrored?: boolean;
+  tint?: number;
+  renderScale?: number;
+}
+
+export interface CharacterRecipeRuntime {
+  applySkin(skinId: string): void;
+  attachGroup(groupId: string): void;
+  removeGroup(groupOrSlotId: string): boolean;
+  setMirrored?(mirrored: boolean): void;
+  setTint?(tint?: number): void;
+  resetPose?(): void;
+  stop?(layer?: string): void;
+  play?(clipId: string, options?: { layer?: string }): unknown;
+}
+
 /** Source artwork to legacy rig-coordinate scale. Unique assembled skins are already rig-sized. */
 export const CHIKN_RIG_ART_SCALE = { chikn: 0.1219, roostr: 0.0929 } as const;
+const SINGLE_FEET_TRAIT_X_OFFSET = 8;
 
 /** Apache metadata only. Artwork remains resolved from the separately governed asset manifest. */
 export const UNIQUE_SKINS: readonly UniqueSkinDefinition[] = [
@@ -29,6 +54,51 @@ export function resolveUniqueSkin(species: ChiknSpecies, token: number | string)
 
 export function uniqueAssetPrefix(unique: UniqueSkinDefinition): string { return `assembled-unique/${unique.species}/${assetToken(unique.skinId)}/`; }
 export function uniqueAssetId(unique: UniqueSkinDefinition, slotId: string): string { return `${uniqueAssetPrefix(unique)}${assetToken(slotId)}`; }
+
+/** Validates the portable recipe emitted by character builders before it mutates a live rig. */
+export function validateCharacterRecipe(recipe: unknown, definition: RigDefinitionV1, clips: readonly AnimationClipV1[] = []): string[] {
+  if (!recipe || typeof recipe !== 'object' || Array.isArray(recipe)) return ['character recipe must be an object'];
+  const value = recipe as Partial<CharacterRecipeV1>;
+  const errors: string[] = [];
+  if (value.schema !== CHARACTER_RECIPE_SCHEMA) errors.push(`schema must be ${CHARACTER_RECIPE_SCHEMA}`);
+  if (value.species !== 'chikn' && value.species !== 'roostr') errors.push('species must be chikn or roostr');
+  if (value.species && definition.id !== value.species) errors.push(`recipe species ${value.species} does not match rig ${definition.id}`);
+  if (typeof value.skinId !== 'string' || !value.skinId || !definition.skins || !Object.hasOwn(definition.skins, value.skinId)) errors.push(`unknown skin ${String(value.skinId)}`);
+  if (!Array.isArray(value.traitGroupIds)) errors.push('traitGroupIds must be an array');
+  else {
+    const occupiedSlots = new Set<string>();
+    for (const groupId of value.traitGroupIds) {
+      const group = typeof groupId === 'string' && definition.attachmentGroups && Object.hasOwn(definition.attachmentGroups, groupId)
+        ? definition.attachmentGroups[groupId]
+        : undefined;
+      if (!group) { errors.push(`unknown trait group ${String(groupId)}`); continue; }
+      if (occupiedSlots.has(group.slotId)) errors.push(`multiple trait groups target ${group.slotId}`);
+      occupiedSlots.add(group.slotId);
+    }
+  }
+  if (value.animationId !== undefined && (typeof value.animationId !== 'string' || !clips.some(({ id }) => id === value.animationId))) errors.push(`unknown animation ${String(value.animationId)}`);
+  if (value.mirrored !== undefined && typeof value.mirrored !== 'boolean') errors.push('mirrored must be a boolean');
+  if (value.tint !== undefined && (!Number.isInteger(value.tint) || value.tint < 0 || value.tint > 0xffffff)) errors.push('tint must be an integer colour');
+  if (value.renderScale !== undefined && (!Number.isFinite(value.renderScale) || value.renderScale <= 0)) errors.push('renderScale must be a positive finite number');
+  return errors;
+}
+
+/** Applies a validated recipe while clearing every previously selected trait category. */
+export function applyCharacterRecipe(runtime: CharacterRecipeRuntime, recipe: CharacterRecipeV1, definition: RigDefinitionV1, clips: readonly AnimationClipV1[] = []): void {
+  const errors = validateCharacterRecipe(recipe, definition, clips);
+  if (errors.length) throw new Error(`Invalid character recipe:\n${errors.join('\n')}`);
+  if (runtime.resetPose) runtime.resetPose();
+  else runtime.stop?.('base');
+  const traitSlots = new Set(Object.values(definition.attachmentGroups ?? {}).map((group) => group.slotId));
+  for (const slotId of traitSlots) runtime.removeGroup(slotId);
+  runtime.applySkin(recipe.skinId);
+  for (const groupId of recipe.traitGroupIds) runtime.attachGroup(groupId);
+  runtime.setMirrored?.(recipe.mirrored ?? false);
+  runtime.setTint?.(recipe.tint);
+  if (recipe.animationId && runtime.play) {
+    runtime.play(recipe.animationId, { layer: 'base' });
+  }
+}
 
 /**
  * Adds a unique skin to a converted base rig. The caller supplies the pack's logical asset IDs,
@@ -78,6 +148,8 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   const layoutScale = id === 'chikn' || id === 'roostr' ? CHIKN_RIG_ART_SCALE[id] : undefined;
   const textureByAttachment = new Map<string, string>();
   const slotByAttachment = new Map<string, string>();
+  const traitCategoryByAttachment = new Map<string, string>();
+  const singleFeetAttachmentIds = new Set<string>();
   // Null-prototype accumulators: source ids are untrusted strings, and `__proto__` as a plain-object
   // key reparents the container instead of adding an entry.
   const skins: Record<string, Record<string, string | undefined>> = Object.create(null);
@@ -92,9 +164,24 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   }
   const attachmentGroups: Record<string, RigAttachmentGroupV1> = Object.create(null);
   for (const [traitGroupId, traitGroup] of Object.entries(source.traits ?? {})) for (const [traitId, trait] of Object.entries(traitGroup)) {
-    for (const part of trait.attachments) { textureByAttachment.set(part.name, part.texture ?? part.name); slotByAttachment.set(part.name, trait.slot); }
+    if (slug(traitGroupId) === 'feet' && trait.attachments.length === 1) singleFeetAttachmentIds.add(trait.attachments[0]!.name);
+    for (const part of trait.attachments) {
+      textureByAttachment.set(part.name, part.texture ?? part.name);
+      slotByAttachment.set(part.name, trait.slot);
+      traitCategoryByAttachment.set(part.name, traitGroupId);
+    }
     const groupId = `${slug(traitGroupId)}/${slug(traitId)}`;
-    attachmentGroups[groupId] = { id: groupId, slotId: trait.slot, attachmentIds: trait.attachments.map(({ name }) => name), exclusive: true, metadata: { category: traitGroupId, name: traitId } };
+    const replacesSlotIds = normalizedReplacementSlots(traitGroupId, trait.replaces);
+    const slotZIndexOverrides = trait.slot_z_index_overrides ?? defaultSlotZIndexOverrides(traitGroupId);
+    attachmentGroups[groupId] = {
+      id: groupId,
+      slotId: trait.slot,
+      attachmentIds: trait.attachments.map(({ name }) => name),
+      ...(replacesSlotIds?.length ? { replacesSlotIds } : {}),
+      ...(slotZIndexOverrides ? { slotZIndexOverrides } : {}),
+      exclusive: true,
+      metadata: { category: traitGroupId, name: traitId }
+    };
   }
   const partNames = new Set(source.rig.map((part) => part.name));
   const attachments: AttachmentDefinitionV1[] = source.rig.map((part, index) => ({
@@ -107,11 +194,17 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
-    zIndex: part.z_index ?? index,
+    zIndex: normalizedTraitZIndex(traitCategoryByAttachment.get(part.name), part.z_index ?? index),
     depthTarget: 'bone',
     visible: false,
     anchorX: part.pivot_x ?? 0.5,
     anchorY: part.pivot_y ?? 0.5
+  }));
+  const slots = [...new Map(attachments.map(({ id: attachmentId, slotId, zIndex }) => [slotId, { id: slotId, zIndex, defaultAttachmentId: attachmentId }])).values()];
+  const slotIds = new Set(slots.map(({ id: slotId }) => slotId));
+  const normalizedAttachmentGroups = Object.fromEntries(Object.entries(attachmentGroups).map(([groupId, group]) => {
+    const replacesSlotIds = group.replacesSlotIds?.filter((slotId) => slotIds.has(slotId));
+    return [groupId, { ...group, ...(replacesSlotIds?.length ? { replacesSlotIds } : { replacesSlotIds: undefined }) }];
   }));
   return {
     schema: 'roost2d.rig/v1', id, displayName,
@@ -122,7 +215,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
         return {
           id: `bone:${part.name}`,
           ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'root' }),
-          x: part.x ?? 0,
+          x: (part.x ?? 0) + (singleFeetAttachmentIds.has(part.name) ? SINGLE_FEET_TRAIT_X_OFFSET : 0),
           y: part.y ?? 0,
           rotation: radians(part.rotation ?? 0),
           scaleX: part.scale ?? 1,
@@ -130,11 +223,11 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
         };
       })
     ],
-    slots: [...new Map(attachments.map(({ id: attachmentId, slotId, zIndex }) => [slotId, { id: slotId, zIndex, defaultAttachmentId: attachmentId }])).values()],
+    slots,
     attachments,
     skins,
     defaultSkinId: Object.keys(skins)[0],
-    attachmentGroups,
+    attachmentGroups: normalizedAttachmentGroups,
     metadata: { sourceFormat: 'roostrift-rig-json', species: id }
   };
 }
@@ -142,7 +235,9 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
 export function convertLegacyAnimations(source: LegacyAnimations, species: string): AnimationClipV1[] {
   if (!source || typeof source.animations !== 'object' || source.animations === null) throw new Error('Legacy animation source must provide an animations object');
   return Object.entries(source.animations).map(([id, animation]) => ({
-    schema: 'roost2d.animation/v1', id: `${species}.${id}`, durationMs: (animation.duration ?? 1) * 1000, loop: animation.loop ?? true,
+    schema: 'roost2d.animation/v1', id: `${species}.${id}`, durationMs: (animation.duration ?? 1) * 1000,
+    loop: animation.loop ?? false,
+    ...(animation.loop === true && animation.loopMode ? { loopMode: animation.loopMode } : {}),
     // A Map, not a plain object: `slotName('__proto__')` as a key would otherwise hit Object.prototype.
     tracks: [...(animation.tweens ?? []).reduce((tracks, tween) => {
       const targetId = slotName(tween.target);
@@ -171,6 +266,24 @@ function compactAssetToken(value: string): string { return assetToken(value).rep
 function slug(value: string): string { return value.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase(); }
 function slotName(value: string): string { return value.replace(/^[^_]+_/, '').replace(/([a-z])([AB])$/, '$1 $2'); }
 function radians(degrees: number): number { return degrees * Math.PI / 180; }
+function normalizedReplacementSlots(category: string, declared?: string[]): string[] | undefined {
+  const normalized = slug(category);
+  if (normalized === 'head') return undefined;
+  if (normalized === 'tail') return declared ?? ['Tail'];
+  if (normalized === 'feet') return declared ?? ['LegFoot A', 'LegFoot B'];
+  return declared;
+}
+function defaultSlotZIndexOverrides(category: string): Record<string, number> | undefined {
+  return slug(category) === 'tail' ? { Tail: 6 } : undefined;
+}
+function normalizedTraitZIndex(category: string | undefined, zIndex: number): number {
+  if (!category) return zIndex;
+  const normalized = slug(category);
+  if (normalized === 'torso') return 9;
+  if (normalized === 'neck' || normalized === 'feet') return 20;
+  if (normalized === 'head') return 30;
+  return zIndex;
+}
 function traitFollowSlot(name: string): string | undefined {
   if (!name.startsWith('Trait_')) return undefined;
   const [, category, ...rest] = name.split('_');

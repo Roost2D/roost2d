@@ -85,6 +85,8 @@ The Chikn/Roostr/FarmLand artwork remains owned and controlled by the Chikn righ
 import { loadChiknPack } from '@chikn-game-assets/runtime';
 import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import {
+  applyCharacterRecipe,
+  CHARACTER_RECIPE_SCHEMA,
   loadChiknAnimations,
   loadChiknRig,
   mergeUniqueSkin,
@@ -125,9 +127,15 @@ const rig = new RigRuntime(definition, factory, clips);
 host.app.stage.addChild(factory.root);
 factory.root.position.set(320, 360);
 
-rig.applySkin(unique.skinId); // Or use definition.defaultSkinId for a normal skin.
-rig.attachGroup('head/daft-punk');
-rig.play('chikn.idle', { layer: 'base' });
+const recipe = {
+  schema: CHARACTER_RECIPE_SCHEMA,
+  species: 'chikn',
+  skinId: unique.skinId, // Or use definition.defaultSkinId for a normal skin.
+  traitGroupIds: ['head/admiral', 'tail/golden-plumage'],
+  animationId: 'chikn.walk',
+  mirrored: false,
+};
+applyCharacterRecipe(rig, recipe, definition, clips);
 
 window.addEventListener('beforeunload', () => {
   rig.dispose();
@@ -138,6 +146,10 @@ window.addEventListener('beforeunload', () => {
 ```
 
 Application code does not apply Chikn/Roostr scale constants, move trait bones, or rewrite z-order. `@roost2d/chikn-rigs` records those adapter details in the portable rig definition, while `RigRuntime` and `PixiRigFactory` enforce them.
+
+Do not compose a character by centering independently scaled source PNGs. The source files have different trimmed bounds, and some traits replace base slots while others overlay them. Persist the recipe's skin and trait-group IDs; the rig definition owns positioning, depth, animation following, and replacement semantics.
+
+Chikn/Roostr replacement tails raise the active tail branch above the body torso. Torso traits use the band below the foreground wing, neck traits sit above torso traits, and head traits sit above the base head and neck without hiding the selected head. Feet traits render above their foot branch and replace both base feet; single-image composite feet receive the adapter's authored rightward correction before composition. `walk` is a closed two-step repeat with equal opposite leg rotations, while `slowed` and `fly` use seamless ping-pong loops; action clips are one-shots.
 
 ## 5. Replace the content pack
 

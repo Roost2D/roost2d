@@ -124,6 +124,16 @@ test('rig texture layout scale and depth targets are validated', () => {
   assert.match(validateRigDefinition({ ...rig, attachments: [{ ...attachment, depthTarget: 'bone' }] }).join('\n'), /requires boneId/);
 });
 
+test('attachment group replacement slots are validated', () => {
+  const attachmentGroups = { body: { id: 'body', slotId: 'body', attachmentIds: ['body.a'], replacesSlotIds: ['body'], slotZIndexOverrides: { body: 6 } } };
+  assert.deepEqual(validateRigDefinition({ ...rig, attachmentGroups }), []);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, replacesSlotIds: 'body' } } }).join('\n'), /replacesSlotIds must be an array/);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, replacesSlotIds: ['missing'] } } }).join('\n'), /unknown replacement slot/);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, slotZIndexOverrides: [] } } }).join('\n'), /slotZIndexOverrides must be an object/);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, slotZIndexOverrides: { missing: 6 } } } }).join('\n'), /unknown depth override slot/);
+  assert.match(validateRigDefinition({ ...rig, attachmentGroups: { body: { ...attachmentGroups.body, slotZIndexOverrides: { body: Infinity } } } }).join('\n'), /must be finite/);
+});
+
 test('animation validation rejects unknown targets and missing keyframes without throwing', () => {
   assert.deepEqual(validateAnimationClip(clip), []);
   assert.deepEqual(validateAnimationClip(clip, rig), []);
@@ -132,6 +142,9 @@ test('animation validation rejects unknown targets and missing keyframes without
   assert.match(validateAnimationClip({ ...clip, tracks: undefined }).join('\n'), /tracks must be an array/);
   assert.match(validateAnimationClip({ ...clip, tracks: [null] }).join('\n'), /must be an object/);
   assert.match(validateAnimationClip({ ...clip, durationMs: 0 }).join('\n'), /durationMs/);
+  assert.deepEqual(validateAnimationClip({ ...clip, loop: true, loopMode: 'ping-pong' }), []);
+  assert.match(validateAnimationClip({ ...clip, loop: false, loopMode: 'ping-pong' }).join('\n'), /requires loop/);
+  assert.match(validateAnimationClip({ ...clip, loop: true, loopMode: 'bounce' }).join('\n'), /repeat or ping-pong/);
 });
 
 // S5 — every extra keyframe property used to be spread straight into the tween vars.

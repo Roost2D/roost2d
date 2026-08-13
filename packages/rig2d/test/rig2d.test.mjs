@@ -22,6 +22,22 @@ test('skins and trait groups expose only selected attachments', () => {
   rig.removeGroup('head'); assert.equal(nodes.get('hat').visible, false); rig.dispose();
 });
 
+test('a replacement trait hides its owned base slot and restores it when removed', () => {
+  const replacement = structuredClone(definition);
+  replacement.attachmentGroups['head/hat'].replacesSlotIds = ['body'];
+  const nodes = new Map();
+  const factory = { createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; }, attach() {}, destroy() {} };
+  const rig = new RigRuntime(replacement, factory);
+  rig.attachGroup('head/hat');
+  assert.equal(nodes.get('body-white').visible, false);
+  assert.equal(nodes.get('hat').visible, true);
+  rig.applySkin('red');
+  assert.equal(nodes.get('body-red').visible, false, 'replacement ownership survives a skin change');
+  rig.removeGroup('head/hat');
+  assert.equal(nodes.get('body-red').visible, true);
+  rig.dispose();
+});
+
 test('inherited object keys are not accepted as skin or attachment group ids', () => {
   const { rig } = runtime();
   assert.throws(() => rig.applySkin('toString'), /Unknown skin/);
@@ -33,7 +49,7 @@ test('inherited object keys are not accepted as skin or attachment group ids', (
 function runtime() {
   const nodes = new Map();
   const factory = {
-    createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }),
+    createBone: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; },
     createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; },
     attach() {}, destroy() {}
   };
@@ -60,6 +76,23 @@ test('a valid clip still plays and only touches contract properties', () => {
   assert.equal('onComplete' in node, false);
   assert.equal(Object.getPrototypeOf(node), Object.prototype, 'the display node prototype must be intact');
   rig.stop();
+  rig.dispose();
+});
+
+test('seek pauses a live layer at a deterministic clip time', () => {
+  const { rig, nodes } = runtime();
+  rig.play(clip([{ timeMs: 0, durationMs: 100, x: 10 }]), { layer: 'preview', repeat: 0 });
+  rig.seek(50, 'preview');
+  assert.ok(nodes.get('root').x > 0 && nodes.get('root').x < 10);
+  assert.throws(() => rig.seek(-1, 'preview'), /finite non-negative/);
+  assert.throws(() => rig.seek(0, 'missing'), /not playing/);
+  rig.dispose();
+});
+
+test('ping-pong loops return through the pose instead of snapping to the beginning', () => {
+  const { rig } = runtime();
+  const handle = rig.play({ ...clip([{ timeMs: 0, durationMs: 100, x: 10 }]), loop: true, loopMode: 'ping-pong' });
+  assert.equal(handle.yoyo(), true);
   rig.dispose();
 });
 
@@ -193,7 +226,10 @@ test('bone-targeted legacy depth keeps attachment sprites at zero across trait t
     bones: [{ id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }, ...ids.map((id) => ({ id: `bone:${id}`, parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }))],
     slots: ids.map((id, index) => ({ id, zIndex: depths[index], defaultAttachmentId: id })),
     attachments: ids.map((id, index) => ({ id, slotId: id, boneId: `bone:${id}`, texture: { assetId: id }, zIndex: depths[index], depthTarget: 'bone' })),
-    attachmentGroups: { trait: { id: 'trait', slotId: 'head-trait', attachmentIds: ['head-trait'], exclusive: true } },
+    attachmentGroups: {
+      trait: { id: 'trait', slotId: 'head-trait', attachmentIds: ['head-trait'], exclusive: true },
+      'tail/replacement': { id: 'tail/replacement', slotId: 'tail', attachmentIds: ['tail'], replacesSlotIds: ['tail'], slotZIndexOverrides: { tail: 6 }, exclusive: true },
+    },
   };
   const { rig, nodes } = hierarchyRuntime(depthDefinition);
   assert.deepEqual(ids.map((id) => nodes.get(`bone:${id}`).zIndex), depths);
@@ -201,5 +237,9 @@ test('bone-targeted legacy depth keeps attachment sprites at zero across trait t
   rig.attachGroup('trait');
   rig.removeGroup('trait');
   assert.deepEqual(ids.map((id) => nodes.get(`bone:${id}`).zIndex), depths);
+  rig.attachGroup('tail/replacement');
+  assert.equal(nodes.get('bone:tail').zIndex, 6, 'replacement branch rises above the body while active');
+  rig.removeGroup('tail/replacement');
+  assert.equal(nodes.get('bone:tail').zIndex, -10, 'base depth is restored with the replacement removed');
   rig.dispose();
 });

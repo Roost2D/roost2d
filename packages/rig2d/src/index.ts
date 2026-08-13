@@ -44,6 +44,7 @@ export class RigRuntime {
   private readonly slotAttachments = new Map<string, RigDisplayNode[]>();
   private readonly clips = new Map<string, AnimationClipV1>();
   private readonly timelines = new Map<string, gsap.core.Timeline>();
+  private readonly baseBoneZIndexes = new Map<string, number | undefined>();
   private readonly activeGroups = new Map<string, RigAttachmentGroupV1>();
   private readonly manualAttachments = new Map<string, string>();
   private readonly visibilityOverrides = new Map<string, boolean>();
@@ -69,6 +70,7 @@ export class RigRuntime {
       const slotDefinition = definition.slots.find(({ id }) => id === attachment.slotId);
       factory.attach(attachment.boneId ? this.bones.get(attachment.boneId) : slotDefinition?.boneId ? this.bones.get(slotDefinition.boneId) : undefined, node);
     }
+    for (const [id, node] of this.bones) this.baseBoneZIndexes.set(id, node.zIndex);
     for (const clip of clips) this.registerClip(clip);
     const initialSkin = definition.defaultSkinId ?? Object.keys(definition.skins ?? {})[0];
     if (initialSkin) this.applySkin(initialSkin); else this.applyVisibility();
@@ -115,7 +117,11 @@ export class RigRuntime {
   play(clipOrId: AnimationClipV1 | string, options: RigPlayOptions = {}): RigAnimationHandle {
     const clip = typeof clipOrId === 'string' ? this.resolveClip(clipOrId) : this.useClip(clipOrId);
     const layer = options.layer ?? clip.defaultLayer ?? 'base'; this.stop(layer);
-    const timeline = gsap.timeline({ repeat: clip.loop ? (options.repeat ?? -1) : (options.repeat ?? 0), onComplete: () => { this.timelines.delete(layer); options.onComplete?.(); } });
+    const timeline = gsap.timeline({
+      repeat: clip.loop ? (options.repeat ?? -1) : (options.repeat ?? 0),
+      yoyo: clip.loop === true && clip.loopMode === 'ping-pong',
+      onComplete: () => { this.timelines.delete(layer); options.onComplete?.(); },
+    });
     const mask = new Set(options.mask ?? clip.mask ?? []);
     for (const track of clip.tracks) if (!mask.size || mask.has(track.targetId)) this.addTrack(timeline, track);
     timeline.timeScale(this.normaliseSpeed(options.speed ?? this.layerSpeeds.get(layer) ?? this.runtimeSpeed)); this.timelines.set(layer, timeline); return timeline;
@@ -128,6 +134,15 @@ export class RigRuntime {
   stop(layer?: string): void {
     if (layer !== undefined) { this.timelines.get(layer)?.kill(); this.timelines.delete(layer); return; }
     for (const timeline of this.timelines.values()) timeline.kill(); this.timelines.clear();
+  }
+
+  /** Pauses and seeks a live animation layer to an exact clip time for previews or frame export. */
+  seek(timeMs: number, layer = 'base'): void {
+    if (!Number.isFinite(timeMs) || timeMs < 0) throw new Error('Rig seek time must be a finite non-negative number');
+    const timeline = this.timelines.get(layer);
+    if (!timeline) throw new Error(`Animation layer is not playing: ${layer}`);
+    timeline.pause();
+    timeline.seek(Math.min(timeMs / 1000, timeline.totalDuration()), true);
   }
 
   /** Sets the default speed for future clips and updates every matching live timeline. */
@@ -204,7 +219,17 @@ export class RigRuntime {
       const visible = this.visibilityOverrides.get(attachment.id) ?? selected.has(attachment.id);
       this.attachments.get(attachment.id)!.visible = visible;
     }
+    this.applyGroupDepthOverrides();
     this.resolveFollowerParents();
+  }
+
+  private applyGroupDepthOverrides(): void {
+    for (const [boneId, zIndex] of this.baseBoneZIndexes) this.bones.get(boneId)!.zIndex = zIndex;
+    for (const group of this.activeGroups.values()) for (const [slotId, zIndex] of Object.entries(group.slotZIndexOverrides ?? {})) {
+      const attachmentId = this.slotTransformAttachmentId(slotId);
+      const attachment = attachmentId ? this.definition.attachments.find(({ id }) => id === attachmentId) : undefined;
+      if (attachment?.boneId) this.bones.get(attachment.boneId)!.zIndex = zIndex;
+    }
   }
 
   private addTrack(timeline: gsap.core.Timeline, track: AnimationTrackV1): void {
@@ -235,11 +260,13 @@ export class RigRuntime {
       const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId;
       if (id) selected.add(id);
     }
-    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
     for (const [slotId, id] of this.manualAttachments) {
       for (const attachment of this.definition.attachments) if (attachment.slotId === slotId) selected.delete(attachment.id);
       selected.add(id);
     }
+    const replacedSlotIds = new Set([...this.activeGroups.values()].flatMap(({ replacesSlotIds }) => replacesSlotIds ?? []));
+    for (const attachment of this.definition.attachments) if (replacedSlotIds.has(attachment.slotId)) selected.delete(attachment.id);
+    for (const group of this.activeGroups.values()) for (const id of group.attachmentIds) selected.add(id);
     return selected;
   }
 

@@ -89,6 +89,13 @@ test('seek pauses a live layer at a deterministic clip time', () => {
   rig.dispose();
 });
 
+test('ping-pong loops return through the pose instead of snapping to the beginning', () => {
+  const { rig } = runtime();
+  const handle = rig.play({ ...clip([{ timeMs: 0, durationMs: 100, x: 10 }]), loop: true, loopMode: 'ping-pong' });
+  assert.equal(handle.yoyo(), true);
+  rig.dispose();
+});
+
 test('playOneShot accepts a clip id without a cast', () => {
   const { rig } = runtime();
   rig.registerClip(clip([{ timeMs: 0, x: 1 }]));
@@ -219,7 +226,10 @@ test('bone-targeted legacy depth keeps attachment sprites at zero across trait t
     bones: [{ id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }, ...ids.map((id) => ({ id: `bone:${id}`, parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }))],
     slots: ids.map((id, index) => ({ id, zIndex: depths[index], defaultAttachmentId: id })),
     attachments: ids.map((id, index) => ({ id, slotId: id, boneId: `bone:${id}`, texture: { assetId: id }, zIndex: depths[index], depthTarget: 'bone' })),
-    attachmentGroups: { trait: { id: 'trait', slotId: 'head-trait', attachmentIds: ['head-trait'], exclusive: true } },
+    attachmentGroups: {
+      trait: { id: 'trait', slotId: 'head-trait', attachmentIds: ['head-trait'], exclusive: true },
+      'tail/replacement': { id: 'tail/replacement', slotId: 'tail', attachmentIds: ['tail'], replacesSlotIds: ['tail'], slotZIndexOverrides: { tail: 6 }, exclusive: true },
+    },
   };
   const { rig, nodes } = hierarchyRuntime(depthDefinition);
   assert.deepEqual(ids.map((id) => nodes.get(`bone:${id}`).zIndex), depths);
@@ -227,5 +237,9 @@ test('bone-targeted legacy depth keeps attachment sprites at zero across trait t
   rig.attachGroup('trait');
   rig.removeGroup('trait');
   assert.deepEqual(ids.map((id) => nodes.get(`bone:${id}`).zIndex), depths);
+  rig.attachGroup('tail/replacement');
+  assert.equal(nodes.get('bone:tail').zIndex, 6, 'replacement branch rises above the body while active');
+  rig.removeGroup('tail/replacement');
+  assert.equal(nodes.get('bone:tail').zIndex, -10, 'base depth is restored with the replacement removed');
   rig.dispose();
 });

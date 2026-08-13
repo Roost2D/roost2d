@@ -149,6 +149,8 @@ Application code does not apply Chikn/Roostr scale constants, move trait bones, 
 
 Do not compose a character by centering independently scaled source PNGs. The source files have different trimmed bounds, and some traits replace base slots while others overlay them. Persist the recipe's skin and trait-group IDs; the rig definition owns positioning, depth, animation following, and replacement semantics.
 
+Chikn/Roostr replacement tails raise the active tail branch above the body torso. Torso traits use the band below the foreground wing, so held artwork such as Cutlass remains partially occluded as authored. Locomotion clips (`walk`, `slowed`, and `fly`) use seamless ping-pong loops; action clips are one-shots.
+
 ## 5. Replace the content pack
 
 The engine does not require Chikn content. To use different or commercially cleared artwork, publish a `roost2d.assets/v1` manifest whose logical files point to your independently licensed images, then supply that manifest's base URL to the same `AssetManifestResolver` and `PixiAssetLoader` flow.

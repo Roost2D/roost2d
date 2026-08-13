@@ -86,7 +86,10 @@ test('replacement traits declare the base feather slots they own', async () => {
     const tails = groups.filter(({ metadata }) => metadata.category === 'Tail');
     const feet = groups.filter(({ metadata }) => metadata.category === 'Feet');
     assert.ok(tails.length > 0 && tails.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'Tail'));
+    assert.ok(tails.every(({ slotZIndexOverrides }) => slotZIndexOverrides?.Tail === 6));
     assert.ok(feet.length > 0 && feet.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'LegFoot A|LegFoot B'));
+    const torsoAttachmentIds = new Set(groups.filter(({ metadata }) => metadata.category === 'Torso').flatMap(({ attachmentIds }) => attachmentIds));
+    assert.ok(torsoAttachmentIds.size > 0 && rig.attachments.filter(({ id }) => torsoAttachmentIds.has(id)).every(({ zIndex }) => zIndex === 10));
   }
   const chiknSource = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
   const chikn = convertLegacyRig(chiknSource, 'chikn', 'Chikn');
@@ -122,6 +125,7 @@ test('character recipes validate and apply one trait per category', () => {
     applySkin: (id) => calls.push(`skin:${id}`),
     attachGroup: (id) => calls.push(`attach:${id}`),
     removeGroup: (id) => { calls.push(`remove:${id}`); return true; },
+    resetPose: () => calls.push('reset'),
     setMirrored: (value) => calls.push(`mirror:${value}`),
     setTint: (value) => calls.push(`tint:${value}`),
     stop: (layer) => calls.push(`stop:${layer}`),
@@ -129,8 +133,8 @@ test('character recipes validate and apply one trait per category', () => {
   };
   applyCharacterRecipe(runtime, recipe, definition, clips);
   assert.deepEqual(calls, [
-    'remove:Head', 'remove:Tail', 'skin:Gold', 'attach:head/hat', 'attach:tail/leaves',
-    'mirror:true', 'tint:16777215', 'stop:base', 'play:chikn.walk:base',
+    'reset', 'remove:Head', 'remove:Tail', 'skin:Gold', 'attach:head/hat', 'attach:tail/leaves',
+    'mirror:true', 'tint:16777215', 'play:chikn.walk:base',
   ]);
   assert.match(validateCharacterRecipe({ ...recipe, traitGroupIds: ['head/hat', 'head/hat'] }, definition, clips).join('\n'), /multiple trait groups/);
   assert.match(validateCharacterRecipe({ ...recipe, skinId: 'missing' }, definition, clips).join('\n'), /unknown skin/);
@@ -140,6 +144,23 @@ test('converts legacy GSAP tween timings into slot tracks', () => {
   const [clip] = convertLegacyAnimations({ animations: { walk: { duration: .5, tweens: [{ target: 'Wing A', at: .25, properties: { rotation: 10, duration: .1 } }] } } }, 'chikn');
   assert.equal(clip.tracks[0].target, 'slot');
   assert.equal(clip.tracks[0].keyframes[0].durationMs, 100);
+  assert.equal(clip.loop, false, 'legacy one-shots do not silently repeat');
+});
+
+test('shipped locomotion clips are seamless ping-pong loops and action clips are one-shots', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-anims.json`, import.meta.url), 'utf8'));
+    const clips = convertLegacyAnimations(source, species);
+    for (const name of ['walk', 'slowed', 'fly']) {
+      const clip = clips.find(({ id }) => id.endsWith(`.${name}`));
+      assert.equal(clip.loop, true, name);
+      assert.equal(clip.loopMode, 'ping-pong', name);
+    }
+    for (const clip of clips.filter(({ id }) => !['walk', 'slowed', 'fly'].some((name) => id.endsWith(`.${name}`)))) {
+      assert.equal(clip.loop, false, clip.id);
+      assert.equal(clip.loopMode, undefined, clip.id);
+    }
+  }
 });
 
 // B6 — plain-object accumulators keyed by source strings: `__proto__` reparented the container,

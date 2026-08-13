@@ -60,7 +60,7 @@
         "uniqueAssetPrefix",
         "validateCharacterRecipe"
       ],
-      "declarationSha256": "42437429c2f0a24d01f80d946d8d78c963931278b9d5cdcb90eae1afaf8ef94d"
+      "declarationSha256": "4effd345c7e19d741e3aed0b12a754483c9f7d56f20bfdc126f5296e31d0f445"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
@@ -101,7 +101,7 @@
         "validateRigDefinition",
         "validateRightsManifest"
       ],
-      "declarationSha256": "7f3d7065c8704688f8035aeae77d891e339276048e5d780f7e5ae20a34a79ed5"
+      "declarationSha256": "f8c922a93c67a13bc487cf62d39abd71fc74ce9cc2bf600235f8e8fcc0f73041"
     },
     "@roost2d/core": {
       "entrypoint": ".",
@@ -245,7 +245,7 @@
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "427e327f96d4f90220e6d983f11fa6aaa9d36e35388f79c5d8710182924ef097"
+      "declarationSha256": "9a0bf90174d2f647e39f8e1e3cf232f84cce52b8d7cb469d551e0cd5f96fd231"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",

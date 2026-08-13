@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/rig2d",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "GSAP-powered, renderer-neutral 2D rig runtime.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "@roost2d/contracts": "0.1.0"
+    "@roost2d/contracts": "0.2.0"
   },
   "peerDependencies": {
     "gsap": "^3.0.0"

@@ -2,6 +2,8 @@
     "animations": {
         "walk": {
             "duration": 0.5,
+            "loop": true,
+            "loopMode": "ping-pong",
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "y": -8, "rotation": 0, "duration": 0.125 } },
                 { "target": "Torso", "at": 0.125, "properties": { "y": 0, "rotation": -1, "duration": 0.125 } },
@@ -23,6 +25,8 @@
         },
         "slowed": {
             "duration": 1.0,
+            "loop": true,
+            "loopMode": "ping-pong",
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "y": 8, "rotation": -8, "duration": 0.5 } },
                 { "target": "Torso", "at": 0.5, "properties": { "y": 5, "rotation": -6, "duration": 0.5 } },
@@ -38,6 +42,7 @@
         },
         "hit": {
             "duration": 0.35,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": -15, "x": -10, "duration": 0.08 } },
                 { "target": "Torso", "at": 0.08, "properties": { "rotation": 10, "x": 5, "duration": 0.12 } },
@@ -48,6 +53,8 @@
         },
         "fly": {
             "duration": 0.4,
+            "loop": true,
+            "loopMode": "ping-pong",
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "y": -15, "duration": 0.2 } },
                 { "target": "Torso", "at": 0.2, "properties": { "y": 0, "duration": 0.2 } },
@@ -67,6 +74,7 @@
         },
         "attack": {
             "duration": 0.3,
+            "loop": false,
             "tweens": [
                 { "target": "Head", "at": 0.0, "properties": { "rotation": 45.0, "duration": 0.1 } },
                 { "target": "Head", "at": 0.1, "properties": { "rotation": -10.0, "duration": 0.08 } },
@@ -79,6 +87,7 @@
         },
         "peck": {
             "duration": 0.64,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": -9, "duration": 0.14 } },
                 { "target": "Torso", "at": 0.14, "properties": { "rotation": -21, "duration": 0.14 } },
@@ -94,6 +103,7 @@
         },
         "attack_peck": {
             "duration": 0.3,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": -6, "x": -4, "duration": 0.08 } },
                 { "target": "Torso", "at": 0.08, "properties": { "rotation": 5, "x": 9, "duration": 0.1 } },
@@ -109,6 +119,7 @@
         },
         "attack_heavy": {
             "duration": 0.52,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": -22, "x": -12, "y": -4, "duration": 0.2 } },
                 { "target": "Torso", "at": 0.2, "properties": { "rotation": 18, "x": 14, "y": 2, "duration": 0.14 } },
@@ -128,6 +139,7 @@
         },
         "stagger": {
             "duration": 0.34,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": 20, "x": 12, "duration": 0.09 } },
                 { "target": "Torso", "at": 0.09, "properties": { "rotation": -12, "x": -6, "duration": 0.12 } },
@@ -142,6 +154,7 @@
         },
         "death_burst": {
             "duration": 0.42,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "rotation": -18, "y": -10, "duration": 0.12 } },
                 { "target": "Torso", "at": 0.12, "properties": { "rotation": 46, "y": 14, "duration": 0.3 } },
@@ -158,6 +171,7 @@
         },
         "spawn_drop": {
             "duration": 0.46,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "y": -46, "rotation": 8, "duration": 0.22 } },
                 { "target": "Torso", "at": 0.22, "properties": { "y": 6, "rotation": 0, "duration": 0.1 } },
@@ -179,6 +193,7 @@
         },
         "extraction_bow": {
             "duration": 0.72,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.2, "properties": { "rotation": 24, "y": 6, "duration": 0.2 } },
                 { "target": "Torso", "at": 0.4, "properties": { "rotation": 24, "y": 6, "duration": 0.14 } },
@@ -196,6 +211,7 @@
         },
         "draft_cheer": {
             "duration": 0.6,
+            "loop": false,
             "tweens": [
                 { "target": "Torso", "at": 0.0, "properties": { "y": 4, "duration": 0.1 } },
                 { "target": "Torso", "at": 0.1, "properties": { "y": -18, "duration": 0.16 } },

@@ -1,10 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-08-13
 
 - Add portable Chikn/Roostr character recipes for multi-trait builders and animation exports.
 - Let attachment groups declare the base slots they replace, so tail, feet, and full-head traits do not retain default feathers underneath.
 - Add deterministic animation seeking for previews and sprite-sheet capture.
+- Add temporary slot-depth overrides so replacement tails render above the torso while torso traits remain below the foreground wing.
+- Add ping-pong loop semantics and classify Chikn/Roostr locomotion as seamless loops while keeping actions as one-shots.
 
 ## 0.1.0
 

@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/isometric",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Grid projection and picking utilities for isometric Roost2D games.",
   "license": "Apache-2.0",
   "repository": {

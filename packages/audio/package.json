@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/audio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Web Audio mixer primitives for Roost2D.",
   "license": "Apache-2.0",
   "repository": {

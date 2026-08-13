@@ -59,6 +59,8 @@ export interface RigAttachmentGroupV1 {
   attachmentIds: string[];
   /** Base slots hidden while this group is active. The hidden bones remain animation targets. */
   replacesSlotIds?: string[];
+  /** Temporary base-slot transform depths used while this group is active. */
+  slotZIndexOverrides?: Record<string, number>;
   exclusive?: boolean;
   metadata?: Record<string, string | number | boolean>;
 }
@@ -95,6 +97,7 @@ export interface AnimationClipV1 {
   id: string;
   durationMs: number;
   loop?: boolean;
+  loopMode?: 'repeat' | 'ping-pong';
   fallbackClipId?: string;
   defaultLayer?: string;
   mask?: string[];
@@ -508,6 +511,13 @@ export function validateRigDefinition(rig: unknown): string[] {
       if (!Array.isArray(group.replacesSlotIds)) errors.push(`${groupId}: replacesSlotIds must be an array`);
       else for (const slotId of group.replacesSlotIds as unknown[]) if (!isNonEmptyString(slotId) || !slots.has(slotId)) errors.push(`${groupId}: unknown replacement slot ${String(slotId)}`);
     }
+    if (group.slotZIndexOverrides !== undefined) {
+      if (!isRecord(group.slotZIndexOverrides)) errors.push(`${groupId}: slotZIndexOverrides must be an object`);
+      else for (const [slotId, zIndex] of Object.entries(group.slotZIndexOverrides)) {
+        if (!slots.has(slotId)) errors.push(`${groupId}: unknown depth override slot ${slotId}`);
+        if (!isFiniteNumber(zIndex)) errors.push(`${groupId}: depth override for ${slotId} must be finite`);
+      }
+    }
   }
   return errors;
 }
@@ -559,6 +569,8 @@ export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
   const durationMs = isFiniteNumber(clip.durationMs) && clip.durationMs > 0 ? clip.durationMs : undefined;
   if (durationMs === undefined) errors.push(`${label}: durationMs must be positive`);
   if (clip.loop !== undefined && typeof clip.loop !== 'boolean') errors.push(`${label}: loop must be a boolean`);
+  if (clip.loopMode !== undefined && clip.loopMode !== 'repeat' && clip.loopMode !== 'ping-pong') errors.push(`${label}: loopMode must be repeat or ping-pong`);
+  if (clip.loopMode !== undefined && clip.loop !== true) errors.push(`${label}: loopMode requires loop: true`);
   if (clip.fallbackClipId !== undefined && !isNonEmptyString(clip.fallbackClipId)) errors.push(`${label}: fallbackClipId must be a string`);
   if (clip.defaultLayer !== undefined && !isNonEmptyString(clip.defaultLayer)) errors.push(`${label}: defaultLayer must be a string`);
   if (clip.mask !== undefined && (!Array.isArray(clip.mask) || !(clip.mask as unknown[]).every(isNonEmptyString))) errors.push(`${label}: mask must be an array of ids`);

@@ -61,10 +61,11 @@ test('every converted rig attachment carries the species layout scale and legacy
   }
 });
 
-test('trait follower slots preserve paired limbs and neck-to-head behavior', () => {
-  const parts = ['Trait_Neck_Scarf', 'Trait_Feet_Boot_A', 'Trait_Feet_Boot_B', 'Trait_Wings_Cape_A', 'Trait_Wings_Cape_B'];
+test('trait follower slots preserve paired limbs and head/neck behavior', () => {
+  const parts = ['Trait_Head_Hat', 'Trait_Neck_Scarf', 'Trait_Feet_Boot_A', 'Trait_Feet_Boot_B', 'Trait_Wings_Cape_A', 'Trait_Wings_Cape_B'];
   const rig = convertLegacyRig({ rig: parts.map((name) => ({ name })) }, 'chikn', 'Chikn');
   const follow = Object.fromEntries(rig.bones.filter(({ followSlotId }) => followSlotId).map(({ id, followSlotId }) => [id, followSlotId]));
+  assert.equal(follow['bone:Trait_Head_Hat'], 'Head');
   assert.equal(follow['bone:Trait_Neck_Scarf'], 'Head');
   assert.equal(follow['bone:Trait_Feet_Boot_A'], 'LegFoot A');
   assert.equal(follow['bone:Trait_Feet_Boot_B'], 'LegFoot B');
@@ -78,33 +79,32 @@ test('converts legacy traits into exclusive attachment groups', () => {
   assert.deepEqual(rig.attachmentGroups['head/hat'].attachmentIds, ['Trait_Head_Hat']);
 });
 
-test('replacement traits declare the base feather slots they own', async () => {
+test('trait depth hierarchy and replacement ownership match character composition', async () => {
   for (const species of ['chikn', 'roostr']) {
     const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
     const rig = convertLegacyRig(source, species, species);
     const groups = Object.values(rig.attachmentGroups);
     const tails = groups.filter(({ metadata }) => metadata.category === 'Tail');
     const feet = groups.filter(({ metadata }) => metadata.category === 'Feet');
+    const heads = groups.filter(({ metadata }) => metadata.category === 'Head');
+    assert.ok(Object.values(source.traits?.Head ?? {}).every(({ replaces }) => replaces === undefined), `${species} source head traits remain overlays`);
     assert.ok(tails.length > 0 && tails.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'Tail'));
     assert.ok(tails.every(({ slotZIndexOverrides }) => slotZIndexOverrides?.Tail === 6));
     assert.ok(feet.length > 0 && feet.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'LegFoot A|LegFoot B'));
-    const torsoAttachmentIds = new Set(groups.filter(({ metadata }) => metadata.category === 'Torso').flatMap(({ attachmentIds }) => attachmentIds));
-    assert.ok(torsoAttachmentIds.size > 0 && rig.attachments.filter(({ id }) => torsoAttachmentIds.has(id)).every(({ zIndex }) => zIndex === 10));
-  }
-  const chiknSource = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
-  const chikn = convertLegacyRig(chiknSource, 'chikn', 'Chikn');
-  for (const groupId of ['head/daft-punk', 'head/tungsten-cube', 'head/golden-bone-daddy', 'head/boxhead', 'head/hamlet', 'head/pineapple', 'head/golden-crusader', 'head/mfd', 'head/crusader']) {
-    assert.deepEqual(chikn.attachmentGroups[groupId].replacesSlotIds, ['Head'], groupId);
-  }
-  assert.equal(chikn.attachmentGroups['head/goose'].replacesSlotIds, undefined, 'glasses remain an overlay on the base head');
+    assert.ok(heads.length > 0 && heads.every(({ replacesSlotIds }) => replacesSlotIds === undefined), 'head traits never hide the base head');
 
-  const roostrSource = JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8'));
-  const roostr = convertLegacyRig(roostrSource, 'roostr', 'Roostr');
-  for (const groupId of ['head/boxhead', 'head/hole-in-one', 'head/panic-buy', 'head/smol-brain-in-jar', 'head/robocoq', 'head/quarter-pounder', 'head/feed-bag', 'head/crt', 'head/golden-templar', 'head/plague-doctor', 'head/jell-o', 'head/golden-bone-daddy', 'head/templar', 'head/mfd', 'head/supervillain']) {
-    assert.deepEqual(roostr.attachmentGroups[groupId].replacesSlotIds, ['Head'], groupId);
+    for (const [category, zIndex] of [['Torso', 9], ['Neck', 20], ['Head', 30], ['Feet', 20]]) {
+      const attachmentIds = new Set(groups.filter(({ metadata }) => metadata.category === category).flatMap(({ attachmentIds }) => attachmentIds));
+      assert.ok(attachmentIds.size > 0 && rig.attachments.filter(({ id }) => attachmentIds.has(id)).every((attachment) => attachment.zIndex === zIndex), `${species} ${category} depth`);
+    }
+
+    for (const trait of Object.values(source.traits?.Feet ?? {}).filter(({ attachments }) => attachments.length === 1)) {
+      const sourcePart = source.rig.find(({ name }) => name === trait.attachments[0].name);
+      const bone = rig.bones.find(({ id }) => id === `bone:${trait.attachments[0].name}`);
+      assert.equal(bone.x, (sourcePart.x ?? 0) + 8, `${species} ${trait.attachments[0].name} right offset`);
+      assert.equal(bone.followSlotId, 'LegFoot A');
+    }
   }
-  assert.equal(roostr.attachmentGroups['head/golden-comb'].replacesSlotIds, undefined, 'comb colour remains an overlay on the base head');
-  assert.equal(roostr.attachmentGroups['head/beaker'].replacesSlotIds, undefined, 'transparent beaker keeps the selected base head visible');
 });
 
 test('character recipes validate and apply one trait per category', () => {
@@ -147,11 +147,20 @@ test('converts legacy GSAP tween timings into slot tracks', () => {
   assert.equal(clip.loop, false, 'legacy one-shots do not silently repeat');
 });
 
-test('shipped locomotion clips are seamless ping-pong loops and action clips are one-shots', async () => {
+test('shipped locomotion clips close cleanly and action clips are one-shots', async () => {
   for (const species of ['chikn', 'roostr']) {
     const source = JSON.parse(await readFile(new URL(`../data/${species}-anims.json`, import.meta.url), 'utf8'));
     const clips = convertLegacyAnimations(source, species);
-    for (const name of ['walk', 'slowed', 'fly']) {
+    const walk = clips.find(({ id }) => id.endsWith('.walk'));
+    assert.equal(walk.loop, true);
+    assert.equal(walk.loopMode, 'repeat');
+    assert.equal(walk.durationMs, 500);
+    const rotations = (targetId) => walk.tracks.find((track) => track.targetId === targetId).keyframes.map(({ rotation }) => Math.round(rotation * 180 / Math.PI));
+    assert.deepEqual(rotations('LegUpper A'), [30, 0, -30, 0]);
+    assert.deepEqual(rotations('LegUpper B'), [-30, 0, 30, 0]);
+    assert.ok(walk.tracks.every(({ keyframes }) => keyframes.at(-1).rotation === 0), `${species} walk must return every rotation to neutral`);
+    assert.equal(walk.tracks.find(({ targetId }) => targetId === 'Torso').keyframes.at(-1).y, 0);
+    for (const name of ['slowed', 'fly']) {
       const clip = clips.find(({ id }) => id.endsWith(`.${name}`));
       assert.equal(clip.loop, true, name);
       assert.equal(clip.loopMode, 'ping-pong', name);

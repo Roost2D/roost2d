@@ -419,7 +419,6 @@
         "Head": {
             "Boxhead": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Boxhead_A",
@@ -433,7 +432,6 @@
             },
             "Hole in One": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_HoleInOne",
@@ -443,7 +441,6 @@
             },
             "Panic Buy": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_PanicBuy_A",
@@ -457,7 +454,6 @@
             },
             "Smol Brain In Jar": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_SmolBrainInJar",
@@ -467,7 +463,6 @@
             },
             "Robocoq": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Robocoq",
@@ -503,7 +498,6 @@
             },
             "Quarter Pounder": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_QuarterPounder",
@@ -513,7 +507,6 @@
             },
             "Feed Bag": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_FeedBag",
@@ -523,7 +516,6 @@
             },
             "CRT": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Crt",
@@ -542,7 +534,6 @@
             },
             "Golden Templar": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_GoldenTemplar",
@@ -570,7 +561,6 @@
             },
             "Plague Doctor": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_PlagueDoctor",
@@ -580,7 +570,6 @@
             },
             "Jell-O": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_JellO",
@@ -590,7 +579,6 @@
             },
             "Golden Bone Daddy": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_GoldenBoneDaddy",
@@ -636,7 +624,6 @@
             },
             "Templar": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Templar",
@@ -646,7 +633,6 @@
             },
             "MFD": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Mfd",
@@ -745,7 +731,6 @@
             },
             "SuperVillain": {
                 "slot": "Head",
-                "replaces": ["Head"],
                 "attachments": [
                     {
                         "name": "Trait_Head_Supervillain",

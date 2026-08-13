@@ -39,6 +39,7 @@ export interface CharacterRecipeRuntime {
 
 /** Source artwork to legacy rig-coordinate scale. Unique assembled skins are already rig-sized. */
 export const CHIKN_RIG_ART_SCALE = { chikn: 0.1219, roostr: 0.0929 } as const;
+const SINGLE_FEET_TRAIT_X_OFFSET = 8;
 
 /** Apache metadata only. Artwork remains resolved from the separately governed asset manifest. */
 export const UNIQUE_SKINS: readonly UniqueSkinDefinition[] = [
@@ -148,6 +149,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   const textureByAttachment = new Map<string, string>();
   const slotByAttachment = new Map<string, string>();
   const traitCategoryByAttachment = new Map<string, string>();
+  const singleFeetAttachmentIds = new Set<string>();
   // Null-prototype accumulators: source ids are untrusted strings, and `__proto__` as a plain-object
   // key reparents the container instead of adding an entry.
   const skins: Record<string, Record<string, string | undefined>> = Object.create(null);
@@ -162,13 +164,14 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   }
   const attachmentGroups: Record<string, RigAttachmentGroupV1> = Object.create(null);
   for (const [traitGroupId, traitGroup] of Object.entries(source.traits ?? {})) for (const [traitId, trait] of Object.entries(traitGroup)) {
+    if (slug(traitGroupId) === 'feet' && trait.attachments.length === 1) singleFeetAttachmentIds.add(trait.attachments[0]!.name);
     for (const part of trait.attachments) {
       textureByAttachment.set(part.name, part.texture ?? part.name);
       slotByAttachment.set(part.name, trait.slot);
       traitCategoryByAttachment.set(part.name, traitGroupId);
     }
     const groupId = `${slug(traitGroupId)}/${slug(traitId)}`;
-    const replacesSlotIds = trait.replaces ?? defaultReplacementSlots(traitGroupId);
+    const replacesSlotIds = normalizedReplacementSlots(traitGroupId, trait.replaces);
     const slotZIndexOverrides = trait.slot_z_index_overrides ?? defaultSlotZIndexOverrides(traitGroupId);
     attachmentGroups[groupId] = {
       id: groupId,
@@ -212,7 +215,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
         return {
           id: `bone:${part.name}`,
           ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'root' }),
-          x: part.x ?? 0,
+          x: (part.x ?? 0) + (singleFeetAttachmentIds.has(part.name) ? SINGLE_FEET_TRAIT_X_OFFSET : 0),
           y: part.y ?? 0,
           rotation: radians(part.rotation ?? 0),
           scaleX: part.scale ?? 1,
@@ -263,16 +266,23 @@ function compactAssetToken(value: string): string { return assetToken(value).rep
 function slug(value: string): string { return value.trim().replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-|-$/g, '').toLowerCase(); }
 function slotName(value: string): string { return value.replace(/^[^_]+_/, '').replace(/([a-z])([AB])$/, '$1 $2'); }
 function radians(degrees: number): number { return degrees * Math.PI / 180; }
-function defaultReplacementSlots(category: string): string[] | undefined {
-  if (slug(category) === 'tail') return ['Tail'];
-  if (slug(category) === 'feet') return ['LegFoot A', 'LegFoot B'];
-  return undefined;
+function normalizedReplacementSlots(category: string, declared?: string[]): string[] | undefined {
+  const normalized = slug(category);
+  if (normalized === 'head') return undefined;
+  if (normalized === 'tail') return declared ?? ['Tail'];
+  if (normalized === 'feet') return declared ?? ['LegFoot A', 'LegFoot B'];
+  return declared;
 }
 function defaultSlotZIndexOverrides(category: string): Record<string, number> | undefined {
   return slug(category) === 'tail' ? { Tail: 6 } : undefined;
 }
 function normalizedTraitZIndex(category: string | undefined, zIndex: number): number {
-  return category && slug(category) === 'torso' ? 10 : zIndex;
+  if (!category) return zIndex;
+  const normalized = slug(category);
+  if (normalized === 'torso') return 9;
+  if (normalized === 'neck' || normalized === 'feet') return 20;
+  if (normalized === 'head') return 30;
+  return zIndex;
 }
 function traitFollowSlot(name: string): string | undefined {
   if (!name.startsWith('Trait_')) return undefined;

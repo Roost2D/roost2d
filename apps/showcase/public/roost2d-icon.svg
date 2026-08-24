@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Roost2D engine icon</title>
+  <g stroke="#08152f" stroke-width="14" stroke-linejoin="round">
+    <path fill="#ff9f1a" d="M239 286 116 202l58-56 96 105z"/>
+    <path fill="#ff9f1a" d="m273 286 123-84-58-56-96 105z"/>
+    <path fill="#ff641a" d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>
+  </g>
+  <path fill="#0a1735" d="m52 321 204 108v38L52 359z"/>
+  <path fill="#0d1d42" d="m460 321-204 108v38l204-108z"/>
+  <path fill="#142750" stroke="#08152f" stroke-width="14" stroke-linejoin="round" d="M256 218 460 321 256 429 52 321z"/>
+  <path fill="#852df1" d="m256 277 84 44-84 45-84-45z"/>
+  <path fill="#d55cff" d="m256 299 43 22-43 23-43-23z"/>
+</svg>

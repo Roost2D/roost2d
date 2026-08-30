@@ -26,4 +26,14 @@ const recipe = {
 applyCharacterRecipe(rig, recipe, definition, clips);
 ```
 
+Both species ship the same 40 animation names, prefixed with `chikn.` or `roostr.`:
+
+- Movement: `walk`, `slowed`, `fly`, `run`, `sneak`, `crouch`, `jump`, `fall`, `land`, `dodge`, `charge`, `swim`, `spawn_drop`
+- Combat: `attack`, `peck`, `attack_peck`, `attack_heavy`, `block`, `parry`, `kick`, `wing_slap`, `headbutt`, `cast`
+- Reactions: `hit`, `stagger`, `knockback`, `knockdown`, `get_up`, `death_burst`
+- Emotes: `extraction_bow`, `draft_cheer`, `victory`, `wave`, `dance`, `panic`
+- Ambient: `idle_breathe`, `idle_alert`, `sleep`, `eat`, `look_around`
+
+Loop and loop-mode metadata travels with every clip. One-shots preserve their authored end pose, so call `resetPose()` before switching independently previewed actions; persistent states such as `knockdown` can instead flow directly into `get_up`.
+
 Resolve each `definition.attachments[].texture.assetId` through a separately hosted Chikn runtime manifest before creating the display factory. [Chikn integration tutorial](https://github.com/Roost2D/roost2d/blob/main/docs/chikn-assets.md).

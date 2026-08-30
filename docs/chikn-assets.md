@@ -149,7 +149,9 @@ Application code does not apply Chikn/Roostr scale constants, move trait bones, 
 
 Do not compose a character by centering independently scaled source PNGs. The source files have different trimmed bounds, and some traits replace base slots while others overlay them. Persist the recipe's skin and trait-group IDs; the rig definition owns positioning, depth, animation following, and replacement semantics.
 
-Chikn/Roostr replacement tails raise the active tail branch above the body torso. Torso traits use the band below the foreground wing, neck traits sit above torso traits, and head traits sit above the base head and neck without hiding the selected head. Feet traits render above their foot branch and replace both base feet; single-image composite feet receive the adapter's authored rightward correction before composition. `walk` is a closed two-step repeat with equal opposite leg rotations, while `slowed` and `fly` use seamless ping-pong loops; action clips are one-shots.
+Chikn/Roostr replacement tails raise the active tail branch above the body torso. Torso traits use the band below the foreground wing, neck traits sit above torso traits, and head traits sit above the base head and neck without hiding the selected head. Feet traits render above their foot branch and replace both base feet; single-image composite feet receive the adapter's authored rightward correction before composition.
+
+Both species expose 40 matching clips spanning movement, combat, reactions, emotes, and ambient states. IDs use the species prefix, such as `chikn.run`, `roostr.wing_slap`, or `chikn.idle_breathe`. Repeat clips close at neutral; authored holds and reversible state loops declare their loop mode in the clip. Actions are one-shots, with persistent end states such as `knockdown` intentionally left posed for a following `get_up` or `resetPose()`.
 
 ## 5. Replace the content pack
 

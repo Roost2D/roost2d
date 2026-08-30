@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 - 2026-08-30
+
+- Expand the matching Chikn and Roostr rig catalogs from 13 to 40 clips across movement, combat, reactions, emotes, and ambient states.
+- Validate every shipped clip against both real rig definitions and lock the cross-species names and loop modes in tests.
+
 ## 0.2.0 - 2026-08-13
 
 - Add portable Chikn/Roostr character recipes for multi-trait builders and animation exports.

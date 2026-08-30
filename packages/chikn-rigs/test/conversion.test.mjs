@@ -147,10 +147,27 @@ test('converts legacy GSAP tween timings into slot tracks', () => {
   assert.equal(clip.loop, false, 'legacy one-shots do not silently repeat');
 });
 
-test('shipped locomotion clips close cleanly and action clips are one-shots', async () => {
+test('ships the complete animation catalog for both species with valid loop semantics', async () => {
+  const expectedNames = [
+    'walk', 'slowed', 'hit', 'fly', 'attack', 'peck', 'attack_peck', 'attack_heavy', 'stagger', 'death_burst',
+    'spawn_drop', 'extraction_bow', 'draft_cheer', 'idle_breathe', 'idle_alert', 'run', 'sneak', 'crouch',
+    'jump', 'fall', 'land', 'dodge', 'block', 'parry', 'kick', 'wing_slap', 'headbutt', 'charge', 'knockback',
+    'knockdown', 'get_up', 'victory', 'wave', 'dance', 'sleep', 'eat', 'look_around', 'panic', 'cast', 'swim',
+  ];
+  const loopModes = new Map([
+    ['walk', 'repeat'], ['slowed', 'ping-pong'], ['fly', 'ping-pong'], ['idle_breathe', 'ping-pong'],
+    ['idle_alert', 'ping-pong'], ['run', 'repeat'], ['sneak', 'repeat'], ['crouch', 'ping-pong'],
+    ['fall', 'ping-pong'], ['block', 'ping-pong'], ['charge', 'repeat'], ['victory', 'ping-pong'],
+    ['dance', 'repeat'], ['sleep', 'ping-pong'], ['look_around', 'repeat'], ['panic', 'repeat'], ['swim', 'ping-pong'],
+  ]);
   for (const species of ['chikn', 'roostr']) {
     const source = JSON.parse(await readFile(new URL(`../data/${species}-anims.json`, import.meta.url), 'utf8'));
+    const rigSource = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const rig = convertLegacyRig(rigSource, species, species);
     const clips = convertLegacyAnimations(source, species);
+    assert.deepEqual(clips.map(({ id }) => id.replace(`${species}.`, '')), expectedNames);
+    assert.equal(clips.length, 40);
+    for (const clip of clips) assert.deepEqual(validateAnimationClip(clip, rig), [], clip.id);
     const walk = clips.find(({ id }) => id.endsWith('.walk'));
     assert.equal(walk.loop, true);
     assert.equal(walk.loopMode, 'repeat');
@@ -160,14 +177,11 @@ test('shipped locomotion clips close cleanly and action clips are one-shots', as
     assert.deepEqual(rotations('LegUpper B'), [-30, 0, 30, 0]);
     assert.ok(walk.tracks.every(({ keyframes }) => keyframes.at(-1).rotation === 0), `${species} walk must return every rotation to neutral`);
     assert.equal(walk.tracks.find(({ targetId }) => targetId === 'Torso').keyframes.at(-1).y, 0);
-    for (const name of ['slowed', 'fly']) {
-      const clip = clips.find(({ id }) => id.endsWith(`.${name}`));
-      assert.equal(clip.loop, true, name);
-      assert.equal(clip.loopMode, 'ping-pong', name);
-    }
-    for (const clip of clips.filter(({ id }) => !['walk', 'slowed', 'fly'].some((name) => id.endsWith(`.${name}`)))) {
-      assert.equal(clip.loop, false, clip.id);
-      assert.equal(clip.loopMode, undefined, clip.id);
+    for (const clip of clips) {
+      const name = clip.id.replace(`${species}.`, '');
+      const expectedLoopMode = loopModes.get(name);
+      assert.equal(clip.loop, expectedLoopMode !== undefined, clip.id);
+      assert.equal(clip.loopMode, expectedLoopMode, clip.id);
     }
   }
 });

@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/tooling",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Node-only manifest, inventory, integrity, and architecture tooling for Roost2D.",
   "license": "Apache-2.0",
   "repository": {
@@ -26,7 +26,7 @@
     "roost2d-tooling": "dist/cli.js"
   },
   "dependencies": {
-    "@roost2d/contracts": "0.2.0",
+    "@roost2d/contracts": "0.3.0",
     "sharp": "^0.35.3"
   },
   "publishConfig": {

@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/chikn-rigs",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Apache-2.0 Chikn and Roostr rig and animation metadata for Roost2D.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "@roost2d/contracts": "0.4.0"
+    "@roost2d/contracts": "0.4.1"
   },
   "publishConfig": {
     "access": "public"

@@ -1,10 +1,10 @@
 # Changelog
 
-## 0.4.0 - 2026-09-07
+## 0.4.1 - 2026-09-07
 
 - Add `@roost2d/blueprint`: canonical `GameBlueprintV1`, capability validation, generated JSON Schema and deterministic foundation sessions.
 - Add compiled extension lifecycle, named foundation commands, seeded restart and fixed-tick event dispatch independent of rendering.
-- Keep all 14 public packages on 0.4.0 and cover Blueprint consumption in the compiled smoke app, API snapshot and release pipeline. Game artwork and foundation rules remain application-owned.
+- Keep all 14 public packages on 0.4.1 and cover Blueprint consumption in the compiled smoke app, API snapshot and release pipeline. Game artwork and foundation rules remain application-owned.
 
 ## 0.3.0 - 2026-08-30
 

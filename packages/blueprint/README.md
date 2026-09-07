@@ -3,7 +3,7 @@
 Portable game design, capability validation and deterministic sessions for authored game foundations. This renderer-neutral package contains no game artwork, game-specific simulation, network client or Node dependencies. Applications supply their own foundation implementations and statically imported extensions.
 
 ```sh
-npm install @roost2d/blueprint@0.4.0 @roost2d/core@0.4.0
+npm install @roost2d/blueprint@0.4.1 @roost2d/core@0.4.1
 ```
 
 ```ts

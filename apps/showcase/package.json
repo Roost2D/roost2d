@@ -9,13 +9,13 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@roost2d/assets": "0.3.0",
-    "@roost2d/core": "0.3.0",
-    "@roost2d/diagnostics": "0.3.0",
-    "@roost2d/effects": "0.3.0",
-    "@roost2d/input": "0.3.0",
-    "@roost2d/isometric": "0.3.0",
-    "@roost2d/pixi": "0.3.0",
+    "@roost2d/assets": "0.4.0",
+    "@roost2d/core": "0.4.0",
+    "@roost2d/diagnostics": "0.4.0",
+    "@roost2d/effects": "0.4.0",
+    "@roost2d/input": "0.4.0",
+    "@roost2d/isometric": "0.4.0",
+    "@roost2d/pixi": "0.4.0",
     "pixi.js": "^8.0.0"
   },
   "devDependencies": {

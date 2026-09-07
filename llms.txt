@@ -1,10 +1,11 @@
 # Roost2D model context
 
-Roost2D is an Apache-2.0 TypeScript ESM monorepo containing 13 lockstep public packages. Start with README.md, docs/architecture.md, docs/packages.md, and the target package README.
+Roost2D is an Apache-2.0 TypeScript ESM monorepo containing 14 lockstep public packages. Start with README.md, docs/architecture.md, docs/packages.md, and the target package README.
 
 Critical boundaries:
 - contracts: serialized schemas and validation
 - core: deterministic runtime/scenes; no renderer
+- blueprint: game design validation and deterministic sessions; application-owned foundations and compiled extensions
 - pixi: PixiJS v8 adapter
 - rig2d: renderer-neutral rigs/GSAP animation
 - assets: explicit-host manifest loading and SHA-256 integrity

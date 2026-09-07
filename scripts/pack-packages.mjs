@@ -52,8 +52,8 @@ for (const { root, manifest } of ordered) {
   console.log(`Packed ${manifest.name}@${manifest.version} as ${filename}`);
 }
 
-if (tarballs.length !== 13 || new Set(tarballs).size !== tarballs.length) {
-  throw new Error(`Expected 13 unique public package tarballs, got ${tarballs.length}`);
+if (tarballs.length !== 14 || new Set(tarballs).size !== tarballs.length) {
+  throw new Error(`Expected 14 unique public package tarballs, got ${tarballs.length}`);
 }
 await writeFile(resolve(destination, 'publish-order.txt'), `${tarballs.join('\n')}\n`, 'utf8');
 console.log(`Wrote dependency order for ${tarballs.length} packages.`);

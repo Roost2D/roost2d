@@ -1,12 +1,12 @@
 {
-  "name": "@roost2d/effects",
+  "name": "@roost2d/blueprint",
   "version": "0.4.0",
-  "description": "Renderer-neutral effect lifecycle and pooling utilities.",
+  "description": "Portable game Blueprints, capability validation and renderer-neutral deterministic sessions.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Roost2D/roost2d.git",
-    "directory": "packages/effects"
+    "directory": "packages/blueprint"
   },
   "type": "module",
   "sideEffects": false,
@@ -23,6 +23,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@roost2d/core": "0.4.0",
+    "zod": "4.5.4"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

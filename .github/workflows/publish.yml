@@ -62,8 +62,8 @@ jobs:
           mapfile -t ordered_tarballs < dist-pack/publish-order.txt
           mapfile -t actual_tarballs < <(find dist-pack -maxdepth 1 -type f -name '*.tgz' -printf '%f\n' | sort)
           mapfile -t expected_tarballs < <(printf '%s\n' "${ordered_tarballs[@]}" | sort)
-          if [[ "${#ordered_tarballs[@]}" -ne 13 ]] || ! diff -u <(printf '%s\n' "${expected_tarballs[@]}") <(printf '%s\n' "${actual_tarballs[@]}"); then
-            printf 'Expected exactly the 13 verified Roost2D package tarballs.\n' >&2
+          if [[ "${#ordered_tarballs[@]}" -ne 14 ]] || ! diff -u <(printf '%s\n' "${expected_tarballs[@]}") <(printf '%s\n' "${actual_tarballs[@]}"); then
+            printf 'Expected exactly the 14 verified Roost2D package tarballs.\n' >&2
             exit 1
           fi
           package_field() {

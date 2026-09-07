@@ -26,7 +26,8 @@ test('trusted publishing requires exactly 14 ordered tarballs', async () => {
 
 test('multi-package publishing is resumable only for byte-identical existing versions', async () => {
   const workflow = await readFile(resolve('.github/workflows/publish.yml'), 'utf8');
-  assert.match(workflow, /npm view "\$package_spec" dist\.integrity/);
+  assert.match(workflow, /registry_field "\$package_name" "\$package_version" dist\.integrity/);
+  assert.match(workflow, /release-check=.*Date.now/);
   assert.match(workflow, /published_integrity" != "\$local_integrity/);
   assert.match(workflow, /published_tag" != "\$package_version/);
   assert.doesNotMatch(workflow, /npm dist-tag add/);

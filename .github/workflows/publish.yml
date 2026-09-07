@@ -81,6 +81,19 @@ jobs:
               console.log(`sha512-${createHash("sha512").update(readFileSync(process.argv[1])).digest("base64")}`);
             ' "$1"
           }
+          registry_field() {
+            node --input-type=module - "$1" "$2" "$3" <<'NODE'
+          const [name, version, field] = process.argv.slice(2);
+          const url = 'https://registry.npmjs.org/' + encodeURIComponent(name) + '?release-check=' + Date.now();
+          const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+          if (response.status === 404) process.exit(0);
+          if (!response.ok) throw new Error('Registry metadata request failed: ' + response.status);
+          const data = await response.json();
+          const value = field.startsWith('dist-tags.') ? data['dist-tags']?.[field.slice(10)]
+            : field === 'version' ? data.versions?.[version]?.version : data.versions?.[version]?.dist?.integrity;
+          if (value) console.log(value);
+          NODE
+          }
           for tarball in "${ordered_tarballs[@]}"; do
             if [[ ! "$tarball" =~ ^[A-Za-z0-9._-]+\.tgz$ ]]; then
               printf 'Unsafe tarball name: %s\n' "$tarball" >&2
@@ -91,13 +104,13 @@ jobs:
             package_version="$(package_field "$tarball_path" version)"
             package_spec="$package_name@$package_version"
             local_integrity="$(tarball_integrity "$tarball_path")"
-            published_integrity="$(npm view "$package_spec" dist.integrity 2>/dev/null || true)"
+            published_integrity="$(registry_field "$package_name" "$package_version" dist.integrity)"
             if [[ -n "$published_integrity" ]]; then
               if [[ "$published_integrity" != "$local_integrity" ]]; then
                 printf 'Refusing to resume: %s exists with different integrity.\n' "$package_spec" >&2
                 exit 1
               fi
-              published_tag="$(npm view "$package_name" "dist-tags.$RELEASE_TAG" 2>/dev/null || true)"
+              published_tag="$(registry_field "$package_name" "$package_version" "dist-tags.$RELEASE_TAG")"
               if [[ "$published_tag" != "$package_version" ]]; then
                 printf 'Refusing to resume: %s exists but tag %s points to %s. Repair the tag through an authorized operator.\n' "$package_spec" "$RELEASE_TAG" "${published_tag:-nothing}" >&2
                 exit 1
@@ -113,8 +126,8 @@ jobs:
             package_version="$(package_field "$tarball_path" version)"
             verified=false
             for attempt in {1..6}; do
-              published_version="$(npm view "$package_name@$package_version" version 2>/dev/null || true)"
-              published_tag="$(npm view "$package_name" "dist-tags.$RELEASE_TAG" 2>/dev/null || true)"
+              published_version="$(registry_field "$package_name" "$package_version" version)"
+              published_tag="$(registry_field "$package_name" "$package_version" "dist-tags.$RELEASE_TAG")"
               if [[ "$published_version" == "$package_version" && "$published_tag" == "$package_version" ]]; then
                 verified=true
                 break

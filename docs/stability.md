@@ -4,7 +4,7 @@
 engine is still establishing its broader ecosystem, but the following project policy is stricter
 than bare SemVer permits for `0.x` packages:
 
-- all 13 public `@roost2d/*` packages ship in lockstep and consumers should pin one exact version;
+- all 14 public `@roost2d/*` packages ship in lockstep and consumers should pin one exact version;
 - public exports captured in `reports/public-api.json` are preserved throughout `0.1.x` unless a
   security or correctness defect makes that impossible;
 - removals require a documented deprecation path and a release note;

@@ -17,16 +17,17 @@ test('trusted publishing keeps project dependency execution outside the OIDC job
   assert.doesNotMatch(publishJob, /--provenance/, 'OIDC publishes generate provenance automatically');
 });
 
-test('trusted publishing requires exactly 13 ordered tarballs', async () => {
+test('trusted publishing requires exactly 14 ordered tarballs', async () => {
   const workflow = await readFile(resolve('.github/workflows/publish.yml'), 'utf8');
   assert.match(workflow, /ordered_tarballs < dist-pack\/publish-order\.txt/);
-  assert.match(workflow, /"\$\{#ordered_tarballs\[@\]\}" -ne 13/);
+  assert.match(workflow, /"\$\{#ordered_tarballs\[@\]\}" -ne 14/);
   assert.match(workflow, /\^\[A-Za-z0-9\._-\]\+\\\.tgz\$/);
 });
 
 test('multi-package publishing is resumable only for byte-identical existing versions', async () => {
   const workflow = await readFile(resolve('.github/workflows/publish.yml'), 'utf8');
-  assert.match(workflow, /npm view "\$package_spec" dist\.integrity/);
+  assert.match(workflow, /registry_field "\$package_name" "\$package_version" dist\.integrity/);
+  assert.match(workflow, /release-check=.*Date.now/);
   assert.match(workflow, /published_integrity" != "\$local_integrity/);
   assert.match(workflow, /published_tag" != "\$package_version/);
   assert.doesNotMatch(workflow, /npm dist-tag add/);

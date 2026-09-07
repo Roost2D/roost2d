@@ -57,7 +57,7 @@ Configuring only one package does not grant the workflow access to the other pac
 
 ### Release candidate
 
-1. Update the root and all 13 public package versions to the same `X.Y.Z-rc.N` value.
+1. Update the root and all 14 public package versions to the same `X.Y.Z-rc.N` value.
 2. Commit and push to `main`; wait for CI and `npm run release:verify` to pass.
 3. Dispatch **Publish packages** with `tag=next`, then inspect the npm package pages and dist-tags.
 4. Publish `@chikn-game-assets/runtime` to `next` from its repository.

@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/core",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "Runtime-neutral lifecycle, events, and frame scheduling primitives for Roost2D.",
   "license": "Apache-2.0",
   "repository": {

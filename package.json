@@ -1,6 +1,6 @@
 {
   "name": "roost2d",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "private": true,
   "description": "Framework-agnostic 2D game-engine packages.",
   "type": "module",
@@ -13,7 +13,7 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:effects && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling",
+    "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:effects && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling && npm run build:blueprint",
     "build:contracts": "npm run build -w @roost2d/contracts",
     "build:core": "npm run build -w @roost2d/core",
     "build:assets": "npm run build -w @roost2d/assets",
@@ -37,7 +37,8 @@
     "check": "npm run check --workspaces --if-present",
     "test": "node --test scripts/test/*.test.mjs && npm run test --workspaces --if-present",
     "clean": "node scripts/clean.mjs",
-    "release:verify": "npm run clean && npm ci && npm run build && npm run api:verify && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs"
+    "release:verify": "npm run clean && npm ci && npm run build && npm run api:verify && npm run check && npm run test && npm run build:smoke && npm run smoke && npm run build:showcase && npm run docs:build && node scripts/assert-lockstep.mjs && node scripts/release-verify.mjs && node scripts/verify-packs.mjs",
+    "build:blueprint": "npm run build -w @roost2d/blueprint"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

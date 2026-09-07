@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 - 2026-09-07
+
+- Add `@roost2d/blueprint`: canonical `GameBlueprintV1`, capability validation, generated JSON Schema and deterministic foundation sessions.
+- Add compiled extension lifecycle, named foundation commands, seeded restart and fixed-tick event dispatch independent of rendering.
+- Keep all 14 public packages on 0.4.1 and cover Blueprint consumption in the compiled smoke app, API snapshot and release pipeline. Game artwork and foundation rules remain application-owned.
+
 ## 0.3.0 - 2026-08-30
 
 - Expand the matching Chikn and Roostr rig catalogs from 13 to 40 clips across movement, combat, reactions, emotes, and ambient states.

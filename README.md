@@ -59,6 +59,7 @@ Run `npm run dev`. The simulation advances at a fixed 60 Hz while Pixi renders a
 | Package | Use it for |
 | --- | --- |
 | `@roost2d/core` | scenes, fixed updates, events, services, scheduling, deterministic random |
+| `@roost2d/blueprint` | validated game designs, deterministic foundation sessions, compiled extension lifecycle |
 | `@roost2d/pixi` | Pixi application host, layers, camera, atlas textures, rig display adapter |
 | `@roost2d/input` | keyboard, pointer/touch, gestures, gamepad, rebinding, input contexts |
 | `@roost2d/assets` | explicit-host manifests, lazy bundles, aliases, integrity verification |
@@ -97,4 +98,4 @@ npm ci
 npm run release:verify
 ```
 
-`release:verify` builds, type-checks, tests, compiles the showcase/docs, validates package boundaries, and dry-runs all 13 npm package tarballs. Publishing remains a separate trusted-publisher workflow.
+`release:verify` builds, type-checks, tests, compiles the showcase/docs, validates package boundaries, and dry-runs all 14 npm package tarballs. Publishing remains a separate trusted-publisher workflow.

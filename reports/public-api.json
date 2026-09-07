@@ -33,6 +33,27 @@
       ],
       "declarationSha256": "5baa6e5b0048ba3f2d47dbf28a7a440318270eb7c56d8fb5bde18faa9dafd64b"
     },
+    "@roost2d/blueprint": {
+      "entrypoint": ".",
+      "exports": [
+        "BlueprintCommand",
+        "BlueprintContext",
+        "BlueprintEvent",
+        "BlueprintExtension",
+        "BlueprintExtensionContext",
+        "BlueprintInput",
+        "BlueprintSession",
+        "BlueprintSimulation",
+        "BlueprintSnapshot",
+        "FOUNDATION_CAPABILITIES",
+        "FoundationFactory",
+        "GameBlueprintV1",
+        "blueprintJsonSchema",
+        "gameBlueprintSchema",
+        "parseBlueprint"
+      ],
+      "declarationSha256": "0d4e24f3fa8d566d370a0c247f695114ec62b879362aad57e4ea7fc660a19e2f"
+    },
     "@roost2d/chikn-rigs": {
       "entrypoint": ".",
       "exports": [

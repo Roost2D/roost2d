@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { AssetManifestResolver } from '@roost2d/assets';
 import { AudioMixer } from '@roost2d/audio';
+import { BlueprintSession, gameBlueprintSchema } from '@roost2d/blueprint';
 import { chiknRigMetadataUrl } from '@roost2d/chikn-rigs';
 import { validateAssetManifest } from '@roost2d/contracts';
 import { FixedStepClock, SeededRandom } from '@roost2d/core';
@@ -32,4 +33,5 @@ const target = { x: 0, y: 0, scaleX: 1, scaleY: 1 }; const effect = scalePop(tar
 const diagnostics = new Diagnostics(3, () => 1); diagnostics.increment('imports', 13); assert.equal(diagnostics.snapshot().counters.imports, 13);
 assert.equal(sha256Hex(new TextEncoder().encode('roost2d')).length, 64); assert.ok(chiknRigMetadataUrl.href.endsWith('chikn-rig.json'));
 assert.equal(typeof AudioMixer, 'function'); assert.equal(typeof InputManager, 'function'); assert.equal(typeof Camera2D, 'function'); assert.equal(typeof RigRuntime, 'function');
-console.log('Roost2D public package smoke test passed for all 13 packages.');
+assert.equal(typeof BlueprintSession, 'function'); assert.equal(gameBlueprintSchema.safeParse({}).success, false);
+console.log('Roost2D public package smoke test passed for all 14 packages.');

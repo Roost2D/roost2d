@@ -1,12 +1,12 @@
 {
-  "name": "@roost2d/chikn-rigs",
+  "name": "@roost2d/blueprint",
   "version": "0.4.1",
-  "description": "Apache-2.0 Chikn and Roostr rig and animation metadata for Roost2D.",
+  "description": "Portable game Blueprints, capability validation and renderer-neutral deterministic sessions.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Roost2D/roost2d.git",
-    "directory": "packages/chikn-rigs"
+    "directory": "packages/blueprint"
   },
   "type": "module",
   "sideEffects": false,
@@ -21,14 +21,15 @@
       "import": "./dist/index.js"
     }
   },
-  "dependencies": {
-    "@roost2d/contracts": "0.4.1"
-  },
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "@roost2d/core": "0.4.1",
+    "zod": "4.5.4"
+  },
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/copy-metadata.mjs",
+    "build": "tsc -p tsconfig.json",
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "node --test test/*.test.mjs"
   }

@@ -15,7 +15,7 @@ hero:
 
 features:
   - title: Modular by construction
-    details: Install only the runtime systems your game needs. All 13 public packages use one lockstep version.
+    details: Install only the runtime systems your game needs. All 14 public packages use one lockstep version.
   - title: Art-host neutral
     details: Asset manifests describe immutable releases; the application always chooses the host and quality profile.
   - title: Testable outside the browser

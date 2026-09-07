@@ -7,6 +7,7 @@ All `@roost2d/*` packages use the same exact version. `@roost2d/contracts` is th
 | Package | Purpose |
 | --- | --- |
 | `core` | runtime, scenes, fixed clock, events, services, scheduler, pools, seeded random |
+| `blueprint` | canonical game designs, capability checks, seeded fixed-step sessions, compiled extension hooks |
 | `contracts` | versioned assets, atlases, rights, rigs, and animation schemas |
 | `assets` | profiles, aliases, bundles, integrity, cache, and explicit-host resolution |
 | `pixi` | application host, layers, camera, cropped atlas textures, rig display adapter |

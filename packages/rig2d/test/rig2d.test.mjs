@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { RigRuntime } from '../dist/index.js';
+import { RigActionController, RigRuntime } from '../dist/index.js';
 
 const definition = {
   schema: 'roost2d.rig/v1', id: 'bird', displayName: 'Bird', defaultSkinId: 'white',
@@ -86,6 +86,34 @@ test('seek pauses a live layer at a deterministic clip time', () => {
   assert.ok(nodes.get('root').x > 0 && nodes.get('root').x < 10);
   assert.throws(() => rig.seek(-1, 'preview'), /finite non-negative/);
   assert.throws(() => rig.seek(0, 'missing'), /not playing/);
+  rig.dispose();
+});
+
+test('controlled playback emits every crossed cue once while silent sampling can scrub backward', () => {
+  const { rig } = runtime();
+  const events = [];
+  const controlled = rig.play({ ...clip([{ timeMs: 0, durationMs: 100, x: 10 }]), cues: [{ id: 'a', timeMs: 20 }, { id: 'b', timeMs: 70 }, { id: 'done', timeMs: 100 }] }, { controlled: true, onCue: ({ cue }) => events.push(cue.id) });
+  controlled.advance(80);
+  assert.deepEqual(events, ['a', 'b'], 'a skipped render frame still emits every crossed cue');
+  controlled.sample(10);
+  controlled.sample(100);
+  assert.deepEqual(events, ['a', 'b'], 'scrubbing never emits callbacks');
+  rig.dispose();
+});
+
+test('action interruption and completion restore the rig and preserve mirroring', () => {
+  const { rig, nodes } = runtime();
+  rig.setMirrored(true);
+  const controller = new RigActionController(rig);
+  const first = controller.play(clip([{ timeMs: 0, durationMs: 100, x: 10 }]), { controlled: true });
+  first.advance(50);
+  assert.notEqual(nodes.get('root').x, 0);
+  const second = controller.play(clip([{ timeMs: 0, durationMs: 100, x: 6 }]), { controlled: true });
+  assert.equal(nodes.get('root').x, 0, 'interrupting restores the setup pose');
+  second.advance(100);
+  assert.equal(nodes.get('root').x, 0, 'exact completion restores the setup pose');
+  assert.equal(nodes.get('root').scaleX, -1, 'facing survives action restoration');
+  controller.dispose();
   rig.dispose();
 });
 

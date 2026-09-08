@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/input",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Keyboard and pointer action mapping for Roost2D.",
   "license": "Apache-2.0",
   "repository": {

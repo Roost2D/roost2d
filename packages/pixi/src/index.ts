@@ -1,7 +1,8 @@
-import { Application, Container, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
+import { Application, Container, Graphics, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode } from '@roost2d/rig2d';
 import type { AtlasFrameV1, TextureRef } from '@roost2d/contracts';
+import { sampleProceduralEffect, type ProceduralEffectDescriptor } from '@roost2d/effects';
 
 export interface PixiHostOptions extends Partial<ApplicationOptions> {
   mount: HTMLElement;
@@ -257,5 +258,50 @@ export class PixiRigFactory implements RigDisplayFactory {
     });
     this.derivedTextures.add(derived);
     return derived;
+  }
+}
+
+/** Pixi renderer for the generic deterministic effect descriptors. */
+export class PixiProceduralEffect {
+  readonly display = new Container();
+  private readonly graphic = new Graphics();
+
+  constructor(readonly descriptor: ProceduralEffectDescriptor, parent: Container | PixiRigNode) {
+    (parent instanceof PixiRigNode ? parent.display : parent).addChild(this.display);
+    this.display.addChild(this.graphic);
+    this.draw();
+    this.sample(0);
+  }
+
+  sample(elapsedMs: number): boolean {
+    const frame = sampleProceduralEffect(this.descriptor, elapsedMs);
+    this.display.alpha = frame.alpha;
+    this.display.scale.set(frame.scale);
+    this.display.x = frame.offsetX;
+    this.display.rotation = frame.rotation;
+    return frame.complete;
+  }
+
+  destroy(): void { this.display.destroy({ children: true }); }
+
+  private draw(): void {
+    const color = this.descriptor.color;
+    const secondary = this.descriptor.secondaryColor ?? 0xffffff;
+    const length = this.descriptor.length ?? 120;
+    const width = this.descriptor.width ?? 8;
+    const radius = this.descriptor.radius ?? 18;
+    if (this.descriptor.kind === 'beam') {
+      this.graphic.rect(0, -width / 2, length, width).fill({ color, alpha: 0.78 });
+      this.graphic.rect(0, -width / 6, length, width / 3).fill({ color: secondary, alpha: 0.95 });
+    } else if (this.descriptor.kind === 'slash') {
+      this.graphic.arc(0, 0, radius * 2, -0.8, 0.8).stroke({ color, width, alpha: 0.9 });
+    } else if (this.descriptor.kind === 'projectile') {
+      this.graphic.circle(0, 0, radius).fill({ color }).stroke({ color: secondary, width: Math.max(2, width / 3) });
+    } else if (this.descriptor.kind === 'burst') {
+      this.graphic.circle(0, 0, radius).stroke({ color, width });
+      this.graphic.circle(0, 0, radius * 0.45).fill({ color: secondary, alpha: 0.7 });
+    } else {
+      this.graphic.roundRect(-length * 0.5, -width * 0.5, length, width, width * 0.5).fill({ color, alpha: 0.55 });
+    }
   }
 }

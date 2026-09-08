@@ -1084,6 +1084,14 @@
                     }
                 ]
             },
+            "polygon bling": {
+                "slot": "Neck",
+                "attachments": [{ "name": "Trait_Neck_PolygonBling", "texture": "PolygonBling" }]
+            },
+            "polygon degen": {
+                "slot": "Neck",
+                "attachments": [{ "name": "Trait_Neck_PolygonDegen", "texture": "PolygonDegen" }]
+            },
             "hairy old man": {
                 "slot": "Neck",
                 "attachments": [
@@ -1440,11 +1448,7 @@
                 "attachments": [
                     {
                         "name": "Trait_Feet_PurpleFeet_A",
-                        "texture": "PurpleFeet A 2"
-                    },
-                    {
-                        "name": "Trait_Feet_PurpleFeet_B",
-                        "texture": "PurpleFeet B 2"
+                        "texture": "PurpleFeet A"
                     }
                 ]
             },
@@ -1453,11 +1457,7 @@
                 "attachments": [
                     {
                         "name": "Trait_Feet_RedFeet_A",
-                        "texture": "RedFeet A 2"
-                    },
-                    {
-                        "name": "Trait_Feet_RedFeet_B",
-                        "texture": "RedFeet B 2"
+                        "texture": "RedFeet A"
                     }
                 ]
             },
@@ -1466,11 +1466,7 @@
                 "attachments": [
                     {
                         "name": "Trait_Feet_GreenFeet_A",
-                        "texture": "GreenFeet A 2"
-                    },
-                    {
-                        "name": "Trait_Feet_GreenFeet_B",
-                        "texture": "GreenFeet B 2"
+                        "texture": "GreenFeet A"
                     }
                 ]
             },
@@ -1479,11 +1475,7 @@
                 "attachments": [
                     {
                         "name": "Trait_Feet_BlueFeet_A",
-                        "texture": "BlueFeet A 2"
-                    },
-                    {
-                        "name": "Trait_Feet_BlueFeet_B",
-                        "texture": "BlueFeet B 2"
+                        "texture": "BlueFeet A"
                     }
                 ]
             }
@@ -4125,17 +4117,6 @@
             "pivot_y": 0.5
         },
         {
-            "name": "Trait_Feet_PurpleFeet_B",
-            "parent": null,
-            "x": -2.77099609375,
-            "y": -16.06926406926407,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 0,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
             "name": "Trait_Feet_RedFeet_A",
             "parent": null,
             "x": -4.43359375,
@@ -4143,17 +4124,6 @@
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Feet_RedFeet_B",
-            "parent": null,
-            "x": -4.43359375,
-            "y": -18.285714285714285,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 0,
             "pivot_x": 0.5,
             "pivot_y": 0.5
         },
@@ -4169,32 +4139,10 @@
             "pivot_y": 0.5
         },
         {
-            "name": "Trait_Feet_GreenFeet_B",
-            "parent": null,
-            "x": -3.3251953125,
-            "y": -17.17748917748918,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 0,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
             "name": "Trait_Feet_BlueFeet_A",
             "parent": null,
             "x": -3.3251953125,
             "y": -17.17748917748918,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 20,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Feet_BlueFeet_B",
-            "parent": null,
-            "x": -4.43359375,
-            "y": -17.73160173160173,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,

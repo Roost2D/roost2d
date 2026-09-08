@@ -61,7 +61,14 @@
         "CHIKN_RIG_ART_SCALE",
         "CharacterRecipeRuntime",
         "CharacterRecipeV1",
+        "ChiknActionChoice",
+        "ChiknActionInput",
+        "ChiknActionRecipe",
+        "ChiknMotionFamily",
         "ChiknSpecies",
+        "ChiknTraitAnimationProfile",
+        "ResolvedChiknAction",
+        "ResolvedChiknEffect",
         "UNIQUE_SKINS",
         "UniqueSkinDefinition",
         "applyCharacterRecipe",
@@ -69,25 +76,33 @@
         "chiknRigMetadataUrl",
         "convertLegacyAnimations",
         "convertLegacyRig",
+        "createChiknActionClips",
+        "createChiknTraitAnimationProfiles",
+        "listAvailableChiknActions",
+        "listChiknSpecials",
         "loadChiknAnimations",
         "loadChiknRig",
         "loadRoostrAnimations",
         "loadRoostrRig",
         "mergeUniqueSkin",
+        "resolveChiknAction",
         "resolveUniqueSkin",
         "roostrAnimationMetadataUrl",
         "roostrRigMetadataUrl",
         "uniqueAssetId",
         "uniqueAssetPrefix",
-        "validateCharacterRecipe"
+        "validateCharacterRecipe",
+        "validateChiknTraitAnimationProfiles"
       ],
-      "declarationSha256": "4effd345c7e19d741e3aed0b12a754483c9f7d56f20bfdc126f5296e31d0f445"
+      "declarationSha256": "fe0a79b00728b7538c97871d33d09efb7a343c199fe2e92a93a6dc026591f2b7"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
       "exports": [
         "ANIMATION_KEYFRAME_KEYS",
         "AnimationClipV1",
+        "AnimationCuePhase",
+        "AnimationCueV1",
         "AnimationKeyframeKey",
         "AnimationKeyframeV1",
         "AnimationKeyframeValues",
@@ -109,6 +124,7 @@
         "RigBoneV1",
         "RigDefinitionV1",
         "RigSlotV1",
+        "RigSocketV1",
         "RightsAssetV1",
         "RightsManifestV1",
         "TextureRef",
@@ -122,7 +138,7 @@
         "validateRigDefinition",
         "validateRightsManifest"
       ],
-      "declarationSha256": "f8c922a93c67a13bc487cf62d39abd71fc74ce9cc2bf600235f8e8fcc0f73041"
+      "declarationSha256": "3839b47298190e41e1f02bc5ad135876a98ab0ac9508347e6e0e6e73d4bb327e"
     },
     "@roost2d/core": {
       "entrypoint": ".",
@@ -174,6 +190,9 @@
         "EffectPool",
         "Particle",
         "ParticleEmitter",
+        "ProceduralEffectDescriptor",
+        "ProceduralEffectFrame",
+        "ProceduralEffectKind",
         "ScreenShake",
         "TimedEffect",
         "Trail",
@@ -181,10 +200,11 @@
         "Updatable",
         "easing",
         "fade",
+        "sampleProceduralEffect",
         "scalePop",
         "tintFlash"
       ],
-      "declarationSha256": "b23ecb5d2e31aa2bb5500eae0730795edfa6df32b09718b3d3726eaa29bd3959"
+      "declarationSha256": "76398e1fa7622582aa3ef6413f74dfa53ba3b698caa8b864f244e3b7eae59445"
     },
     "@roost2d/input": {
       "entrypoint": ".",
@@ -252,21 +272,25 @@
         "PixiApplicationHost",
         "PixiAssetLoader",
         "PixiHostOptions",
+        "PixiProceduralEffect",
         "PixiRigFactory",
         "PixiRigNode"
       ],
-      "declarationSha256": "1fd922c8aee44fdaaac16bf18186041214a0b163dbcd611dc367b6548e3441b2"
+      "declarationSha256": "80355a0d3395bd6dec496ac846b297f1f462d06aeffcf4d78971ae098a0fdcfd"
     },
     "@roost2d/rig2d": {
       "entrypoint": ".",
       "exports": [
+        "RigActionController",
+        "RigActionPlayOptions",
         "RigAnimationHandle",
+        "RigCueEvent",
         "RigDisplayFactory",
         "RigDisplayNode",
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "9a0bf90174d2f647e39f8e1e3cf232f84cce52b8d7cb469d551e0cd5f96fd231"
+      "declarationSha256": "454be35ae745b0d94beb3b412f7d091d9ef178df604390552be84d874f9105ba"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",

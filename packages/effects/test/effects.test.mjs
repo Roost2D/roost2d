@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { EffectPool, TimedEffect, Trail, fade, scalePop } from '../dist/index.js';
+import { EffectPool, TimedEffect, Trail, fade, sampleProceduralEffect, scalePop } from '../dist/index.js';
 
 test('timed effects finish deterministically', () => {
   const values = []; const effect = new TimedEffect(100, (value) => values.push(value)); effect.reset();
@@ -32,4 +32,12 @@ test('EffectPool recycles updatables under its own name', () => {
   assert.equal(pool.activeCount, 0, 'a finished effect returns itself to the pool');
   assert.equal(pool.acquire(), first, 'the released instance is reused');
   assert.equal(created, 1);
+});
+
+test('procedural effects sample deterministically on a caller-owned clock', () => {
+  const descriptor = { id: 'egg', kind: 'projectile', durationMs: 400, color: 0xffffff, distance: 160 };
+  assert.deepEqual(sampleProceduralEffect(descriptor, 200), sampleProceduralEffect(descriptor, 200));
+  assert.equal(sampleProceduralEffect(descriptor, 200).offsetX, 80);
+  assert.equal(sampleProceduralEffect(descriptor, 400).complete, true);
+  assert.throws(() => sampleProceduralEffect({ ...descriptor, durationMs: 0 }, 0), /positive/);
 });

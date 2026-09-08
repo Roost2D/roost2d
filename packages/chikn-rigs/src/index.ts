@@ -1,4 +1,5 @@
 import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigDefinitionV1 } from '@roost2d/contracts';
+export * from './actions.js';
 
 interface LegacyPart { name: string; texture?: string; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; z_index?: number; pivot_x?: number; pivot_y?: number; }
 interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; }
@@ -140,11 +141,16 @@ export function mergeUniqueSkin(base: RigDefinitionV1, unique: UniqueSkinDefinit
 
 export async function loadChiknRig(fetcher: typeof fetch = fetch): Promise<RigDefinitionV1> { return convertLegacyRig(await loadJson<LegacyRig>(chiknRigMetadataUrl, fetcher), 'chikn', 'Chikn'); }
 export async function loadRoostrRig(fetcher: typeof fetch = fetch): Promise<RigDefinitionV1> { return convertLegacyRig(await loadJson<LegacyRig>(roostrRigMetadataUrl, fetcher), 'roostr', 'Roostr'); }
-export async function loadChiknAnimations(fetcher: typeof fetch = fetch): Promise<AnimationClipV1[]> { return convertLegacyAnimations(await loadJson<LegacyAnimations>(chiknAnimationMetadataUrl, fetcher), 'chikn'); }
-export async function loadRoostrAnimations(fetcher: typeof fetch = fetch): Promise<AnimationClipV1[]> { return convertLegacyAnimations(await loadJson<LegacyAnimations>(roostrAnimationMetadataUrl, fetcher), 'roostr'); }
+export async function loadChiknAnimations(fetcher: typeof fetch = fetch): Promise<AnimationClipV1[]> { const definition = await loadChiknRig(fetcher); return [...convertLegacyAnimations(await loadJson<LegacyAnimations>(chiknAnimationMetadataUrl, fetcher), 'chikn'), ...(await import('./actions.js')).createChiknActionClips(definition)]; }
+export async function loadRoostrAnimations(fetcher: typeof fetch = fetch): Promise<AnimationClipV1[]> { const definition = await loadRoostrRig(fetcher); return [...convertLegacyAnimations(await loadJson<LegacyAnimations>(roostrAnimationMetadataUrl, fetcher), 'roostr'), ...(await import('./actions.js')).createChiknActionClips(definition)]; }
 
 export function convertLegacyRig(source: LegacyRig, id: string, displayName: string): RigDefinitionV1 {
   if (!source || !Array.isArray(source.rig)) throw new Error('Legacy rig source must provide a rig array');
+  const rigParts = [...source.rig];
+  const knownRigParts = new Set(rigParts.map(({ name }) => name));
+  for (const traits of Object.values(source.traits ?? {})) for (const trait of Object.values(traits)) for (const part of trait.attachments) {
+    if (!knownRigParts.has(part.name)) { rigParts.push(part); knownRigParts.add(part.name); }
+  }
   const layoutScale = id === 'chikn' || id === 'roostr' ? CHIKN_RIG_ART_SCALE[id] : undefined;
   const textureByAttachment = new Map<string, string>();
   const slotByAttachment = new Map<string, string>();
@@ -183,8 +189,8 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
       metadata: { category: traitGroupId, name: traitId }
     };
   }
-  const partNames = new Set(source.rig.map((part) => part.name));
-  const attachments: AttachmentDefinitionV1[] = source.rig.map((part, index) => ({
+  const partNames = new Set(rigParts.map((part) => part.name));
+  const attachments: AttachmentDefinitionV1[] = rigParts.map((part, index) => ({
     id: part.name,
     slotId: slotByAttachment.get(part.name) ?? slotName(part.name),
     texture: { assetId: `${id}.rig.${assetToken(textureByAttachment.get(part.name) ?? part.name)}`, ...(layoutScale ? { layoutScale } : {}) },
@@ -210,7 +216,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     schema: 'roost2d.rig/v1', id, displayName,
     bones: [
       { id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
-      ...source.rig.map((part) => {
+      ...rigParts.map((part) => {
         const followSlotId = traitFollowSlot(part.name);
         return {
           id: `bone:${part.name}`,
@@ -228,6 +234,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     skins,
     defaultSkinId: Object.keys(skins)[0],
     attachmentGroups: normalizedAttachmentGroups,
+    sockets: actionSockets(id).filter(({ targetId }) => slotIds.has(targetId)),
     metadata: { sourceFormat: 'roostrift-rig-json', species: id }
   };
 }
@@ -294,5 +301,15 @@ function traitFollowSlot(name: string): string | undefined {
   if (category === 'Feet') return suffix === 'A' || suffix === 'B' ? `LegFoot ${suffix}` : 'LegFoot A';
   if (category === 'Wings') return suffix === 'A' || suffix === 'B' ? `Wing ${suffix}` : 'Wing A';
   return undefined;
+}
+function actionSockets(species: string) {
+  const roostr = species === 'roostr';
+  return [
+    { id: 'eyes', target: 'slot' as const, targetId: 'Head', x: roostr ? 16 : 13, y: roostr ? -4 : -3, rotation: 0, scaleX: 1, scaleY: 1 },
+    { id: 'wing-front', target: 'slot' as const, targetId: 'Wing A', x: roostr ? 18 : 15, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+    { id: 'weapon', target: 'slot' as const, targetId: 'Torso', x: roostr ? 24 : 20, y: 12, rotation: 0, scaleX: 1, scaleY: 1 },
+    { id: 'foot-front', target: 'slot' as const, targetId: 'LegFoot A', x: roostr ? 12 : 10, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+    { id: 'tail', target: 'slot' as const, targetId: 'Tail', x: roostr ? -18 : -15, y: 0, rotation: Math.PI, scaleX: 1, scaleY: 1 },
+  ];
 }
 async function loadJson<T>(url: URL, fetcher: typeof fetch): Promise<T> { const response = await fetcher.call(globalThis, url); if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`); return response.json() as Promise<T>; }

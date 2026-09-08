@@ -36,4 +36,15 @@ Both species ship the same 40 animation names, prefixed with `chikn.` or `roostr
 
 Loop and loop-mode metadata travels with every clip. One-shots preserve their authored end pose, so call `resetPose()` before switching independently previewed actions; persistent states such as `knockdown` can instead flow directly into `get_up`.
 
+Trait-aware brawler actions are resolved from the same recipe:
+
+```ts
+const choices = listAvailableChiknActions(recipe, definition);
+const action = resolveChiknAction(recipe, definition, choices[0].id);
+const playback = new RigActionController(rig).play(action.clip, { controlled: true });
+playback.advance(frameMs);
+```
+
+Every attachment group receives an immutable motion profile with its supported actions, attachment targets, amplitude, and speed. Weapons can replace the punch motion, feet select the paired or combined flying spin kick, combat-capable tails use a tail-strike foundation, and `listChiknSpecials` returns only specials granted by equipped traits.
+
 Resolve each `definition.attachments[].texture.assetId` through a separately hosted Chikn runtime manifest before creating the display factory. [Chikn integration tutorial](https://github.com/Roost2D/roost2d/blob/main/docs/chikn-assets.md).

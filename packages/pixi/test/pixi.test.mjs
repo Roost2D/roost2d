@@ -4,7 +4,7 @@ import test from 'node:test';
 import { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import { Container, Rectangle, Texture } from 'pixi.js';
 import { RigRuntime } from '@roost2d/rig2d';
-import { Camera2D, LayerStack, PixiAssetLoader, PixiRigFactory } from '../dist/index.js';
+import { Camera2D, LayerStack, PixiAssetLoader, PixiProceduralEffect, PixiRigFactory } from '../dist/index.js';
 
 const verified = new TextEncoder().encode('verified-atlas-bytes');
 const sri = `sha256-${createHash('sha256').update(verified).digest('base64')}`;
@@ -35,6 +35,19 @@ function loaderFor(fetchImpl) {
 
 test('layer definitions remain game supplied', () => { const layers = new LayerStack([{ id: 'background', order: 0 }, { id: 'actors', order: 10 }]); assert.equal(layers.get('actors').zIndex, 10); assert.throws(() => layers.get('towers')); layers.destroy(); });
 test('camera clamps zoom and supports coordinate transforms', () => { const camera = new Camera2D(); camera.setViewport(800, 600); camera.setPosition(200, 100); camera.setZoom(100); assert.equal(camera.container.scale.x, 8); const screen = camera.worldToScreen({ x: 200, y: 100 }); assert.deepEqual({ x: screen.x, y: screen.y }, { x: 400, y: 300 }); camera.container.destroy(); });
+
+test('procedural effects share one deterministic Pixi lifecycle', () => {
+  const root = new Container();
+  for (const kind of ['beam', 'slash', 'projectile', 'burst', 'trail']) {
+    const effect = new PixiProceduralEffect({ id: kind, kind, durationMs: 300, color: 0xffffff, length: 80, width: 6, radius: 8, distance: 90 }, root);
+    assert.equal(effect.sample(150), false, kind);
+    assert.equal(effect.display.parent, root, kind);
+    assert.equal(effect.sample(300), true, kind);
+    effect.destroy();
+  }
+  assert.equal(root.children.length, 0);
+  root.destroy({ children: true });
+});
 
 test('PixiAssetLoader requires an integrity loader', () => {
   const resolver = new AssetManifestResolver(manifest, { baseUrl: 'https://assets.example/' });

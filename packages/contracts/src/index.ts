@@ -65,6 +65,13 @@ export interface RigAttachmentGroupV1 {
   metadata?: Record<string, string | number | boolean>;
 }
 
+/** A named presentation origin which follows a rig target. */
+export interface RigSocketV1 extends TransformV1 {
+  id: string;
+  target: 'bone' | 'attachment' | 'slot';
+  targetId: string;
+}
+
 export interface RigDefinitionV1 {
   schema: 'roost2d.rig/v1';
   id: string;
@@ -75,6 +82,8 @@ export interface RigDefinitionV1 {
   skins?: Record<string, Record<string, string | undefined>>;
   defaultSkinId?: string;
   attachmentGroups?: Record<string, RigAttachmentGroupV1>;
+  /** Optional origins for projectiles, beams, trails, and other presentation effects. */
+  sockets?: RigSocketV1[];
   metadata?: Record<string, string | number | boolean>;
 }
 
@@ -92,6 +101,16 @@ export interface AnimationTrackV1 {
   keyframes: AnimationKeyframeV1[];
 }
 
+export type AnimationCuePhase = 'anticipation' | 'contact' | 'release' | 'recovery' | 'complete';
+
+/** A presentation-only event on an animation timeline. It never implies a gameplay hit. */
+export interface AnimationCueV1 {
+  id: string;
+  timeMs: number;
+  phase?: AnimationCuePhase;
+  data?: Record<string, string | number | boolean>;
+}
+
 export interface AnimationClipV1 {
   schema: 'roost2d.animation/v1';
   id: string;
@@ -101,6 +120,7 @@ export interface AnimationClipV1 {
   fallbackClipId?: string;
   defaultLayer?: string;
   mask?: string[];
+  cues?: AnimationCueV1[];
   tracks: AnimationTrackV1[];
 }
 
@@ -519,6 +539,20 @@ export function validateRigDefinition(rig: unknown): string[] {
       }
     }
   }
+
+  const socketEntries = rig.sockets === undefined ? [] : readEntries(rig.sockets, 'sockets', errors);
+  const socketIds = new Set<string>();
+  for (const socket of socketEntries ?? []) {
+    const label = isNonEmptyString(socket.id) ? socket.id : 'socket';
+    if (!isNonEmptyString(socket.id) || socketIds.has(socket.id)) errors.push(`duplicate or empty socket id: ${String(socket.id)}`);
+    else socketIds.add(socket.id);
+    if (socket.target !== 'bone' && socket.target !== 'attachment' && socket.target !== 'slot') errors.push(`${label}: unknown socket target ${String(socket.target)}`);
+    if (!isNonEmptyString(socket.targetId)) errors.push(`${label}: socket targetId is required`);
+    else if (socket.target === 'bone' && !bones.has(socket.targetId)) errors.push(`${label}: unknown bone ${socket.targetId}`);
+    else if (socket.target === 'attachment' && !attachments.has(socket.targetId)) errors.push(`${label}: unknown attachment ${socket.targetId}`);
+    else if (socket.target === 'slot' && !slots.has(socket.targetId)) errors.push(`${label}: unknown slot ${socket.targetId}`);
+    errors.push(...transformErrors(socket, label));
+  }
   return errors;
 }
 
@@ -574,6 +608,18 @@ export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
   if (clip.fallbackClipId !== undefined && !isNonEmptyString(clip.fallbackClipId)) errors.push(`${label}: fallbackClipId must be a string`);
   if (clip.defaultLayer !== undefined && !isNonEmptyString(clip.defaultLayer)) errors.push(`${label}: defaultLayer must be a string`);
   if (clip.mask !== undefined && (!Array.isArray(clip.mask) || !(clip.mask as unknown[]).every(isNonEmptyString))) errors.push(`${label}: mask must be an array of ids`);
+
+  const cues = clip.cues === undefined ? [] : readEntries(clip.cues, `${label}.cues`, errors);
+  const cueIds = new Set<string>();
+  let previousCueTime = -1;
+  for (const cue of cues ?? []) {
+    if (!isNonEmptyString(cue.id) || cueIds.has(cue.id)) errors.push(`${label}: duplicate or empty cue id ${String(cue.id)}`);
+    else cueIds.add(cue.id);
+    if (!isFiniteNumber(cue.timeMs) || cue.timeMs < previousCueTime || cue.timeMs < 0 || (durationMs !== undefined && cue.timeMs > durationMs)) errors.push(`${label}: invalid cue time ${String(cue.timeMs)}`);
+    else previousCueTime = cue.timeMs;
+    if (cue.phase !== undefined && !['anticipation', 'contact', 'release', 'recovery', 'complete'].includes(String(cue.phase))) errors.push(`${label}: invalid cue phase ${String(cue.phase)}`);
+    if (cue.data !== undefined && (!isRecord(cue.data) || Object.values(cue.data).some((value) => !['string', 'number', 'boolean'].includes(typeof value) || (typeof value === 'number' && !Number.isFinite(value))))) errors.push(`${label}: cue data values must be finite primitive values`);
+  }
 
   const tracks = readEntries(clip.tracks, `${label}.tracks`, errors);
   if (!tracks) return errors;

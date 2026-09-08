@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/assets",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Manifest-first, integrity-checked lazy asset loading for Roost2D.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "@roost2d/contracts": "0.4.1"
+    "@roost2d/contracts": "0.5.0"
   },
   "publishConfig": {
     "access": "public"

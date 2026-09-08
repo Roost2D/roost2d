@@ -147,6 +147,16 @@ test('animation validation rejects unknown targets and missing keyframes without
   assert.match(validateAnimationClip({ ...clip, loop: true, loopMode: 'bounce' }).join('\n'), /repeat or ping-pong/);
 });
 
+test('rig sockets and animation cues validate as presentation-only metadata', () => {
+  const socketRig = { ...rig, sockets: [{ id: 'muzzle', target: 'slot', targetId: 'body', x: 4, y: -2 }] };
+  assert.deepEqual(validateRigDefinition(socketRig), []);
+  assert.match(validateRigDefinition({ ...socketRig, sockets: [{ id: 'bad', target: 'slot', targetId: 'missing' }] }).join('\n'), /unknown slot/);
+  const cued = { ...clip, cues: [{ id: 'windup', timeMs: 0, phase: 'anticipation' }, { id: 'fire', timeMs: 60, phase: 'release', data: { effect: 'beam', strength: 1 } }] };
+  assert.deepEqual(validateAnimationClip(cued, socketRig), []);
+  assert.match(validateAnimationClip({ ...cued, cues: [{ id: 'late', timeMs: 101 }] }).join('\n'), /invalid cue time/);
+  assert.match(validateAnimationClip({ ...cued, cues: [{ id: 'bad-data', timeMs: 20, data: { nested: {} } }] }).join('\n'), /cue data/);
+});
+
 // S5 — every extra keyframe property used to be spread straight into the tween vars.
 test('animation keyframes accept only contract properties with correct types', () => {
   // JSON.parse is the real vector: unlike an object literal, it makes `__proto__` an own property.

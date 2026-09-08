@@ -1,6 +1,47 @@
 export interface Updatable { update(deltaMs: number): boolean; reset(): void; }
 export interface TransformTarget { x: number; y: number; scaleX?: number; scaleY?: number; alpha?: number; tint?: number; rotation?: number; }
 
+export type ProceduralEffectKind = 'beam' | 'slash' | 'projectile' | 'burst' | 'trail';
+
+/** Renderer-neutral description of a deterministic presentation effect. */
+export interface ProceduralEffectDescriptor {
+  id: string;
+  kind: ProceduralEffectKind;
+  durationMs: number;
+  color: number;
+  secondaryColor?: number;
+  length?: number;
+  width?: number;
+  radius?: number;
+  distance?: number;
+}
+
+export interface ProceduralEffectFrame {
+  progress: number;
+  alpha: number;
+  scale: number;
+  offsetX: number;
+  rotation: number;
+  complete: boolean;
+}
+
+/** Pure sampling keeps live rendering and exported frames on the same clock. */
+export function sampleProceduralEffect(effect: ProceduralEffectDescriptor, elapsedMs: number): ProceduralEffectFrame {
+  if (!(effect.durationMs > 0) || !Number.isFinite(effect.durationMs)) throw new Error('Effect durationMs must be positive');
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) throw new Error('Effect elapsedMs must be finite and non-negative');
+  const progress = Math.min(1, elapsedMs / effect.durationMs);
+  const envelope = Math.sin(progress * Math.PI);
+  const moving = effect.kind === 'projectile' || effect.kind === 'trail';
+  return {
+    progress,
+    alpha: progress >= 1 ? 0 : effect.kind === 'beam' ? Math.min(1, envelope * 2.4) : envelope,
+    scale: effect.kind === 'burst' ? 0.35 + progress * 1.25 : 0.75 + envelope * 0.25,
+    offsetX: moving ? (effect.distance ?? effect.length ?? 120) * progress : 0,
+    rotation: effect.kind === 'slash' ? -0.85 + progress * 1.7 : 0,
+    complete: progress >= 1,
+  };
+}
+
 /** Recycles self-updating effects. Distinct from `@roost2d/core`'s general-purpose `ObjectPool`. */
 export class EffectPool<T extends Updatable> {
   private readonly available: T[] = [];

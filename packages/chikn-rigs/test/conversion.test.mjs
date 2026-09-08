@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 import { readFile } from 'node:fs/promises';
-import { applyCharacterRecipe, CHARACTER_RECIPE_SCHEMA, CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, loadChiknRig, mergeUniqueSkin, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix, validateCharacterRecipe } from '../dist/index.js';
+import { applyCharacterRecipe, CHARACTER_RECIPE_SCHEMA, CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, createChiknActionClips, createChiknTraitAnimationProfiles, listChiknSpecials, loadChiknRig, mergeUniqueSkin, resolveChiknAction, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix, validateCharacterRecipe, validateChiknTraitAnimationProfiles } from '../dist/index.js';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -101,10 +101,51 @@ test('trait depth hierarchy and replacement ownership match character compositio
     for (const trait of Object.values(source.traits?.Feet ?? {}).filter(({ attachments }) => attachments.length === 1)) {
       const sourcePart = source.rig.find(({ name }) => name === trait.attachments[0].name);
       const bone = rig.bones.find(({ id }) => id === `bone:${trait.attachments[0].name}`);
-      assert.equal(bone.x, (sourcePart.x ?? 0) + 8, `${species} ${trait.attachments[0].name} right offset`);
+      assert.equal(bone.x, (sourcePart?.x ?? 0) + 8, `${species} ${trait.attachments[0].name} right offset`);
       assert.equal(bone.followSlotId, 'LegFoot A');
     }
   }
+});
+
+test('every Chikn and Roostr trait has one valid animation profile', async () => {
+  const expected = { chikn: 114, roostr: 162 };
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const profiles = createChiknTraitAnimationProfiles(definition);
+    assert.equal(profiles.length, expected[species]);
+    assert.deepEqual(validateChiknTraitAnimationProfiles(definition, profiles), []);
+    assert.equal(new Set(profiles.map(({ traitGroupId }) => traitGroupId)).size, profiles.length);
+    assert.ok(createChiknActionClips(definition).every((clip) => validateAnimationClip(clip, definition).length === 0));
+  }
+});
+
+test('action resolution chooses Katana, selectable Laser Eye and egg specials, and combined feet', async () => {
+  const sources = {
+    chikn: JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8')),
+    roostr: JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8')),
+  };
+  const roostr = convertLegacyRig(sources.roostr, 'roostr', 'Roostr');
+  const katana = resolveChiknAction({ species: 'roostr', traitGroupIds: ['torso/katana'] }, roostr, 'punch');
+  assert.equal(katana.motionFamily, 'blade');
+  assert.equal(katana.clip.id, 'roostr.action.punch.blade');
+  assert.equal(katana.effects[0].kind, 'slash');
+  assert.ok(katana.clip.tracks.some(({ target, targetId }) => target === 'attachment' && targetId === 'Trait_Torso_Katana'), 'the selected weapon gets its explicit follow-through track');
+  assert.notEqual(katana.clip.durationMs, createChiknActionClips(roostr).find(({ id }) => id === katana.clip.id).durationMs, 'the trait speed adjustment tailors the action timeline');
+  const laserRecipe = { species: 'roostr', traitGroupIds: ['head/laser-eye'] };
+  const laser = listChiknSpecials(laserRecipe, roostr)[0];
+  assert.equal(resolveChiknAction(laserRecipe, roostr, laser.id).effects[0].socketId, 'eyes');
+  assert.deepEqual(listChiknSpecials({ species: 'roostr', traitGroupIds: ['head/beard'] }, roostr), []);
+  assert.equal(resolveChiknAction({ species: 'roostr', traitGroupIds: ['feet/golden-feet'] }, roostr, 'kick').motionFamily, 'combined');
+  const tailRecipe = { species: 'roostr', traitGroupIds: ['tail/sword-tail'] };
+  const tail = listChiknSpecials(tailRecipe, roostr)[0];
+  assert.equal(resolveChiknAction(tailRecipe, roostr, tail.id).clip.id, 'roostr.action.special.tail');
+  const chikn = convertLegacyRig(sources.chikn, 'chikn', 'Chikn');
+  const cosmetic = resolveChiknAction({ species: 'chikn', traitGroupIds: ['head/black-sweatband'] }, chikn, 'punch');
+  assert.ok(cosmetic.clip.tracks.some(({ target, targetId }) => target === 'attachment' && targetId === 'Trait_Head_BlackSweatband'), 'cosmetic traits get recoil without gaining a special');
+  const eggRecipe = { species: 'chikn', traitGroupIds: ['tail/golden-egg'] };
+  const egg = listChiknSpecials(eggRecipe, chikn)[0];
+  assert.equal(resolveChiknAction(eggRecipe, chikn, egg.id).effects[0].kind, 'projectile');
 });
 
 test('character recipes validate and apply one trait per category', () => {
@@ -165,8 +206,10 @@ test('ships the complete animation catalog for both species with valid loop sema
     const rigSource = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
     const rig = convertLegacyRig(rigSource, species, species);
     const clips = convertLegacyAnimations(source, species);
+    const actionClips = createChiknActionClips(rig);
     assert.deepEqual(clips.map(({ id }) => id.replace(`${species}.`, '')), expectedNames);
     assert.equal(clips.length, 40);
+    assert.equal(new Set([...clips, ...actionClips].map(({ id }) => id)).size, clips.length + actionClips.length, 'trait-aware additions must retain every released catalog clip without duplicate IDs');
     for (const clip of clips) assert.deepEqual(validateAnimationClip(clip, rig), [], clip.id);
     const walk = clips.find(({ id }) => id.endsWith('.walk'));
     assert.equal(walk.loop, true);

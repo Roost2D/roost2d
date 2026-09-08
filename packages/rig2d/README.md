@@ -13,4 +13,6 @@ rig.applySkin('default');
 rig.play('idle', { layer: 'base' });
 ```
 
+For realtime actions, pass `controlled: true` and call `advance(deltaMs)` from the game clock. `sample(timeMs)` supports silent scrubbing and export, while animation cues report presentation timing without applying gameplay effects. `RigActionController` owns interruption and pose restoration.
+
 The display factory owns renderer objects; dispose the rig and its factory together. [Rig2D guide](https://github.com/Roost2D/roost2d/blob/main/docs/rig2d.md).

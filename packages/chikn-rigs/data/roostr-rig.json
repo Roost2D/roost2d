@@ -711,6 +711,15 @@
                     }
                 ]
             },
+            "Beard": {
+                "slot": "Head",
+                "attachments": [
+                    {
+                        "name": "Trait_Head_Beard",
+                        "texture": "Beard"
+                    }
+                ]
+            },
             "Chef": {
                 "slot": "Head",
                 "attachments": [
@@ -753,6 +762,10 @@
                     {
                         "name": "Trait_Head_Permabull",
                         "texture": "Permabull"
+                    },
+                    {
+                        "name": "Trait_Head_Permabull_B",
+                        "texture": "Permabull_B"
                     }
                 ]
             },
@@ -1243,7 +1256,7 @@
                     },
                     {
                         "name": "Trait_Torso_SnibSnibs_B",
-                        "texture": "Snip Snips_B"
+                        "texture": "Snib Snibs_B"
                     }
                 ]
             },
@@ -1803,6 +1816,15 @@
                     {
                         "name": "Trait_Feet_GoldenFeet",
                         "texture": "Golden Feet"
+                    }
+                ]
+            },
+            "IronClaw": {
+                "slot": "Feet",
+                "attachments": [
+                    {
+                        "name": "Trait_Feet_IronClaw",
+                        "texture": "IronClaw"
                     }
                 ]
             },

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2026-09-08
+
+- Add validated animation cues and named rig sockets while preserving existing serialized rig and clip compatibility.
+- Add controlled sampling, crossed-cue delivery, action interruption/restoration, and deterministic procedural Pixi effects.
+- Add exhaustive Chikn/Roostr trait motion profiles, weapon-aware Punch, flying spin Kick, selectable beam/projectile/cast/tail specials, and the supporting brawler movement set.
+- Reconcile missing and multipart Chikn/Roostr rig traits, including Polygon necklaces, Beard, IronClaw, PermaBull, Snib Snibs, and combined colored feet.
+
 ## 0.4.1 - 2026-09-07
 
 - Add `@roost2d/blueprint`: canonical `GameBlueprintV1`, capability validation, generated JSON Schema and deterministic foundation sessions.

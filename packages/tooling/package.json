@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@roost2d/contracts": "0.6.1",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.4"
   },
   "publishConfig": {
     "access": "public"

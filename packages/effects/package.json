@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/effects",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Renderer-neutral effect lifecycle and pooling utilities.",
   "license": "Apache-2.0",
   "repository": {

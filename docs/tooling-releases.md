@@ -14,7 +14,7 @@ roost2d project create ./my-game
 
 Atlas builds are deterministic and support profiles, padding, extrusion, power-of-two pages, and dry runs. CI also enforces the package boundary that keeps tooling out of browser runtime graphs.
 
-Release candidates publish all lockstep packages under npm's `next` tag. A consumer smoke workspace imports all 13 package entry points before stable promotion to `latest`.
+Release candidates publish all lockstep packages under npm's `next` tag. A consumer smoke workspace imports all 14 package entry points before stable promotion to `latest`.
 
 ## Release operator runbook
 

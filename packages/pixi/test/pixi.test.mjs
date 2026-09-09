@@ -49,6 +49,51 @@ test('procedural effects share one deterministic Pixi lifecycle', () => {
   root.destroy({ children: true });
 });
 
+test('rig effects clone the exact attachment and detached trajectories ignore recovery motion', () => {
+  const texture = new Texture({ source: Texture.WHITE.source });
+  const definition = {
+    schema: 'roost2d.rig/v1', id: 'effect-bird', displayName: 'Effect bird', defaultSkinId: 'white',
+    bones: [
+      { id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      { id: 'pose', parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      { id: 'bone:egg', parentId: 'pose', x: -12, y: 8, rotation: .2, scaleX: 1.1, scaleY: .9 },
+    ],
+    slots: [{ id: 'Tail', boneId: 'bone:egg', zIndex: 0, defaultAttachmentId: 'egg' }],
+    attachments: [{ id: 'egg', slotId: 'Tail', boneId: 'bone:egg', texture: { assetId: 'egg' }, zIndex: 0, anchorX: .4, anchorY: .6 }],
+    skins: { white: { Tail: 'egg' } },
+  };
+  const factory = new PixiRigFactory(new Map([['egg', texture]]));
+  const rig = new RigRuntime(definition, factory);
+  const source = rig.node('attachment', 'egg').display;
+  source.tint = 0xffcc55;
+  const descriptor = {
+    id: 'egg-shot', kind: 'projectile', durationMs: 400, color: 0xffffff,
+    origin: { target: 'attachment', targetId: 'egg' }, space: 'detached',
+    trajectory: { kind: 'arc', targetOffset: { x: 100, y: 20 }, arcHeight: 24, rotationTurns: 1 },
+    visual: { kind: 'attachment-clone', attachmentId: 'egg' },
+  };
+  const effect = PixiProceduralEffect.fromRig(descriptor, rig, factory.root);
+  const clone = effect.display.children[0];
+  assert.equal(clone.texture, texture, 'the released object uses the displayed trait texture object');
+  assert.deepEqual([clone.anchor.x, clone.anchor.y, clone.tint], [.4, .6, 0xffcc55]);
+  assert.equal(effect.display.parent, factory.root);
+  const emissionX = effect.display.x;
+  rig.node('bone', 'bone:egg').x += 50;
+  assert.equal(effect.display.x, emissionX, 'recovery motion cannot drag a detached projectile');
+  effect.sample(200);
+  assert.ok(effect.display.x > emissionX);
+  assert.ok(effect.display.y < 20, 'the midpoint includes the shallow upward arc');
+  effect.destroy();
+
+  rig.setMirrored(true);
+  const mirrored = PixiProceduralEffect.fromRig(descriptor, rig, factory.root);
+  const mirroredOrigin = mirrored.display.x;
+  mirrored.sample(200);
+  assert.ok(mirrored.display.x < mirroredOrigin, 'positive local X follows externally mirrored facing');
+  mirrored.destroy();
+  rig.dispose(); factory.destroyRoot(); texture.destroy(false);
+});
+
 test('PixiAssetLoader requires an integrity loader', () => {
   const resolver = new AssetManifestResolver(manifest, { baseUrl: 'https://assets.example/' });
   assert.throws(() => new PixiAssetLoader(resolver), /integrity-checked bytes/);

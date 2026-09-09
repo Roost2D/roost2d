@@ -1,5 +1,6 @@
 import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigDefinitionV1 } from '@roost2d/contracts';
 export * from './actions.js';
+export * from './trait-profiles.js';
 
 interface LegacyPart { name: string; texture?: string; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; z_index?: number; pivot_x?: number; pivot_y?: number; }
 interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; }
@@ -216,11 +217,14 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     schema: 'roost2d.rig/v1', id, displayName,
     bones: [
       { id: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      // The game-facing root remains untouched by authored actions. Rear-facing attacks flip this
+      // inner pose branch and therefore compose cleanly with the caller's mirrored state.
+      { id: 'pose', parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
       ...rigParts.map((part) => {
         const followSlotId = traitFollowSlot(part.name);
         return {
           id: `bone:${part.name}`,
-          ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'root' }),
+          ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'pose' }),
           x: (part.x ?? 0) + (singleFeetAttachmentIds.has(part.name) ? SINGLE_FEET_TRAIT_X_OFFSET : 0),
           y: part.y ?? 0,
           rotation: radians(part.rotation ?? 0),

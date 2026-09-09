@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0 - 2026-09-09
+
+- Replace Chikn/Roostr trait-name regex classification with one checked-in curated profile for all 276 groups, including explicit combat presets, calibrated origins, timing, and secondary motion.
+- Add fighter-local aimed actions, exact attachment-clone projectiles, detached/following effect spaces, two-dimensional arcs, and cue callbacks sampled at their exact authored pose.
+- Add a neutral internal pose bone plus a dedicated 1,000 ms Golden Egg and Very Fresh Egg lay/launch/regrow action while preserving game-owned facing and existing action IDs and defaults.
+- Expand Katana, swords, Snip Snips, tools, Peacemaker, disks, pan, sonic, flame, wand, energy, tail, exhaust, and footwear animation behavior with targeted procedural VFX.
+
 ## 0.5.0 - 2026-09-08
 
 - Add validated animation cues and named rig sockets while preserving existing serialized rig and clip compatibility.

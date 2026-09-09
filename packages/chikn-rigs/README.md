@@ -40,11 +40,15 @@ Trait-aware brawler actions are resolved from the same recipe:
 
 ```ts
 const choices = listAvailableChiknActions(recipe, definition);
-const action = resolveChiknAction(recipe, definition, choices[0].id);
+const action = resolveChiknAction(recipe, definition, choices[0].id, {
+  targetOffset: { x: 210, y: -24 }, // fighter-local; positive X is current forward
+});
 const playback = new RigActionController(rig).play(action.clip, { controlled: true });
 playback.advance(frameMs);
 ```
 
-Every attachment group receives an immutable motion profile with its supported actions, attachment targets, amplitude, and speed. Weapons can replace the punch motion, feet select the paired or combined flying spin kick, combat-capable tails use a tail-strike foundation, and `listChiknSpecials` returns only specials granted by equipped traits.
+Every attachment group receives one checked-in immutable profile with its supported actions, driver attachments, calibrated offsets and timing, functional preset, and explicit rigid/soft/dangling/cloth/feather/bulky/elastic secondary motion. Weapons replace Punch with their own draw, slash, thrust, golf, pickaxe, shot, swing, or casting motion. Feet select tailored paired or combined kicks, and `listChiknSpecials` returns only specials granted by equipped traits.
+
+Golden Egg and Very Fresh Egg use a dedicated 1,000 ms action: the inner `pose` bone turns away while game-owned root facing stays untouched, the bird bends, the displayed egg releases at 400 ms, and a texture-identical detached clone follows an aimed arc until presentation contact at 800 ms. The equipped egg regrows and the setup pose returns at 1,000 ms. Floppy Disk and Omelette also launch exact equipped art; Omelette uses its pan motion and is never classified as an egg.
 
 Resolve each `definition.attachments[].texture.assetId` through a separately hosted Chikn runtime manifest before creating the display factory. [Chikn integration tutorial](https://github.com/Roost2D/roost2d/blob/main/docs/chikn-assets.md).

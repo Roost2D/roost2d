@@ -12,6 +12,6 @@ const effect = scalePop(target, 0.2, 180);
 effect.update(deltaMs);
 ```
 
-`sampleProceduralEffect` deterministically samples generic beam, slash, projectile, burst, and trail descriptors. Renderer adapters can therefore show the same effect from a live clock or an export timestamp.
+`sampleProceduralEffect` deterministically samples generic beam, slash, projectile, burst, and trail descriptors. Descriptors can name a socket or attachment origin, choose following or detached space, describe linear or arcing two-dimensional trajectories, and request either a procedural visual or an exact attachment clone. Renderer adapters can therefore show the same effect from a live clock or an export timestamp.
 
 Effects mutate small structural targets rather than importing a renderer. Recycle them with `EffectPool`, which is distinct from the general-purpose `ObjectPool` in `@roost2d/core`. [Effects guide](https://github.com/Roost2D/roost2d/blob/main/docs/effects-audio.md).

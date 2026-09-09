@@ -201,6 +201,9 @@ export class RigRuntime {
 
   activeAttachmentIds(): readonly string[] { return [...this.selectedAttachmentIds()]; }
 
+  /** Current game-owned facing. Authored actions never change this value. */
+  get isMirrored(): boolean { return this.mirrored; }
+
   setMirrored(mirrored: boolean): void {
     this.mirrored = mirrored;
     const root = this.definition.bones.find(({ parentId }) => !parentId); if (!root) return;
@@ -388,7 +391,9 @@ class RigAnimationPlayback implements RigAnimationHandle {
     if (!Number.isFinite(timeMs) || timeMs < 0) throw new Error('Rig sample time must be a finite non-negative number');
     if (this.#killed) return;
     const next = Math.min(timeMs, this.totalDurationMs());
-    if (emitCues && next >= this.#elapsedMs) this.emitCrossedCues(this.#elapsedMs, next);
+    // Controlled callers can skip many render frames. Visit each crossed cue pose before its
+    // callback so a projectile snapshots the authored release socket instead of the later pose.
+    if (emitCues && next >= this.#elapsedMs) this.emitCrossedCues(this.#elapsedMs, next, true);
     this.timeline.pause().totalTime(next / 1000, true);
     this.#elapsedMs = next;
     if (next >= this.totalDurationMs()) this.finish();
@@ -406,11 +411,12 @@ class RigAnimationPlayback implements RigAnimationHandle {
     this.#elapsedMs = next;
   }
 
-  private emitCrossedCues(previousMs: number, nextMs: number): void {
+  private emitCrossedCues(previousMs: number, nextMs: number, sampleCuePose = false): void {
     for (const cue of this.clip.cues ?? []) {
       if (this.#emittedCues.has(cue.id)) continue;
       if ((cue.timeMs > previousMs || (previousMs === 0 && cue.timeMs === 0)) && cue.timeMs <= nextMs) {
         this.#emittedCues.add(cue.id);
+        if (sampleCuePose) this.timeline.pause().totalTime(cue.timeMs / 1000, true);
         this.options.onCue?.({ clipId: this.clip.id, cue, elapsedMs: cue.timeMs });
       }
     }

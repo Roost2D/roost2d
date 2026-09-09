@@ -38,6 +38,20 @@ test('procedural effects sample deterministically on a caller-owned clock', () =
   const descriptor = { id: 'egg', kind: 'projectile', durationMs: 400, color: 0xffffff, distance: 160 };
   assert.deepEqual(sampleProceduralEffect(descriptor, 200), sampleProceduralEffect(descriptor, 200));
   assert.equal(sampleProceduralEffect(descriptor, 200).offsetX, 80);
+  assert.equal(sampleProceduralEffect(descriptor, 200).offsetY, 0);
   assert.equal(sampleProceduralEffect(descriptor, 400).complete, true);
   assert.throws(() => sampleProceduralEffect({ ...descriptor, durationMs: 0 }, 0), /positive/);
+});
+
+test('aimed projectiles sample a two-dimensional arc and rotation', () => {
+  const descriptor = {
+    id: 'aimed-egg', kind: 'projectile', durationMs: 400, color: 0xffffff,
+    trajectory: { kind: 'arc', targetOffset: { x: 200, y: 40 }, arcHeight: 30, rotationTurns: 1 },
+  };
+  const middle = sampleProceduralEffect(descriptor, 200);
+  assert.equal(middle.offsetX, 100);
+  assert.equal(middle.offsetY, -10);
+  assert.equal(middle.rotation, Math.PI);
+  const end = sampleProceduralEffect(descriptor, 400);
+  assert.deepEqual([end.offsetX, end.offsetY], [200, 40]);
 });

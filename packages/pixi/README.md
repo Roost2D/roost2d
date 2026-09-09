@@ -22,4 +22,6 @@ const textures = new PixiAssetLoader(resolver, new LazyAssetLoader(resolver));
 const texture = await textures.load('chikn-flat/admiral');
 ```
 
+Use `PixiProceduralEffect.fromRig(descriptor, rig, factory.root)` for trait actions. It resolves socket or exact-attachment origins, clones an equipped attachment's current texture and presentation properties when requested, and snapshots detached projectiles under the stable rig root. Following effects keep tracking their origin during recovery.
+
 The `LazyAssetLoader` is required: every texture is decoded from bytes it has already integrity-checked, and the URL is never fetched a second time. Because these sources stay outside Pixi's `Assets` cache, `unload(assetId)` and `clear()` own their teardown — call one of them, plus `host.dispose()`, during teardown. [Complete quick start](https://github.com/Roost2D/roost2d/blob/main/docs/getting-started.md).

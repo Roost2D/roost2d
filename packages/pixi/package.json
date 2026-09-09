@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/pixi",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "PixiJS v8 renderer adapter for Roost2D.",
   "license": "Apache-2.0",
   "repository": {
@@ -22,10 +22,10 @@
     }
   },
   "dependencies": {
-    "@roost2d/assets": "0.5.0",
-    "@roost2d/contracts": "0.5.0",
-    "@roost2d/effects": "0.5.0",
-    "@roost2d/rig2d": "0.5.0"
+    "@roost2d/assets": "0.6.0",
+    "@roost2d/contracts": "0.6.0",
+    "@roost2d/effects": "0.6.0",
+    "@roost2d/rig2d": "0.6.0"
   },
   "peerDependencies": {
     "pixi.js": "^8.0.0"

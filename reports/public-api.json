@@ -59,14 +59,21 @@
       "exports": [
         "CHARACTER_RECIPE_SCHEMA",
         "CHIKN_RIG_ART_SCALE",
+        "CURATED_TRAIT_PROFILES",
         "CharacterRecipeRuntime",
         "CharacterRecipeV1",
         "ChiknActionChoice",
+        "ChiknActionContext",
         "ChiknActionInput",
         "ChiknActionRecipe",
+        "ChiknKickPreset",
         "ChiknMotionFamily",
+        "ChiknPunchPreset",
+        "ChiknSecondaryMotion",
+        "ChiknSpecialPreset",
         "ChiknSpecies",
         "ChiknTraitAnimationProfile",
+        "CuratedTraitProfile",
         "ResolvedChiknAction",
         "ResolvedChiknEffect",
         "UNIQUE_SKINS",
@@ -78,6 +85,7 @@
         "convertLegacyRig",
         "createChiknActionClips",
         "createChiknTraitAnimationProfiles",
+        "curatedTraitProfile",
         "listAvailableChiknActions",
         "listChiknSpecials",
         "loadChiknAnimations",
@@ -94,7 +102,7 @@
         "validateCharacterRecipe",
         "validateChiknTraitAnimationProfiles"
       ],
-      "declarationSha256": "fe0a79b00728b7538c97871d33d09efb7a343c199fe2e92a93a6dc026591f2b7"
+      "declarationSha256": "1dd176e354c64111dcb77fdf6d176f904cf58bccd2ab0952607056deaacd2a8d"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
@@ -187,7 +195,11 @@
       "entrypoint": ".",
       "exports": [
         "Easing",
+        "EffectOrigin",
+        "EffectPoint",
         "EffectPool",
+        "EffectTrajectory",
+        "EffectVisual",
         "Particle",
         "ParticleEmitter",
         "ProceduralEffectDescriptor",
@@ -204,7 +216,7 @@
         "scalePop",
         "tintFlash"
       ],
-      "declarationSha256": "76398e1fa7622582aa3ef6413f74dfa53ba3b698caa8b864f244e3b7eae59445"
+      "declarationSha256": "a2c5922eec3fd7084b27e5a494ecc8421fbeab8030d66ed4da262cd5ffaa13e5"
     },
     "@roost2d/input": {
       "entrypoint": ".",
@@ -276,7 +288,7 @@
         "PixiRigFactory",
         "PixiRigNode"
       ],
-      "declarationSha256": "80355a0d3395bd6dec496ac846b297f1f462d06aeffcf4d78971ae098a0fdcfd"
+      "declarationSha256": "4c33081421243c42ef599d4bad8dcfdb5b06afacedf1e9d139c7a660f0c3a4ac"
     },
     "@roost2d/rig2d": {
       "entrypoint": ".",
@@ -290,7 +302,7 @@
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "454be35ae745b0d94beb3b412f7d091d9ef178df604390552be84d874f9105ba"
+      "declarationSha256": "bc79085ebb95c4d0e85ccd6ebce7128b9ae9bccf9638ff9b493384c7aa23b01a"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",

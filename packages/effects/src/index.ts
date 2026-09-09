@@ -3,6 +3,29 @@ export interface TransformTarget { x: number; y: number; scaleX?: number; scaleY
 
 export type ProceduralEffectKind = 'beam' | 'slash' | 'projectile' | 'burst' | 'trail';
 
+export interface EffectPoint { x: number; y: number; }
+
+/** A rig-relative presentation origin. Renderers may fall back to legacy socket metadata. */
+export interface EffectOrigin {
+  target: 'socket' | 'attachment';
+  targetId: string;
+  x?: number;
+  y?: number;
+  rotation?: number;
+}
+
+export interface EffectTrajectory {
+  kind: 'linear' | 'arc';
+  /** Fighter-local destination. Positive X is the fighter's current forward direction. */
+  targetOffset: EffectPoint;
+  arcHeight?: number;
+  rotationTurns?: number;
+}
+
+export type EffectVisual =
+  | { kind: 'procedural' }
+  | { kind: 'attachment-clone'; attachmentId: string };
+
 /** Renderer-neutral description of a deterministic presentation effect. */
 export interface ProceduralEffectDescriptor {
   id: string;
@@ -14,6 +37,11 @@ export interface ProceduralEffectDescriptor {
   width?: number;
   radius?: number;
   distance?: number;
+  /** Origin and movement are optional so every v0.5 descriptor remains valid. */
+  origin?: EffectOrigin;
+  space?: 'follow' | 'detached';
+  trajectory?: EffectTrajectory;
+  visual?: EffectVisual;
 }
 
 export interface ProceduralEffectFrame {
@@ -21,6 +49,7 @@ export interface ProceduralEffectFrame {
   alpha: number;
   scale: number;
   offsetX: number;
+  offsetY: number;
   rotation: number;
   complete: boolean;
 }
@@ -32,12 +61,20 @@ export function sampleProceduralEffect(effect: ProceduralEffectDescriptor, elaps
   const progress = Math.min(1, elapsedMs / effect.durationMs);
   const envelope = Math.sin(progress * Math.PI);
   const moving = effect.kind === 'projectile' || effect.kind === 'trail';
+  const target = effect.trajectory?.targetOffset;
+  const offsetX = moving ? (target?.x ?? effect.distance ?? effect.length ?? 120) * progress : 0;
+  const linearY = moving ? (target?.y ?? 0) * progress : 0;
+  const arc = moving && effect.trajectory?.kind === 'arc'
+    ? -4 * (effect.trajectory.arcHeight ?? 0) * progress * (1 - progress)
+    : 0;
+  const turns = moving ? (effect.trajectory?.rotationTurns ?? 0) * Math.PI * 2 * progress : 0;
   return {
     progress,
     alpha: progress >= 1 ? 0 : effect.kind === 'beam' ? Math.min(1, envelope * 2.4) : envelope,
     scale: effect.kind === 'burst' ? 0.35 + progress * 1.25 : 0.75 + envelope * 0.25,
-    offsetX: moving ? (effect.distance ?? effect.length ?? 120) * progress : 0,
-    rotation: effect.kind === 'slash' ? -0.85 + progress * 1.7 : 0,
+    offsetX,
+    offsetY: linearY + arc,
+    rotation: (effect.kind === 'slash' ? -0.85 + progress * 1.7 : 0) + turns,
     complete: progress >= 1,
   };
 }

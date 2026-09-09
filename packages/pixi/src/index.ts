@@ -1,6 +1,6 @@
 import { Application, Container, Graphics, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
-import type { RigDisplayFactory, RigDisplayNode } from '@roost2d/rig2d';
+import type { RigDisplayFactory, RigDisplayNode, RigRuntime } from '@roost2d/rig2d';
 import type { AtlasFrameV1, TextureRef } from '@roost2d/contracts';
 import { sampleProceduralEffect, type ProceduralEffectDescriptor } from '@roost2d/effects';
 
@@ -264,27 +264,80 @@ export class PixiRigFactory implements RigDisplayFactory {
 /** Pixi renderer for the generic deterministic effect descriptors. */
 export class PixiProceduralEffect {
   readonly display = new Container();
-  private readonly graphic = new Graphics();
+  private graphic?: Graphics;
+  private sampleDescriptor: ProceduralEffectDescriptor;
+  private baseX = 0;
+  private baseY = 0;
+  private baseRotation = 0;
+  private baseScaleX = 1;
+  private baseScaleY = 1;
+  private followOrigin?: { source: Container; x: number; y: number; rotation: number };
 
   constructor(readonly descriptor: ProceduralEffectDescriptor, parent: Container | PixiRigNode) {
+    this.sampleDescriptor = descriptor;
     (parent instanceof PixiRigNode ? parent.display : parent).addChild(this.display);
-    this.display.addChild(this.graphic);
+    this.graphic = new Graphics(); this.display.addChild(this.graphic);
     this.draw();
     this.sample(0);
   }
 
+  /**
+   * Creates an effect at its authored rig origin. Detached effects are immediately reparented while
+   * preserving the release transform, so later recoil or recovery cannot drag a projectile.
+   */
+  static fromRig(descriptor: ProceduralEffectDescriptor, rig: RigRuntime, effectRoot: Container): PixiProceduralEffect {
+    const origin = descriptor.origin ?? { target: 'socket' as const, targetId: 'weapon' };
+    const node = rig.node(origin.target, origin.targetId);
+    if (!(node instanceof PixiRigNode)) throw new Error(`Effect origin is unavailable in the Pixi rig: ${origin.target}:${origin.targetId}`);
+    const originParent = node.display.parent ?? effectRoot;
+    const effect = new PixiProceduralEffect(descriptor, originParent);
+    effect.display.setFromMatrix(node.display.localTransform);
+    effect.display.position.set(effect.display.x + (origin.x ?? 0), effect.display.y + (origin.y ?? 0));
+    effect.display.rotation += origin.rotation ?? 0;
+    if (descriptor.visual?.kind === 'attachment-clone') {
+      const visualNode = rig.node('attachment', descriptor.visual.attachmentId);
+      if (!(visualNode instanceof PixiRigNode) || !(visualNode.display instanceof Sprite)) throw new Error(`Attachment clone source is not a Pixi sprite: ${descriptor.visual.attachmentId}`);
+      effect.useAttachmentClone(visualNode.display);
+    }
+    if (descriptor.space === 'detached') effectRoot.reparentChild(effect.display);
+    else effect.followOrigin = { source: node.display, x: origin.x ?? 0, y: origin.y ?? 0, rotation: origin.rotation ?? 0 };
+    effect.captureBase();
+    const target = descriptor.trajectory?.targetOffset;
+    if (target) {
+      const targetX = target.x * (rig.isMirrored ? -1 : 1);
+      const delta = { x: targetX - effect.baseX, y: target.y - effect.baseY };
+      effect.sampleDescriptor = { ...descriptor, trajectory: { ...descriptor.trajectory!, targetOffset: delta }, distance: Math.hypot(delta.x, delta.y) };
+      if (descriptor.kind === 'beam') {
+        effect.baseRotation = Math.atan2(delta.y, delta.x);
+        effect.redrawBeam(Math.hypot(delta.x, delta.y));
+      }
+    }
+    effect.sample(0);
+    return effect;
+  }
+
   sample(elapsedMs: number): boolean {
-    const frame = sampleProceduralEffect(this.descriptor, elapsedMs);
-    this.display.alpha = frame.alpha;
-    this.display.scale.set(frame.scale);
-    this.display.x = frame.offsetX;
-    this.display.rotation = frame.rotation;
+    if (this.followOrigin) {
+      this.display.setFromMatrix(this.followOrigin.source.localTransform);
+      this.display.position.set(this.display.x + this.followOrigin.x, this.display.y + this.followOrigin.y);
+      this.display.rotation += this.followOrigin.rotation;
+      this.captureBase();
+    }
+    const frame = sampleProceduralEffect(this.sampleDescriptor, elapsedMs);
+    const exactClone = this.descriptor.visual?.kind === 'attachment-clone';
+    this.display.alpha = exactClone ? (frame.complete ? 0 : 1) : frame.alpha;
+    const sampledScale = exactClone ? 1 : frame.scale;
+    this.display.scale.set(this.baseScaleX * sampledScale, this.baseScaleY * sampledScale);
+    this.display.x = this.baseX + frame.offsetX;
+    this.display.y = this.baseY + frame.offsetY;
+    this.display.rotation = this.baseRotation + frame.rotation;
     return frame.complete;
   }
 
   destroy(): void { this.display.destroy({ children: true }); }
 
   private draw(): void {
+    if (!this.graphic) return;
     const color = this.descriptor.color;
     const secondary = this.descriptor.secondaryColor ?? 0xffffff;
     const length = this.descriptor.length ?? 120;
@@ -303,5 +356,28 @@ export class PixiProceduralEffect {
     } else {
       this.graphic.roundRect(-length * 0.5, -width * 0.5, length, width, width * 0.5).fill({ color, alpha: 0.55 });
     }
+  }
+
+  private redrawBeam(length: number): void {
+    if (this.descriptor.kind !== 'beam' || !this.graphic) return;
+    this.graphic.clear();
+    const width = this.descriptor.width ?? 8;
+    this.graphic.rect(0, -width / 2, length, width).fill({ color: this.descriptor.color, alpha: .78 });
+    this.graphic.rect(0, -width / 6, length, width / 3).fill({ color: this.descriptor.secondaryColor ?? 0xffffff, alpha: .95 });
+  }
+
+  private useAttachmentClone(source: Sprite): void {
+    this.graphic?.destroy(); this.graphic = undefined;
+    const clone = new Sprite(source.texture);
+    clone.anchor.copyFrom(source.anchor);
+    clone.tint = source.tint;
+    clone.alpha = source.alpha;
+    clone.blendMode = source.blendMode;
+    this.display.addChild(clone);
+  }
+
+  private captureBase(): void {
+    this.baseX = this.display.x; this.baseY = this.display.y; this.baseRotation = this.display.rotation;
+    this.baseScaleX = this.display.scale.x; this.baseScaleY = this.display.scale.y;
   }
 }

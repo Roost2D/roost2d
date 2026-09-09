@@ -3,6 +3,7 @@ import test from 'node:test';
 import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 import { readFile } from 'node:fs/promises';
 import { applyCharacterRecipe, CHARACTER_RECIPE_SCHEMA, CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, createChiknActionClips, createChiknTraitAnimationProfiles, listChiknSpecials, loadChiknRig, mergeUniqueSkin, resolveChiknAction, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix, validateCharacterRecipe, validateChiknTraitAnimationProfiles } from '../dist/index.js';
+import { RigActionController, RigRuntime } from '@roost2d/rig2d';
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -146,6 +147,129 @@ test('action resolution chooses Katana, selectable Laser Eye and egg specials, a
   const eggRecipe = { species: 'chikn', traitGroupIds: ['tail/golden-egg'] };
   const egg = listChiknSpecials(eggRecipe, chikn)[0];
   assert.equal(resolveChiknAction(eggRecipe, chikn, egg.id).effects[0].kind, 'projectile');
+});
+
+test('curated actions aim exact trait artwork and keep cosmetic lookalikes cosmetic', async () => {
+  const sources = {
+    chikn: JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8')),
+    roostr: JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8')),
+  };
+  const chikn = convertLegacyRig(sources.chikn, 'chikn', 'Chikn');
+  const roostr = convertLegacyRig(sources.roostr, 'roostr', 'Roostr');
+  for (const traitGroupId of ['tail/golden-egg', 'tail/very-fresh-egg']) {
+    const recipe = { species: 'chikn', traitGroupIds: [traitGroupId], mirrored: true };
+    const special = listChiknSpecials(recipe, chikn)[0];
+    const targetOffset = { x: 236, y: -41 };
+    const action = resolveChiknAction(recipe, chikn, special.id, { targetOffset });
+    assert.equal(action.clip.id, 'chikn.action.special.egg');
+    assert.equal(action.clip.durationMs, 1000);
+    assert.deepEqual(action.clip.cues.map(({ id, timeMs }) => [id, timeMs]), [['anticipation', 0], ['turn-away', 160], ['release', 400], ['contact', 800], ['recovery', 800], ['turn-back', 920], ['complete', 1000]]);
+    assert.deepEqual(action.targetOffset, targetOffset);
+    assert.notEqual(action.targetOffset, targetOffset, 'the supplied target is captured by value');
+    const effect = action.effects[0];
+    const exactAttachment = chikn.attachmentGroups[traitGroupId].attachmentIds[0];
+    assert.deepEqual(effect.visual, { kind: 'attachment-clone', attachmentId: exactAttachment });
+    assert.deepEqual(effect.origin, { target: 'attachment', targetId: exactAttachment, x: 0, y: 3 });
+    assert.deepEqual(effect.trajectory, { kind: 'arc', targetOffset, arcHeight: 28, rotationTurns: 1 });
+    assert.equal(effect.space, 'detached');
+    assert.equal(effect.durationMs, 400);
+    const attachmentTrack = action.clip.tracks.find(({ target, targetId }) => target === 'attachment' && targetId === exactAttachment);
+    assert.equal(attachmentTrack.keyframes.find(({ timeMs }) => timeMs === 400).visible, false);
+    assert.equal(attachmentTrack.keyframes.find(({ timeMs }) => timeMs === 800).visible, true);
+    const poseTrack = action.clip.tracks.find(({ target, targetId }) => target === 'bone' && targetId === 'pose');
+    assert.equal(poseTrack.keyframes.find(({ timeMs }) => timeMs === 160).scaleX, -1);
+    assert.equal(poseTrack.keyframes.at(-1).scaleX, 1);
+  }
+
+  for (const traitGroupId of ['head/admiral', 'head/maverick', 'tail/golden-plumage', 'tail/orange-plumage', 'tail/red-plumage']) {
+    if (chikn.attachmentGroups[traitGroupId]) assert.deepEqual(listChiknSpecials({ species: 'chikn', traitGroupIds: [traitGroupId] }, chikn), [], traitGroupId);
+  }
+  for (const traitGroupId of ['head/batter-up', 'neck/bone-necklace']) {
+    if (!roostr.attachmentGroups[traitGroupId]) continue;
+    assert.deepEqual(listChiknSpecials({ species: 'roostr', traitGroupIds: [traitGroupId] }, roostr), [], traitGroupId);
+    assert.equal(resolveChiknAction({ species: 'roostr', traitGroupIds: [traitGroupId] }, roostr, 'punch').sourceTraitGroupId, undefined);
+  }
+  const omeletteRecipe = { species: 'roostr', traitGroupIds: ['torso/omelette'] };
+  const omelette = resolveChiknAction(omeletteRecipe, roostr, listChiknSpecials(omeletteRecipe, roostr)[0].id);
+  assert.equal(omelette.motionFamily, 'projectile');
+  assert.deepEqual(omelette.effects[0].visual, { kind: 'attachment-clone', attachmentId: 'Trait_Torso_Omelette' });
+  assert.notEqual(omelette.clip.id, 'roostr.action.special.egg');
+});
+
+test('every curated weapon, tail and footwear subtype resolves without regex classification', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const profiles = createChiknTraitAnimationProfiles(definition);
+    for (const profile of profiles.filter(({ punchPreset }) => punchPreset)) {
+      const action = resolveChiknAction({ species, traitGroupIds: [profile.traitGroupId] }, definition, 'punch', { targetOffset: { x: 140, y: 25 } });
+      assert.equal(action.sourceTraitGroupId, profile.traitGroupId);
+      assert.ok(action.clip.tracks.some(({ target, targetId }) => target === 'attachment' && profile.attachmentTargets.includes(targetId)), profile.traitGroupId);
+    }
+    for (const profile of profiles.filter(({ kickPreset }) => kickPreset)) {
+      const action = resolveChiknAction({ species, traitGroupIds: [profile.traitGroupId] }, definition, 'kick');
+      assert.equal(action.sourceTraitGroupId, profile.traitGroupId);
+      assert.ok(['paired', 'combined'].includes(action.motionFamily));
+    }
+    for (const profile of profiles.filter(({ special }) => special)) {
+      const action = resolveChiknAction({ species, traitGroupIds: [profile.traitGroupId] }, definition, profile.special.id);
+      assert.ok(action.effects.length > 0, profile.traitGroupId);
+    }
+  }
+});
+
+test('action targets reject non-finite values and default to fixed forward compatibility', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
+  const chikn = convertLegacyRig(source, 'chikn', 'Chikn');
+  assert.deepEqual(resolveChiknAction({ species: 'chikn', traitGroupIds: [] }, chikn, 'punch').targetOffset, { x: 180, y: 0 });
+  assert.throws(() => resolveChiknAction({ species: 'chikn', traitGroupIds: [] }, chikn, 'punch', { targetOffset: { x: Infinity, y: 0 } }), /finite/);
+});
+
+test('egg playback restores its internal turn, texture visibility, and external facing after completion or cancellation', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
+  const definition = convertLegacyRig(source, 'chikn', 'Chikn');
+  const nodes = new Map();
+  const makeNode = (id) => {
+    const node = { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, alpha: 1, visible: true, zIndex: 0, tint: 0xffffff, anchorX: 0, anchorY: 0 };
+    nodes.set(id, node); return node;
+  };
+  const factory = { createBone: makeNode, createAttachment: makeNode, attach() {}, destroy() {} };
+  const rig = new RigRuntime(definition, factory, createChiknActionClips(definition));
+  rig.attachGroup('tail/golden-egg');
+  rig.setMirrored(true);
+  const recipe = { species: 'chikn', traitGroupIds: ['tail/golden-egg'], mirrored: true };
+  const special = listChiknSpecials(recipe, definition)[0];
+  const action = resolveChiknAction(recipe, definition, special.id);
+  const controller = new RigActionController(rig);
+
+  let playback = controller.play(action.clip, { controlled: true });
+  playback.sample(160);
+  assert.equal(rig.node('bone', 'pose').scaleX, -1);
+  assert.equal(rig.node('bone', 'root').scaleX, -1, 'internal turn does not rewrite external facing');
+  playback.sample(400);
+  assert.equal(rig.node('attachment', 'Trait_Tail_GoldenEgg').visible, false);
+  controller.cancel();
+  assert.equal(rig.node('bone', 'pose').scaleX, 1);
+  assert.equal(rig.node('bone', 'root').scaleX, -1);
+  assert.equal(rig.node('attachment', 'Trait_Tail_GoldenEgg').visible, true);
+
+  let releasePose;
+  playback = controller.play(action.clip, { controlled: true, onCue: ({ cue }) => {
+    if (cue.id === 'release') releasePose = {
+      poseScaleX: rig.node('bone', 'pose').scaleX,
+      eggVisible: rig.node('attachment', 'Trait_Tail_GoldenEgg').visible,
+    };
+  } });
+  playback.advance(650);
+  assert.deepEqual(releasePose, { poseScaleX: -1, eggVisible: false }, 'a skipped frame emits release from the exact 400 ms pose');
+  controller.cancel();
+
+  playback = controller.play(action.clip, { controlled: true });
+  playback.sample(1000);
+  assert.equal(rig.node('bone', 'pose').scaleX, 1);
+  assert.equal(rig.node('bone', 'root').scaleX, -1);
+  assert.equal(rig.node('attachment', 'Trait_Tail_GoldenEgg').visible, true);
+  controller.dispose(); rig.dispose();
 });
 
 test('character recipes validate and apply one trait per category', () => {

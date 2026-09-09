@@ -90,11 +90,13 @@ test('seek pauses a live layer at a deterministic clip time', () => {
 });
 
 test('controlled playback emits every crossed cue once while silent sampling can scrub backward', () => {
-  const { rig } = runtime();
+  const { rig, nodes } = runtime();
   const events = [];
-  const controlled = rig.play({ ...clip([{ timeMs: 0, durationMs: 100, x: 10 }]), cues: [{ id: 'a', timeMs: 20 }, { id: 'b', timeMs: 70 }, { id: 'done', timeMs: 100 }] }, { controlled: true, onCue: ({ cue }) => events.push(cue.id) });
+  const cuePoses = [];
+  const controlled = rig.play({ ...clip([{ timeMs: 0, durationMs: 100, x: 10 }]), cues: [{ id: 'a', timeMs: 20 }, { id: 'b', timeMs: 70 }, { id: 'done', timeMs: 100 }] }, { controlled: true, onCue: ({ cue }) => { events.push(cue.id); cuePoses.push(Number(nodes.get('root').x.toFixed(3))); } });
   controlled.advance(80);
   assert.deepEqual(events, ['a', 'b'], 'a skipped render frame still emits every crossed cue');
+  assert.deepEqual(cuePoses, [2, 7], 'callbacks observe each exact authored cue pose');
   controlled.sample(10);
   controlled.sample(100);
   assert.deepEqual(events, ['a', 'b'], 'scrubbing never emits callbacks');

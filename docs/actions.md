@@ -18,10 +18,10 @@ attack.sample(240);
 attack.sample(80);
 ```
 
-`advance()` emits every cue crossed since the previous time, even when a slow frame skips over several. Each cue fires once per playback. `sample()` is silent by default, which makes backward scrubbing and deterministic frame export safe.
+`advance()` emits every cue crossed since the previous time, even when a slow frame skips over several. Before each callback it samples the exact authored cue pose, so a detached effect captures the correct release transform on a skipped frame. Each cue fires once per playback. `sample()` is silent by default, which makes backward scrubbing and deterministic frame export safe.
 
 Use `RigActionController` for full-body, interruptible actions. It suspends the base locomotion layer, owns one action at a time, and restores the setup pose and mirrored facing after cancellation or completion. Supply `resumeLocomotion` when the character should return to an idle or run clip.
 
-Named `RigSocketV1` records follow a bone, attachment, or resolved base slot. `rig.node('socket', id)` exposes the renderer-neutral socket node. `@roost2d/effects` supplies deterministic beam, slash, projectile, burst, and trail descriptors; `PixiProceduralEffect` renders those shapes under a Pixi rig socket.
+Named `RigSocketV1` records follow a bone, attachment, or resolved base slot. `rig.node('socket', id)` exposes the renderer-neutral socket node. `@roost2d/effects` supplies deterministic beam, slash, projectile, burst, and trail descriptors with socket/attachment origins, follow/detached space, two-dimensional paths, and procedural or attachment-clone visuals. `PixiProceduralEffect.fromRig()` resolves those fields and snapshots detached effects under a stable Pixi layer.
 
 The game still owns movement, hitboxes, damage, cooldowns, and network validation. Visual root displacement inside an action clip must not be copied into authoritative character position.

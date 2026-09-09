@@ -288,7 +288,7 @@
         "PixiRigFactory",
         "PixiRigNode"
       ],
-      "declarationSha256": "4c33081421243c42ef599d4bad8dcfdb5b06afacedf1e9d139c7a660f0c3a4ac"
+      "declarationSha256": "dc20033fe8e0a36e4860b874e906f1dfd2a3ffa85c6a7b3b573e44188d91aaed"
     },
     "@roost2d/rig2d": {
       "entrypoint": ".",

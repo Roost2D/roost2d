@@ -42,6 +42,8 @@ export interface CharacterRecipeRuntime {
 /** Source artwork to legacy rig-coordinate scale. Unique assembled skins are already rig-sized. */
 export const CHIKN_RIG_ART_SCALE = { chikn: 0.1219, roostr: 0.0929 } as const;
 const SINGLE_FEET_TRAIT_X_OFFSET = 8;
+/** Legacy tail overlays sit too far behind the animated base-tail pivot without this authored inset. */
+const TAIL_TRAIT_X_OFFSET = 12;
 
 /** Apache metadata only. Artwork remains resolved from the separately governed asset manifest. */
 export const UNIQUE_SKINS: readonly UniqueSkinDefinition[] = [
@@ -225,7 +227,9 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
         return {
           id: `bone:${part.name}`,
           ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'pose' }),
-          x: (part.x ?? 0) + (singleFeetAttachmentIds.has(part.name) ? SINGLE_FEET_TRAIT_X_OFFSET : 0),
+          x: (part.x ?? 0)
+            + (singleFeetAttachmentIds.has(part.name) ? SINGLE_FEET_TRAIT_X_OFFSET : 0)
+            + (followSlotId === 'Tail' ? TAIL_TRAIT_X_OFFSET : 0),
           y: part.y ?? 0,
           rotation: radians(part.rotation ?? 0),
           scaleX: part.scale ?? 1,

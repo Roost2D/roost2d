@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/blueprint",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Portable game Blueprints, capability validation and renderer-neutral deterministic sessions.",
   "license": "Apache-2.0",
   "repository": {
@@ -25,7 +25,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@roost2d/core": "0.6.0",
+    "@roost2d/core": "0.6.1",
     "zod": "4.5.4"
   },
   "scripts": {

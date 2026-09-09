@@ -91,6 +91,12 @@ test('trait depth hierarchy and replacement ownership match character compositio
     assert.ok(Object.values(source.traits?.Head ?? {}).every(({ replaces }) => replaces === undefined), `${species} source head traits remain overlays`);
     assert.ok(tails.length > 0 && tails.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'Tail'));
     assert.ok(tails.every(({ slotZIndexOverrides }) => slotZIndexOverrides?.Tail === 6));
+    for (const trait of Object.values(source.traits?.Tail ?? {})) for (const part of trait.attachments) {
+      const sourcePart = source.rig.find(({ name }) => name === part.name) ?? part;
+      const bone = rig.bones.find(({ id }) => id === `bone:${part.name}`);
+      assert.equal(bone.followSlotId, 'Tail', `${species} ${part.name} follows the animated base tail`);
+      assert.equal(bone.x, (sourcePart.x ?? 0) + 12, `${species} ${part.name} is inset toward the torso`);
+    }
     assert.ok(feet.length > 0 && feet.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'LegFoot A|LegFoot B'));
     assert.ok(heads.length > 0 && heads.every(({ replacesSlotIds }) => replacesSlotIds === undefined), 'head traits never hide the base head');
 
@@ -135,7 +141,9 @@ test('action resolution chooses Katana, selectable Laser Eye and egg specials, a
   assert.notEqual(katana.clip.durationMs, createChiknActionClips(roostr).find(({ id }) => id === katana.clip.id).durationMs, 'the trait speed adjustment tailors the action timeline');
   const laserRecipe = { species: 'roostr', traitGroupIds: ['head/laser-eye'] };
   const laser = listChiknSpecials(laserRecipe, roostr)[0];
-  assert.equal(resolveChiknAction(laserRecipe, roostr, laser.id).effects[0].socketId, 'eyes');
+  const laserEffect = resolveChiknAction(laserRecipe, roostr, laser.id).effects[0];
+  assert.equal(laserEffect.socketId, 'eyes');
+  assert.deepEqual(laserEffect.origin, { target: 'attachment', targetId: 'Trait_Head_LaserEye', x: 0, y: 0 });
   assert.deepEqual(listChiknSpecials({ species: 'roostr', traitGroupIds: ['head/beard'] }, roostr), []);
   assert.equal(resolveChiknAction({ species: 'roostr', traitGroupIds: ['feet/golden-feet'] }, roostr, 'kick').motionFamily, 'combined');
   const tailRecipe = { species: 'roostr', traitGroupIds: ['tail/sword-tail'] };
@@ -169,7 +177,7 @@ test('curated actions aim exact trait artwork and keep cosmetic lookalikes cosme
     const effect = action.effects[0];
     const exactAttachment = chikn.attachmentGroups[traitGroupId].attachmentIds[0];
     assert.deepEqual(effect.visual, { kind: 'attachment-clone', attachmentId: exactAttachment });
-    assert.deepEqual(effect.origin, { target: 'attachment', targetId: exactAttachment, x: 0, y: 3 });
+    assert.deepEqual(effect.origin, { target: 'attachment', targetId: exactAttachment, x: 0, y: 0 });
     assert.deepEqual(effect.trajectory, { kind: 'arc', targetOffset, arcHeight: 28, rotationTurns: 1 });
     assert.equal(effect.space, 'detached');
     assert.equal(effect.durationMs, 400);

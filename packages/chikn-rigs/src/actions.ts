@@ -93,8 +93,8 @@ const PRESET_CALIBRATION: Partial<Record<ChiknPunchPreset | ChiknKickPreset | Ch
   golf: { grip: { x: -8, y: 6 }, tip: { x: 42, y: 8 }, origin: { x: 38, y: 8 }, timing: { anticipationMs: 190, releaseMs: 350, recoveryMs: 470 } },
   pickaxe: { grip: { x: -7, y: 5 }, tip: { x: 34, y: 10 }, origin: { x: 30, y: 8 }, timing: { anticipationMs: 180, releaseMs: 330, recoveryMs: 470 } },
   gun: { grip: { x: -8, y: 7 }, tip: { x: 34, y: -3 }, origin: { x: 31, y: -3 }, timing: { anticipationMs: 120, releaseMs: 220, recoveryMs: 330 } },
-  egg: { grip: { x: 0, y: 0 }, tip: { x: 0, y: 0 }, origin: { x: 0, y: 3 }, timing: { anticipationMs: 160, releaseMs: 400, recoveryMs: 800 } },
-  laser: { grip: { x: 0, y: 0 }, tip: { x: 14, y: -3 }, origin: { x: 13, y: -3 }, timing: { anticipationMs: 170, releaseMs: 280, recoveryMs: 440 } },
+  egg: { grip: { x: 0, y: 0 }, tip: { x: 0, y: 0 }, origin: { x: 0, y: 0 }, timing: { anticipationMs: 160, releaseMs: 400, recoveryMs: 800 } },
+  laser: { grip: { x: 0, y: 0 }, tip: { x: 0, y: 0 }, origin: { x: 0, y: 0 }, timing: { anticipationMs: 170, releaseMs: 280, recoveryMs: 440 } },
   disk: { grip: { x: -5, y: 2 }, tip: { x: 18, y: 0 }, origin: { x: 10, y: -2 }, timing: { anticipationMs: 180, releaseMs: 320, recoveryMs: 590 } },
   pan: { grip: { x: -7, y: 4 }, tip: { x: 22, y: 2 }, origin: { x: 13, y: -1 }, timing: { anticipationMs: 190, releaseMs: 330, recoveryMs: 600 } },
   sonic: { grip: { x: -4, y: 4 }, tip: { x: 24, y: 0 }, origin: { x: 19, y: -2 }, timing: { anticipationMs: 170, releaseMs: 300, recoveryMs: 500 } },
@@ -393,7 +393,7 @@ function specialEffects(profile: ChiknTraitAnimationProfile, target: EffectPoint
   if (preset === 'egg') return [cloneEffect(profile.attachmentTargets[0]!, 'release', origin, special.id, target, 400, 28, 1)];
   if (preset === 'disk') return [cloneEffect(profile.attachmentTargets[0]!, 'release', origin, special.id, target, 470, 36, 2)];
   if (preset === 'pan') return [cloneEffect(profile.attachmentTargets[0]!, 'release', origin, special.id, target, 500, 42, 1)];
-  if (preset === 'laser') return [proceduralEffect('beam', 'release', origin, special.id, target, 'detached', undefined, { color: 0xff335a, secondaryColor: 0xffffff, length: Math.hypot(target.x, target.y), width: 9, durationMs: 260 })];
+  if (preset === 'laser') return [{ ...proceduralEffect('beam', 'release', origin, special.id, target, 'detached', undefined, { color: 0xff335a, secondaryColor: 0xffffff, length: Math.hypot(target.x, target.y), width: 9, durationMs: 260 }), socketId: 'eyes' }];
   if (preset === 'sonic') return [proceduralEffect('burst', 'release', origin, special.id, target, 'follow', undefined, { color: 0x73dcff, secondaryColor: 0xffffff, radius: 24, durationMs: 360 })];
   if (preset === 'flame') return [proceduralEffect('trail', 'release', origin, special.id, target, 'follow', { kind: 'linear', targetOffset: { x: target.x * .55, y: target.y * .55 } }, { color: 0xff7a24, secondaryColor: 0xffed6a, width: 18, durationMs: 390 })];
   if (preset === 'exhaust') return [proceduralEffect('trail', 'release', origin, special.id, { x: -Math.max(90, Math.abs(target.x) * .55), y: -target.y * .2 }, 'follow', undefined, { color: 0x7b8194, secondaryColor: 0xd9deeb, width: 18, durationMs: 360 })];
@@ -448,7 +448,7 @@ function specialFor(preset: ChiknSpecialPreset, groupId: string, attachmentId: s
     'tail-slam': { suffix: 'tail', label: 'tail slam', family: 'tail' },
   };
   const named = names[preset];
-  const useAttachment = preset === 'egg' || preset === 'disk' || preset === 'pan' || preset === 'sonic' || preset === 'flame' || preset === 'wand' || preset === 'tail-stab' || preset === 'tail-sweep' || preset === 'tail-snap' || preset === 'tail-slam';
+  const useAttachment = preset === 'egg' || preset === 'laser' || preset === 'disk' || preset === 'pan' || preset === 'sonic' || preset === 'flame' || preset === 'wand' || preset === 'tail-stab' || preset === 'tail-sweep' || preset === 'tail-snap' || preset === 'tail-slam';
   const socketId = preset === 'laser' || (preset === 'energy' && category === 'Head') ? 'eyes' : preset === 'exhaust' ? 'tail' : category === 'Tail' ? 'tail' : 'weapon';
   return {
     id: `${groupId}:${named.suffix}`,

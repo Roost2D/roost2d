@@ -271,7 +271,7 @@ export class PixiProceduralEffect {
   private baseRotation = 0;
   private baseScaleX = 1;
   private baseScaleY = 1;
-  private followOrigin?: { source: Container; x: number; y: number; rotation: number };
+  private followOrigin?: { source: Container; root: Container; x: number; y: number; rotation: number };
 
   constructor(readonly descriptor: ProceduralEffectDescriptor, parent: Container | PixiRigNode) {
     this.sampleDescriptor = descriptor;
@@ -289,18 +289,14 @@ export class PixiProceduralEffect {
     const origin = descriptor.origin ?? { target: 'socket' as const, targetId: 'weapon' };
     const node = rig.node(origin.target, origin.targetId);
     if (!(node instanceof PixiRigNode)) throw new Error(`Effect origin is unavailable in the Pixi rig: ${origin.target}:${origin.targetId}`);
-    const originParent = node.display.parent ?? effectRoot;
-    const effect = new PixiProceduralEffect(descriptor, originParent);
-    effect.display.setFromMatrix(node.display.localTransform);
-    effect.display.position.set(effect.display.x + (origin.x ?? 0), effect.display.y + (origin.y ?? 0));
-    effect.display.rotation += origin.rotation ?? 0;
+    const effect = new PixiProceduralEffect(descriptor, effectRoot);
+    effect.placeAtOrigin(node.display, effectRoot, origin.x ?? 0, origin.y ?? 0, origin.rotation ?? 0);
     if (descriptor.visual?.kind === 'attachment-clone') {
       const visualNode = rig.node('attachment', descriptor.visual.attachmentId);
       if (!(visualNode instanceof PixiRigNode) || !(visualNode.display instanceof Sprite)) throw new Error(`Attachment clone source is not a Pixi sprite: ${descriptor.visual.attachmentId}`);
       effect.useAttachmentClone(visualNode.display);
     }
-    if (descriptor.space === 'detached') effectRoot.reparentChild(effect.display);
-    else effect.followOrigin = { source: node.display, x: origin.x ?? 0, y: origin.y ?? 0, rotation: origin.rotation ?? 0 };
+    if (descriptor.space === 'follow') effect.followOrigin = { source: node.display, root: effectRoot, x: origin.x ?? 0, y: origin.y ?? 0, rotation: origin.rotation ?? 0 };
     effect.captureBase();
     const target = descriptor.trajectory?.targetOffset;
     if (target) {
@@ -318,9 +314,7 @@ export class PixiProceduralEffect {
 
   sample(elapsedMs: number): boolean {
     if (this.followOrigin) {
-      this.display.setFromMatrix(this.followOrigin.source.localTransform);
-      this.display.position.set(this.display.x + this.followOrigin.x, this.display.y + this.followOrigin.y);
-      this.display.rotation += this.followOrigin.rotation;
+      this.placeAtOrigin(this.followOrigin.source, this.followOrigin.root, this.followOrigin.x, this.followOrigin.y, this.followOrigin.rotation);
       this.captureBase();
     }
     const frame = sampleProceduralEffect(this.sampleDescriptor, elapsedMs);
@@ -379,5 +373,16 @@ export class PixiProceduralEffect {
   private captureBase(): void {
     this.baseX = this.display.x; this.baseY = this.display.y; this.baseRotation = this.display.rotation;
     this.baseScaleX = this.display.scale.x; this.baseScaleY = this.display.scale.y;
+  }
+
+  /** Places an effect in effect-root space using freshly sampled transforms from the rig tree. */
+  private placeAtOrigin(source: Container, effectRoot: Container, x: number, y: number, rotation: number): void {
+    const relative = source.getGlobalTransform();
+    relative.prepend(effectRoot.getGlobalTransform().invert());
+    // The calibrated point is expressed in the source attachment/socket's local axes.
+    relative.tx += relative.a * x + relative.c * y;
+    relative.ty += relative.b * x + relative.d * y;
+    this.display.setFromMatrix(relative);
+    this.display.rotation += rotation;
   }
 }

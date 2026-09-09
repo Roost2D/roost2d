@@ -64,29 +64,47 @@ test('rig effects clone the exact attachment and detached trajectories ignore re
   };
   const factory = new PixiRigFactory(new Map([['egg', texture]]));
   const rig = new RigRuntime(definition, factory);
+  factory.root.position.set(200, 100);
+  factory.root.scale.set(.35, .42);
   const source = rig.node('attachment', 'egg').display;
   source.tint = 0xffcc55;
+  source.scale.set(.8, .7);
   const descriptor = {
     id: 'egg-shot', kind: 'projectile', durationMs: 400, color: 0xffffff,
     origin: { target: 'attachment', targetId: 'egg' }, space: 'detached',
     trajectory: { kind: 'arc', targetOffset: { x: 100, y: 20 }, arcHeight: 24, rotationTurns: 1 },
     visual: { kind: 'attachment-clone', attachmentId: 'egg' },
   };
+  const sourceTransform = source.getGlobalTransform();
   const effect = PixiProceduralEffect.fromRig(descriptor, rig, factory.root);
   const clone = effect.display.children[0];
   assert.equal(clone.texture, texture, 'the released object uses the displayed trait texture object');
   assert.deepEqual([clone.anchor.x, clone.anchor.y, clone.tint], [.4, .6, 0xffcc55]);
   assert.equal(effect.display.parent, factory.root);
+  const emissionTransform = effect.display.getGlobalTransform();
+  for (const property of ['a', 'b', 'c', 'd', 'tx', 'ty']) {
+    assert.ok(Math.abs(emissionTransform[property] - sourceTransform[property]) < 1e-9, `${property} preserves the exact sampled attachment transform`);
+  }
   const emissionX = effect.display.x;
+  const detachedTransform = effect.display.getGlobalTransform();
   rig.node('bone', 'bone:egg').x += 50;
   assert.equal(effect.display.x, emissionX, 'recovery motion cannot drag a detached projectile');
+  const afterRecoveryTransform = effect.display.getGlobalTransform();
+  for (const property of ['a', 'b', 'c', 'd', 'tx', 'ty']) {
+    assert.ok(Math.abs(afterRecoveryTransform[property] - detachedTransform[property]) < 1e-9, `${property} remains stable after detachment`);
+  }
   effect.sample(200);
   assert.ok(effect.display.x > emissionX);
   assert.ok(effect.display.y < 20, 'the midpoint includes the shallow upward arc');
   effect.destroy();
 
   rig.setMirrored(true);
+  const mirroredSourceTransform = source.getGlobalTransform();
   const mirrored = PixiProceduralEffect.fromRig(descriptor, rig, factory.root);
+  const mirroredEmissionTransform = mirrored.display.getGlobalTransform();
+  for (const property of ['a', 'b', 'c', 'd', 'tx', 'ty']) {
+    assert.ok(Math.abs(mirroredEmissionTransform[property] - mirroredSourceTransform[property]) < 1e-9, `${property} preserves the mirrored attachment transform`);
+  }
   const mirroredOrigin = mirrored.display.x;
   mirrored.sample(200);
   assert.ok(mirrored.display.x < mirroredOrigin, 'positive local X follows externally mirrored facing');

@@ -1,6 +1,6 @@
 {
   "name": "roost2d",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": true,
   "description": "Framework-agnostic 2D game-engine packages.",
   "type": "module",

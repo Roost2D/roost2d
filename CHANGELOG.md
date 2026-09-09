@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1 - 2026-09-09
+
+- Preserve freshly sampled global transforms when spawning Pixi effects, fixing detached attachment scale and release placement on positioned, scaled, and mirrored fighters.
+- Emit Laser Eye beams from the displayed eye artwork and exact egg clones from the equipped egg transform.
+- Inset Chikn and Roostr tail traits toward the torso while retaining base-tail animation following.
+
 ## 0.6.0 - 2026-09-09
 
 - Replace Chikn/Roostr trait-name regex classification with one checked-in curated profile for all 276 groups, including explicit combat presets, calibrated origins, timing, and secondary motion.

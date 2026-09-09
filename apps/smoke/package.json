@@ -25,6 +25,6 @@
     "@roost2d/blueprint": "0.6.1"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^7.0.2"
   }
 }

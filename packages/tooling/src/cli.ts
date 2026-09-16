@@ -36,7 +36,7 @@ if (area === 'assets' && (action === 'scan' || action === 'inventory')) {
 } else if (area === 'verify-package-boundary') {
   const [packageFile] = [action, ...args]; requireValue(packageFile, 'roost2d verify-package-boundary <package.json>'); fail(await verifyToolingPackageGraph(resolve(packageFile)));
 } else {
-  throw new Error('commands: assets scan|inventory|validate|manifest, atlas build|validate, rig validate, animation validate, licenses validate, project create');
+  throw new Error('commands: assets scan|inventory|validate|manifest, atlas build|validate, rig validate, animation validate, licenses validate, project create, verify-boundary, verify-package-boundary');
 }
 
 function requireValue(value: unknown, usage: string): asserts value { if (!value) throw new Error(`usage: ${usage}`); }

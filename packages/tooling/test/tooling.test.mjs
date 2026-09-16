@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import {
-  readJsonFile, validateAnimationFile, validateAtlasFiles, validateRigFile,
+  createProject, readJsonFile, validateAnimationFile, validateAtlasFiles, validateRigFile,
   sourceSha256Hex, verifyManifestFiles, verifyRightsFiles, verifyToolingBoundary, verifyToolingPackageGraph
 } from '../dist/index.js';
 
@@ -19,6 +19,30 @@ async function scratch(files) {
   }
   return root;
 }
+
+test('project scaffold is a playable, responsive starter with exact package pins', async (t) => {
+  const parent = await scratch({});
+  const root = join(parent, 'starter');
+  t.after(() => rm(parent, { recursive: true, force: true }));
+  await createProject(root);
+
+  const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
+  assert.deepEqual(manifest.dependencies, { '@roost2d/core': '0.7.0', '@roost2d/pixi': '0.7.0', 'pixi.js': '8.11.0' });
+  const source = await readFile(join(root, 'src/main.ts'), 'utf8');
+  assert.match(source, /PixiApplicationHost/);
+  assert.match(source, /fixedUpdate/);
+  assert.match(source, /Collect the five moon sparks/);
+  assert.match(source, /keys\.has\('r'\)/);
+  assert.doesNotMatch(source, /console\.log/);
+  assert.match(await readFile(join(root, 'src/style.css'), 'utf8'), /width: 100%/);
+});
+
+test('project scaffold refuses to overwrite a non-empty directory', async (t) => {
+  const root = await scratch({ 'keep.txt': 'mine' });
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await assert.rejects(createProject(root), /not empty/);
+  assert.equal(await readFile(join(root, 'keep.txt'), 'utf8'), 'mine');
+});
 
 test('tooling source remains detached from browser runtime imports', async () => {
   assert.deepEqual(await verifyToolingBoundary(resolve('src')), []);

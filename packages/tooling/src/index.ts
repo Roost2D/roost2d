@@ -252,12 +252,104 @@ function animationClips(value: unknown): unknown[] | undefined {
 }
 export function assertBudgets(label: string, actualBytes: number, maximumBytes: number): void { if (actualBytes > maximumBytes) throw new Error(`${label} is ${actualBytes} bytes; budget is ${maximumBytes} bytes`); }
 
+const PROJECT_STARTER_VERSION = '0.7.0';
+const PROJECT_PIXI_IMPORT = '@roost2d/' + 'pixi';
+const PROJECT_PIXIJS_IMPORT = 'pixi' + '.js';
+
 export async function createProject(directory: string): Promise<void> {
   const root = resolve(directory); try { if ((await readdir(root)).length) throw new Error(`Project directory is not empty: ${root}`); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
   await mkdir(resolve(root, 'src'), { recursive: true });
-  await writeFile(resolve(root, 'package.json'), `${JSON.stringify({ name: basename(root), private: true, type: 'module', scripts: { dev: 'vite', build: 'vite build' }, dependencies: { '@roost2d/core': '^0.1.0', '@roost2d/pixi': '^0.1.0', 'pixi.js': '^8.0.0' }, devDependencies: { typescript: '^5.8.0', vite: '^8.0.0' } }, null, 2)}\n`);
-  await writeFile(resolve(root, 'index.html'), '<div id="game"></div><script type="module" src="/src/main.ts"></script>\n');
-  await writeFile(resolve(root, 'src/main.ts'), "import { GameRuntime } from '@roost2d/core';\nconst runtime = new GameRuntime();\nconsole.log('Roost2D ready', runtime);\n");
+  await writeFile(resolve(root, 'package.json'), `${JSON.stringify({ name: basename(root), private: true, version: '0.1.0', type: 'module', scripts: { dev: 'vite', build: 'tsc --noEmit && vite build', preview: 'vite preview' }, dependencies: { '@roost2d/core': PROJECT_STARTER_VERSION, '@roost2d/pixi': PROJECT_STARTER_VERSION, 'pixi.js': '8.11.0' }, devDependencies: { typescript: '5.8.3', vite: '8.2.0' } }, null, 2)}\n`);
+  await writeFile(resolve(root, 'index.html'), `<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>My Roost2D Game</title></head>
+  <body><main id="game" aria-label="Roost2D game"></main><script type="module" src="/src/main.ts"></script></body>
+</html>\n`);
+  await writeFile(resolve(root, 'tsconfig.json'), `${JSON.stringify({ compilerOptions: { target: 'ES2022', useDefineForClassFields: true, module: 'ESNext', lib: ['ES2022', 'DOM', 'DOM.Iterable'], skipLibCheck: true, moduleResolution: 'Bundler', allowImportingTsExtensions: true, isolatedModules: true, moduleDetection: 'force', noEmit: true, strict: true }, include: ['src'] }, null, 2)}\n`);
+  await writeFile(resolve(root, 'src/style.css'), `:root { color: #f7f5ed; background: #101827; font-family: system-ui, sans-serif; }
+* { box-sizing: border-box; }
+html, body, #game { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+#game canvas { display: block; }
+.hud { position: fixed; inset: 0; pointer-events: none; display: grid; align-content: space-between; padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
+.hud p { width: fit-content; margin: 0; padding: .55rem .8rem; border-radius: 999px; background: rgb(9 15 27 / 78%); }
+.hud .help { justify-self: center; }
+`);
+  await writeFile(resolve(root, 'src/main.ts'), `import { Graphics } from '${PROJECT_PIXIJS_IMPORT}';
+import { GameRuntime } from '@roost2d/core';
+import { PixiApplicationHost } from '${PROJECT_PIXI_IMPORT}';
+import './style.css';
+
+const mount = document.querySelector<HTMLElement>('#game');
+if (!mount) throw new Error('Missing #game mount');
+
+const host = await PixiApplicationHost.create({ mount, resizeTo: window, background: '#101827' });
+const player = new Graphics().circle(0, 0, 18).fill(0xf6b73c);
+const targets = Array.from({ length: 5 }, () => new Graphics().circle(0, 0, 11).fill(0x7de2d1));
+host.app.stage.addChild(...targets, player);
+
+const hud = document.createElement('div');
+hud.className = 'hud';
+hud.innerHTML = '<p class="score" aria-live="polite"></p><p class="help">Move with WASD or arrow keys · R restarts</p>';
+mount.append(hud);
+const score = hud.querySelector<HTMLElement>('.score');
+if (!score) throw new Error('Missing score display');
+const scoreElement: HTMLElement = score;
+
+const keys = new Set<string>();
+const targetPositions = [[.18, .25], [.8, .2], [.52, .44], [.25, .76], [.77, .72]] as const;
+let collected = new Set<number>();
+let position = { x: 0, y: 0 };
+
+function reset(): void {
+  position = { x: host.app.renderer.width / 2, y: host.app.renderer.height / 2 };
+  collected = new Set<number>();
+}
+
+function layout(): void {
+  const width = host.app.renderer.width;
+  const height = host.app.renderer.height;
+  targets.forEach((target, index) => {
+    target.position.set(targetPositions[index]![0] * width, targetPositions[index]![1] * height);
+    target.visible = !collected.has(index);
+  });
+  player.position.set(position.x, position.y);
+  scoreElement.textContent = collected.size === targets.length ? 'You found every spark! Press R to play again.' : 'Collect the five moon sparks: ' + collected.size + ' / ' + targets.length;
+}
+
+reset();
+const runtime = new GameRuntime({ stepMs: 1000 / 60, seed: 42 });
+runtime.registerScene('play', () => ({
+  id: 'play',
+  fixedUpdate({ deltaMs }) {
+    if (keys.has('r')) reset();
+    if (collected.size === targets.length) return;
+    const horizontal = Number(keys.has('d') || keys.has('arrowright')) - Number(keys.has('a') || keys.has('arrowleft'));
+    const vertical = Number(keys.has('s') || keys.has('arrowdown')) - Number(keys.has('w') || keys.has('arrowup'));
+    const length = Math.hypot(horizontal, vertical) || 1;
+    const distance = deltaMs * 0.24;
+    position.x = Math.min(host.app.renderer.width - 20, Math.max(20, position.x + horizontal / length * distance));
+    position.y = Math.min(host.app.renderer.height - 20, Math.max(20, position.y + vertical / length * distance));
+    targetPositions.forEach(([x, y], index) => {
+      if (!collected.has(index) && Math.hypot(position.x - x * host.app.renderer.width, position.y - y * host.app.renderer.height) < 31) collected.add(index);
+    });
+  },
+  render() { layout(); },
+}));
+
+const keyDown = (event: KeyboardEvent) => { keys.add(event.key.toLowerCase()); if (event.key.startsWith('Arrow')) event.preventDefault(); };
+const keyUp = (event: KeyboardEvent) => { keys.delete(event.key.toLowerCase()); };
+window.addEventListener('keydown', keyDown);
+window.addEventListener('keyup', keyUp);
+await runtime.switchScene('play');
+runtime.start();
+
+window.addEventListener('beforeunload', () => {
+  window.removeEventListener('keydown', keyDown);
+  window.removeEventListener('keyup', keyUp);
+  void runtime.dispose();
+  host.dispose();
+});
+`);
 }
 
 /** Ensures the Node-only package does not accidentally take a browser runtime dependency. */

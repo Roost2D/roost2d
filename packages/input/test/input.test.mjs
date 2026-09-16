@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { InputManager } from '../dist/index.js';
+import { gamepadAxisCode, gamepadButtonCode, InputManager } from '../dist/index.js';
 
 class KeyboardEventMock extends Event { constructor(type, code) { super(type); this.code = code; } }
 globalThis.KeyboardEvent = KeyboardEventMock;
@@ -110,5 +110,78 @@ test('hover movement is not tracked as a down pointer or pinch participant', () 
   assert.equal(input.gestures.pinchScale, 1);
   target.dispatchEvent(new PointerEventMock('pointerup', { pointerId: 1, clientX: 20, clientY: 10, buttons: 0 }));
   assert.equal(input.pointer.down, false, 'the hover pointer must not be promoted after release');
+  input.dispose();
+});
+
+function gamepad(index, { buttons = [], axes = [] } = {}) {
+  return { index, buttons: buttons.map((value) => ({ value, pressed: value > 0.5, touched: value > 0 })), axes };
+}
+
+test('legacy gamepad codes aggregate any connected controller once per update', () => {
+  let pads = [gamepad(0, { buttons: [1] }), gamepad(1, { buttons: [0] })];
+  const input = new InputManager(new EventTarget(), { getGamepads: () => pads });
+  input.bind('confirm', ['Gamepad0']);
+  input.update();
+  assert.equal(input.isDown('confirm'), true, 'an idle later controller must not overwrite an active one');
+  assert.equal(input.value('confirm'), 1);
+  input.endFrame();
+  pads = [gamepad(0, { buttons: [0] }), gamepad(1, { buttons: [0.8] })];
+  input.update();
+  assert.equal(input.value('confirm'), 0.8, 'any connected controller may drive a legacy binding');
+  input.endFrame();
+  pads = [];
+  input.update();
+  assert.equal(input.isDown('confirm'), false);
+  assert.equal(input.wasReleased('confirm'), true, 'disconnecting every controller releases the action');
+  input.dispose();
+});
+
+test('qualified gamepad codes isolate local players and preserve signed axes', () => {
+  let pads = [gamepad(0, { buttons: [1], axes: [-0.75] }), gamepad(1, { buttons: [0], axes: [0.6] })];
+  const input = new InputManager(new EventTarget(), { getGamepads: () => pads, gamepadDeadZone: 0.2 });
+  input.bind('player-one-move', [gamepadAxisCode(0, 0)]);
+  input.bind('player-two-move', [gamepadAxisCode(0, 1)]);
+  input.bind('player-one-action', [gamepadButtonCode(0, 0)]);
+  input.bind('player-two-action', [gamepadButtonCode(0, 1)]);
+  input.update();
+  assert.equal(input.value('player-one-move'), -0.75);
+  assert.equal(input.value('player-two-move'), 0.6);
+  assert.equal(input.isDown('player-one-action'), true);
+  assert.equal(input.isDown('player-two-action'), false);
+  input.endFrame();
+  pads = [gamepad(0, { buttons: [0], axes: [0.1] }), gamepad(1, { buttons: [1], axes: [-0.1] })];
+  input.update();
+  assert.equal(input.value('player-one-move'), 0, 'dead zones apply independently');
+  assert.equal(input.value('player-two-move'), 0);
+  assert.equal(input.isDown('player-one-action'), false);
+  assert.equal(input.isDown('player-two-action'), true);
+  input.dispose();
+});
+
+test('gamepad code helpers retain legacy codes and validate indices', () => {
+  assert.equal(gamepadButtonCode(3), 'Gamepad3');
+  assert.equal(gamepadAxisCode(2), 'GamepadAxis2');
+  assert.equal(gamepadButtonCode(3, 1), 'Gamepad:1:Button:3');
+  assert.equal(gamepadAxisCode(2, 4), 'Gamepad:4:Axis:2');
+  assert.throws(() => gamepadButtonCode(-1), /buttonIndex/);
+  assert.throws(() => gamepadAxisCode(0, 1.5), /gamepadIndex/);
+});
+
+test('blocking contexts release and later reacquire gamepad actions', () => {
+  const pads = [gamepad(0, { buttons: [1] })];
+  const input = new InputManager(new EventTarget(), { getGamepads: () => pads });
+  input.bind('gameplay-confirm', [gamepadButtonCode(0, 0)], 'gameplay');
+  input.pushContext({ id: 'gameplay', actions: new Set(['gameplay-confirm']) });
+  input.update();
+  assert.equal(input.isDown('gameplay-confirm'), true);
+  input.endFrame();
+  input.pushContext({ id: 'menu', actions: new Set(), blocksLower: true });
+  input.update();
+  assert.equal(input.isDown('gameplay-confirm'), false);
+  assert.equal(input.wasReleased('gameplay-confirm'), true);
+  input.endFrame();
+  input.removeContext('menu'); input.update();
+  assert.equal(input.isDown('gameplay-confirm'), true);
+  assert.equal(input.wasPressed('gameplay-confirm'), true);
   input.dispose();
 });

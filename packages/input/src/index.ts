@@ -6,7 +6,14 @@ export interface GestureState { tap: boolean; hold: boolean; drag: boolean; pinc
 export interface WheelState { x: number; y: number; deltaX: number; deltaY: number; }
 export interface ActionState { down: boolean; pressed: boolean; released: boolean; value: number; }
 export interface InputContext { id: string; enabled?: boolean; blocksLower?: boolean; actions: ReadonlySet<string>; }
-export interface InputManagerOptions { holdMs?: number; dragThreshold?: number; gamepadDeadZone?: number; now?: () => number; }
+export interface InputManagerOptions {
+  holdMs?: number;
+  dragThreshold?: number;
+  gamepadDeadZone?: number;
+  now?: () => number;
+  /** Injectable browser gamepad source for deterministic tests and non-window hosts. */
+  getGamepads?: () => readonly (Gamepad | null)[];
+}
 export interface InputTargets {
   keyboardTarget?: EventTarget;
   pointerTarget?: EventTarget;
@@ -19,6 +26,22 @@ export interface InputTargets {
 
 interface Binding { action: string; codes: Set<string>; contextId?: string; }
 interface TrackedPointer { x: number; y: number; startX: number; startY: number; buttons: number; pointerType?: string; }
+
+interface GamepadCode { gamepadIndex?: number; kind: 'button' | 'axis'; controlIndex: number; }
+
+export function gamepadButtonCode(buttonIndex: number, gamepadIndex?: number): string {
+  validateGamepadIndex(buttonIndex, 'buttonIndex');
+  if (gamepadIndex === undefined) return `Gamepad${buttonIndex}`;
+  validateGamepadIndex(gamepadIndex, 'gamepadIndex');
+  return `Gamepad:${gamepadIndex}:Button:${buttonIndex}`;
+}
+
+export function gamepadAxisCode(axisIndex: number, gamepadIndex?: number): string {
+  validateGamepadIndex(axisIndex, 'axisIndex');
+  if (gamepadIndex === undefined) return `GamepadAxis${axisIndex}`;
+  validateGamepadIndex(gamepadIndex, 'gamepadIndex');
+  return `Gamepad:${gamepadIndex}:Axis:${axisIndex}`;
+}
 
 export class InputManager {
   /** Keyed by code; one entry per context, since the same key may mean different things per context. */
@@ -33,6 +56,7 @@ export class InputManager {
   private pointerDownAt = 0;
   private previousPinchDistance = 0;
   private readonly now: () => number;
+  private readonly getGamepads: () => readonly (Gamepad | null)[];
   readonly pointer: PointerState = { x: 0, y: 0, startX: 0, startY: 0, deltaX: 0, deltaY: 0, buttons: 0, down: false, dragging: false };
   readonly gestures: GestureState = { tap: false, hold: false, drag: false, pinchScale: 1, pinchX: 0, pinchY: 0, panX: 0, panY: 0 };
   readonly wheel: WheelState = { x: 0, y: 0, deltaX: 0, deltaY: 0 };
@@ -112,7 +136,7 @@ export class InputManager {
     Object.assign(this.pointer, { x: tracked.x, y: tracked.y, startX: tracked.x, startY: tracked.y, deltaX: 0, deltaY: 0, buttons: tracked.buttons, down: true, dragging: false, pointerId, pointerType: tracked.pointerType });
   }
 
-  private readonly options: Required<Omit<InputManagerOptions, 'now'>>;
+  private readonly options: Required<Omit<InputManagerOptions, 'now' | 'getGamepads'>>;
   constructor(target: EventTarget, options?: InputManagerOptions);
   constructor(targets: InputTargets, options?: InputManagerOptions);
   constructor(targetOrTargets: EventTarget | InputTargets = globalThis.window, options: InputManagerOptions = {}) {
@@ -128,6 +152,7 @@ export class InputManager {
     this.capturePointer = targets.capturePointer ?? true;
     this.options = { holdMs: options.holdMs ?? 450, dragThreshold: options.dragThreshold ?? 8, gamepadDeadZone: options.gamepadDeadZone ?? 0.15 };
     this.now = options.now ?? (() => performance.now());
+    this.getGamepads = options.getGamepads ?? (() => globalThis.navigator?.getGamepads?.() ?? []);
     this.keyboardTarget.addEventListener('keydown', this.onKeyDown); this.keyboardTarget.addEventListener('keyup', this.onKeyUp);
     this.pointerTarget.addEventListener('pointerdown', this.onPointerDown); this.pointerTarget.addEventListener('pointermove', this.onPointerMove); this.pointerTarget.addEventListener('wheel', this.onWheel);
     this.pointerTarget.addEventListener('pointerup', this.onPointerUp); this.pointerTarget.addEventListener('pointercancel', this.onPointerUp);
@@ -169,12 +194,27 @@ export class InputManager {
   consumePressed(action: string): boolean { const state = this.state(action); const pressed = state.pressed; state.pressed = false; return pressed; }
 
   update(): void {
+    if (!this.enabled || this.blocked) return;
     if (this.pointer.down && !this.pointer.dragging && this.now() - this.pointerDownAt >= this.options.holdMs) this.gestures.hold = true;
-    const gamepads = globalThis.navigator?.getGamepads?.() ?? [];
-    for (const gamepad of gamepads) if (gamepad) {
-      for (let index = 0; index < gamepad.buttons.length; index += 1) this.applyGamepadValue(`Gamepad${index}`, gamepad.buttons[index]!.value);
-      for (let index = 0; index < gamepad.axes.length; index += 1) this.applyGamepadValue(`GamepadAxis${index}`, Math.abs(gamepad.axes[index]!) >= this.options.gamepadDeadZone ? gamepad.axes[index]! : 0);
+    const gamepads = this.getGamepads();
+    const actions = new Set<string>();
+    const values = new Map<string, number>();
+    for (const code of this.bindings.keys()) {
+      const parsed = parseGamepadCode(code); if (!parsed) continue;
+      for (const binding of this.bindings.get(code) ?? []) actions.add(binding.action);
+      let value = 0;
+      for (const gamepad of gamepads) {
+        if (!gamepad || (parsed.gamepadIndex !== undefined && gamepad.index !== parsed.gamepadIndex)) continue;
+        const candidate = parsed.kind === 'button'
+          ? gamepad.buttons[parsed.controlIndex]?.value ?? 0
+          : gamepad.axes[parsed.controlIndex] ?? 0;
+        if (Math.abs(candidate) > Math.abs(value)) value = candidate;
+      }
+      const binding = this.resolve(code); if (!binding) continue;
+      const previous = values.get(binding.action) ?? 0;
+      if (Math.abs(value) > Math.abs(previous)) values.set(binding.action, value);
     }
+    for (const action of actions) this.applyGamepadValue(action, values.get(action) ?? 0);
   }
   endFrame(): void {
     for (const state of this.actions.values()) { state.pressed = false; state.released = false; }
@@ -209,10 +249,9 @@ export class InputManager {
     }
     return false;
   }
-  private applyGamepadValue(code: string, value: number): void {
-    const binding = this.resolve(code); if (!binding) return;
-    const state = this.state(binding.action); const down = Math.abs(value) > this.options.gamepadDeadZone;
-    if (down && !state.down) state.pressed = true; if (!down && state.down) state.released = true; state.down = down; state.value = value;
+  private applyGamepadValue(action: string, value: number): void {
+    const state = this.state(action); const down = Math.abs(value) > this.options.gamepadDeadZone;
+    if (down && !state.down) state.pressed = true; if (!down && state.down) state.released = true; state.down = down; state.value = down ? value : 0;
   }
   private updatePinch(): void {
     if (this.pointers.size !== 2) { this.previousPinchDistance = 0; return; }
@@ -228,6 +267,20 @@ export class InputManager {
 
 function isInputTargets(value: EventTarget | InputTargets): value is InputTargets { return !('addEventListener' in value); }
 function hasPointerCapture(value: EventTarget): value is EventTarget & { setPointerCapture?: (pointerId: number) => void; releasePointerCapture?: (pointerId: number) => void } { return 'setPointerCapture' in value || 'releasePointerCapture' in value; }
+
+function validateGamepadIndex(value: number, name: string): void {
+  if (!Number.isSafeInteger(value) || value < 0) throw new Error(`${name} must be a non-negative safe integer`);
+}
+
+function parseGamepadCode(code: string): GamepadCode | undefined {
+  let match = /^Gamepad:(\d+):(Button|Axis):(\d+)$/.exec(code);
+  if (match) return { gamepadIndex: Number(match[1]), kind: match[2] === 'Button' ? 'button' : 'axis', controlIndex: Number(match[3]) };
+  match = /^GamepadAxis(\d+)$/.exec(code);
+  if (match) return { kind: 'axis', controlIndex: Number(match[1]) };
+  match = /^Gamepad(\d+)$/.exec(code);
+  if (match) return { kind: 'button', controlIndex: Number(match[1]) };
+  return undefined;
+}
 
 /** Backwards-compatible name for the initial action-map API. */
 export class InputMap extends InputManager {}

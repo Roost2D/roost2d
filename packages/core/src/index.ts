@@ -114,12 +114,32 @@ export interface RandomSource {
   pick<T>(items: readonly T[]): T;
 }
 
+export interface CheckpointableRandomSource<Checkpoint> extends RandomSource {
+  checkpoint(): Checkpoint;
+  restore(checkpoint: Checkpoint): this;
+}
+
+/** Stable serialized cursor for the Mulberry32 stream used by `SeededRandom`. */
+export interface SeededRandomCheckpointV1 {
+  seed: number;
+  draws: number;
+}
+
+const SEEDED_RANDOM_INCREMENT = 0x6d2b79f5;
+const SEEDED_RANDOM_BLOCK_DRAWS = 65_536;
+
 /** Small reproducible PRNG suitable for gameplay decisions, not cryptography. */
-export class SeededRandom implements RandomSource {
-  private state: number;
-  constructor(seed = 0x6d2b79f5) { this.state = seed >>> 0; }
+export class SeededRandom implements CheckpointableRandomSource<SeededRandomCheckpointV1> {
+  private seed: number;
+  private draws = 0;
+  constructor(seed = SEEDED_RANDOM_INCREMENT) { this.seed = seed >>> 0; }
   next(): number {
-    let value = this.state += 0x6d2b79f5;
+    this.draws += 1;
+    let value = (this.seed + Math.imul(this.draws, SEEDED_RANDOM_INCREMENT)) >>> 0;
+    if (this.draws === SEEDED_RANDOM_BLOCK_DRAWS) {
+      this.seed = value;
+      this.draws = 0;
+    }
     value = Math.imul(value ^ value >>> 15, value | 1);
     value ^= value + Math.imul(value ^ value >>> 7, value | 61);
     return ((value ^ value >>> 14) >>> 0) / 4294967296;
@@ -131,6 +151,19 @@ export class SeededRandom implements RandomSource {
   pick<T>(items: readonly T[]): T {
     if (!items.length) throw new Error('Cannot pick from an empty collection');
     return items[this.integer(0, items.length)]!;
+  }
+  checkpoint(): SeededRandomCheckpointV1 { return { seed: this.seed, draws: this.draws }; }
+  restore(checkpoint: SeededRandomCheckpointV1): this {
+    if (!Number.isInteger(checkpoint?.seed) || checkpoint.seed < 0 || checkpoint.seed > 0xffffffff
+      || !Number.isInteger(checkpoint?.draws) || checkpoint.draws < 0 || checkpoint.draws >= SEEDED_RANDOM_BLOCK_DRAWS) {
+      throw new Error('Invalid seeded random checkpoint');
+    }
+    this.seed = checkpoint.seed >>> 0;
+    this.draws = checkpoint.draws;
+    return this;
+  }
+  static fromCheckpoint(checkpoint: SeededRandomCheckpointV1): SeededRandom {
+    return new SeededRandom().restore(checkpoint);
   }
 }
 

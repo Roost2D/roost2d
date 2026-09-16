@@ -15,3 +15,13 @@ runtime.start();
 ```
 
 Call `runtime.dispose()` when its application owner is removed. [Complete quick start](https://github.com/Roost2D/roost2d/blob/main/docs/getting-started.md).
+
+Long-running deterministic sessions can serialize a bounded random cursor without changing the historical sequence:
+
+```ts
+import { SeededRandom } from '@roost2d/core';
+
+const random = new SeededRandom(42);
+const checkpoint = random.checkpoint(); // JSON-safe { seed, draws }
+const restored = SeededRandom.fromCheckpoint(checkpoint);
+```

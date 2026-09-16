@@ -28,10 +28,12 @@
         "AudioMixer",
         "PlayOptions",
         "PlayingSound",
+        "PlaylistPlayback",
+        "PlaylistPlaybackOptions",
         "SoundDefinition",
         "SoundRegistrationOptions"
       ],
-      "declarationSha256": "5baa6e5b0048ba3f2d47dbf28a7a440318270eb7c56d8fb5bde18faa9dafd64b"
+      "declarationSha256": "4a8f973240d73cf004669da2b8f7562b94b04b7c5e5590c44e4324bb263eae0c"
     },
     "@roost2d/blueprint": {
       "entrypoint": ".",
@@ -151,6 +153,7 @@
     "@roost2d/core": {
       "entrypoint": ".",
       "exports": [
+        "CheckpointableRandomSource",
         "Disposable",
         "DisposalScope",
         "EventBus",
@@ -172,6 +175,7 @@
         "SceneTransitionContext",
         "Scheduler",
         "SeededRandom",
+        "SeededRandomCheckpointV1",
         "ServiceRegistry",
         "System",
         "Tick",
@@ -179,7 +183,7 @@
         "Vec2",
         "browserFrameDriver"
       ],
-      "declarationSha256": "eb6e964d0c13078aa96c72a52bb38b571211696a2dff6e570a659fc254648f3f"
+      "declarationSha256": "ae3e1b44bc6791694213886858e58835474a1125888574c03c5db08a6ec327ae"
     },
     "@roost2d/diagnostics": {
       "entrypoint": ".",
@@ -229,9 +233,11 @@
         "InputMap",
         "InputTargets",
         "PointerState",
-        "WheelState"
+        "WheelState",
+        "gamepadAxisCode",
+        "gamepadButtonCode"
       ],
-      "declarationSha256": "9914739b88e1a0c359c9e791f670dee3310437150e7899910975976c7cd8278b"
+      "declarationSha256": "769ad288aa74025ed41854a3d69f176065c96c5d00c0cf8c2b1f9fbad77db3c2"
     },
     "@roost2d/isometric": {
       "entrypoint": ".",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 - 2026-09-16
+
+- Add stable `SeededRandom` checkpoints with bounded serialized cursors, validation, and exact historical sequence compatibility.
+- Add injectable gamepad polling, qualified per-controller bindings, and strongest-value aggregation for legacy any-controller bindings.
+- Add managed audio playlists that advance on completion, preserve bus routing, skip failed tracks, back off failed cycles, and cancel cleanly.
+
 ## 0.6.1 - 2026-09-09
 
 - Preserve freshly sampled global transforms when spawning Pixi effects, fixing detached attachment scale and release placement on positioned, scaled, and mirrored fighters.

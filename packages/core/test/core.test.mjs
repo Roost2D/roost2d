@@ -22,6 +22,39 @@ test('scheduler and seeded random remain deterministic', () => {
   const a = new SeededRandom(42); const b = new SeededRandom(42); assert.deepEqual([a.next(), a.next(), a.next()], [b.next(), b.next(), b.next()]);
 });
 
+test('seeded random preserves the historical stream and stable checkpoint cursor', () => {
+  let legacyState = 0x8fffffff;
+  const legacyNext = () => {
+    let value = legacyState += 0x6d2b79f5;
+    value = Math.imul(value ^ value >>> 15, value | 1);
+    value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  };
+  const random = new SeededRandom(0x8fffffff);
+  for (let draw = 0; draw < 200_000; draw += 1) assert.equal(random.next(), legacyNext());
+  assert.deepEqual(random.checkpoint(), { seed: 4259250175, draws: 3392 });
+});
+
+test('seeded random checkpoints survive JSON and millions of draws', () => {
+  const random = new SeededRandom(123456);
+  for (let draw = 0; draw < 5_000_000; draw += 1) random.next();
+  const checkpoint = JSON.parse(JSON.stringify(random.checkpoint()));
+  const restored = SeededRandom.fromCheckpoint(checkpoint);
+  for (let draw = 0; draw < 100; draw += 1) assert.equal(restored.next(), random.next());
+  assert.equal(restored.restore(restored.checkpoint()), restored);
+});
+
+test('seeded random rejects malformed checkpoints', () => {
+  const random = new SeededRandom(1);
+  for (const checkpoint of [
+    { seed: -1, draws: 0 },
+    { seed: 0x1_0000_0000, draws: 0 },
+    { seed: 0, draws: -1 },
+    { seed: 0, draws: 65_536 },
+    { seed: 1.5, draws: 0 },
+  ]) assert.throws(() => random.restore(checkpoint), /Invalid seeded random checkpoint/);
+});
+
 /** A frame driver that runs frames only when pumped, so scheduling is fully observable. */
 function manualDriver() {
   const state = { requests: 0, cancels: 0, pending: new Map(), nextHandle: 1, time: 0 };

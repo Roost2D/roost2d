@@ -35,6 +35,116 @@ export interface SoundDefinition {
 export interface SoundRegistrationOptions { replace?: boolean; }
 export interface PlayOptions { volume?: number; rate?: number; loop?: boolean; channel?: AudioChannelId; }
 export interface PlayingSound { id: string; stop(): void; readonly ended: Promise<void>; }
+export interface PlaylistPlaybackOptions {
+  channel?: AudioChannelId;
+  loop?: boolean;
+  retryDelayMs?: number;
+  volume?: number;
+  rate?: number;
+}
+export interface PlaylistPlayback {
+  readonly id: string;
+  readonly running: boolean;
+  readonly currentTrackId: string | undefined;
+  readonly ended: Promise<void>;
+  stop(): void;
+}
+
+const DEFAULT_PLAYLIST_RETRY_DELAY_MS = 30_000;
+
+class ManagedPlaylistPlayback implements PlaylistPlayback {
+  private active?: PlayingSound;
+  private current?: string;
+  private timer?: ReturnType<typeof setTimeout>;
+  private readonly cancelled: Promise<void>;
+  private resolveCancelled!: () => void;
+  private resolveEnded!: () => void;
+  private finished = false;
+  private isRunning = true;
+  readonly ended: Promise<void>;
+
+  constructor(
+    readonly id: string,
+    private readonly tracks: readonly string[],
+    private readonly playTrack: (trackId: string, options: PlayOptions) => Promise<PlayingSound | undefined>,
+    private readonly options: Required<Pick<PlaylistPlaybackOptions, 'channel' | 'loop' | 'retryDelayMs'>> & Pick<PlaylistPlaybackOptions, 'volume' | 'rate'>,
+    private readonly onFinish: () => void,
+  ) {
+    this.cancelled = new Promise<void>((resolve) => { this.resolveCancelled = resolve; });
+    this.ended = new Promise<void>((resolve) => { this.resolveEnded = resolve; });
+    void this.run();
+  }
+
+  get running(): boolean { return this.isRunning; }
+  get currentTrackId(): string | undefined { return this.current; }
+
+  stop(): void {
+    if (!this.isRunning) return;
+    this.isRunning = false;
+    if (this.timer !== undefined) { clearTimeout(this.timer); this.timer = undefined; }
+    this.active?.stop(); this.active = undefined;
+    this.resolveCancelled();
+    this.finish();
+  }
+
+  private async run(): Promise<void> {
+    let cursor = 0;
+    let attempts = 0;
+    let consecutiveFailures = 0;
+    while (this.isRunning) {
+      const trackId = this.tracks[cursor]!;
+      cursor = (cursor + 1) % this.tracks.length;
+      attempts += 1;
+      this.current = trackId;
+      let sound: PlayingSound | undefined;
+      try {
+        sound = await this.playTrack(trackId, {
+          channel: this.options.channel,
+          volume: this.options.volume,
+          rate: this.options.rate,
+          loop: false,
+        });
+      } catch {
+        sound = undefined;
+      }
+      if (!this.isRunning) { sound?.stop(); break; }
+      if (!sound) {
+        consecutiveFailures += 1;
+        if (!this.options.loop && attempts >= this.tracks.length) break;
+        if (consecutiveFailures >= this.tracks.length) {
+          consecutiveFailures = 0;
+          await this.delay(this.options.retryDelayMs);
+        }
+        continue;
+      }
+      consecutiveFailures = 0;
+      this.active = sound;
+      await Promise.race([sound.ended.catch(() => undefined), this.cancelled]);
+      if (this.active === sound) this.active = undefined;
+      if (!this.isRunning) break;
+      if (!this.options.loop && attempts >= this.tracks.length) break;
+    }
+    this.isRunning = false;
+    this.finish();
+  }
+
+  private async delay(milliseconds: number): Promise<void> {
+    await Promise.race([
+      new Promise<void>((resolve) => {
+        this.timer = setTimeout(() => { this.timer = undefined; resolve(); }, milliseconds);
+      }),
+      this.cancelled,
+    ]);
+  }
+
+  private finish(): void {
+    if (this.finished) return;
+    this.finished = true;
+    this.current = undefined;
+    this.onFinish();
+    this.resolveEnded();
+  }
+}
 
 export class AudioManager {
   readonly mixer: AudioMixer;
@@ -43,6 +153,7 @@ export class AudioManager {
   private readonly lastPlayed = new Map<string, number>();
   private readonly active = new Map<string, Set<AudioBufferSourceNode>>();
   private readonly playlists = new Map<string, { tracks: string[]; index: number }>();
+  private readonly playlistPlaybacks = new Map<string, ManagedPlaylistPlayback>();
   private removeResumeListeners?: () => void;
 
   constructor(readonly context: AudioContext, private readonly fetcher: typeof fetch = fetch) { this.mixer = new AudioMixer(context); }
@@ -100,13 +211,35 @@ export class AudioManager {
   }
   definePlaylist(id: string, tracks: readonly string[]): void { if (!tracks.length) throw new Error('Playlist requires at least one track'); for (const track of tracks) this.requireDefinition(track); this.playlists.set(id, { tracks: [...tracks], index: 0 }); }
   async playNext(id: string): Promise<PlayingSound | undefined> { const playlist = this.playlists.get(id); if (!playlist) throw new Error(`Unknown playlist: ${id}`); const track = playlist.tracks[playlist.index++ % playlist.tracks.length]!; return this.play(track, { channel: 'music' }); }
+  startPlaylist(id: string, options: PlaylistPlaybackOptions = {}): PlaylistPlayback {
+    const existing = this.playlistPlaybacks.get(id);
+    if (existing?.running) return existing;
+    const playlist = this.playlists.get(id);
+    if (!playlist) throw new Error(`Unknown playlist: ${id}`);
+    const retryDelayMs = options.retryDelayMs ?? DEFAULT_PLAYLIST_RETRY_DELAY_MS;
+    if (!Number.isFinite(retryDelayMs) || retryDelayMs < 0) throw new Error('retryDelayMs must be a non-negative finite number');
+    let playback!: ManagedPlaylistPlayback;
+    playback = new ManagedPlaylistPlayback(
+      id,
+      [...playlist.tracks],
+      (trackId, playOptions) => this.play(trackId, playOptions),
+      { channel: options.channel ?? 'music', loop: options.loop ?? true, retryDelayMs, volume: options.volume, rate: options.rate },
+      () => { if (this.playlistPlaybacks.get(id) === playback) this.playlistPlaybacks.delete(id); },
+    );
+    this.playlistPlaybacks.set(id, playback);
+    return playback;
+  }
+  stopPlaylist(id?: string): void {
+    if (id !== undefined) { this.playlistPlaybacks.get(id)?.stop(); return; }
+    for (const playback of [...this.playlistPlaybacks.values()]) playback.stop();
+  }
   enableFirstInteractionResume(target: EventTarget = window): void {
     this.removeResumeListeners?.(); const resume = () => { void this.mixer.resume(); this.removeResumeListeners?.(); };
     for (const event of ['pointerdown', 'keydown', 'touchstart']) target.addEventListener(event, resume, { once: true });
     this.removeResumeListeners = () => { for (const event of ['pointerdown', 'keydown', 'touchstart']) target.removeEventListener(event, resume); this.removeResumeListeners = undefined; };
   }
   unload(id: string): void { this.stop(id); this.buffers.delete(id); }
-  async dispose(): Promise<void> { this.removeResumeListeners?.(); this.stop(); this.buffers.clear(); this.definitions.clear(); this.playlists.clear(); await this.mixer.dispose(); }
+  async dispose(): Promise<void> { this.removeResumeListeners?.(); this.stopPlaylist(); this.stop(); this.buffers.clear(); this.definitions.clear(); this.playlists.clear(); await this.mixer.dispose(); }
   private requireDefinition(id: string): SoundDefinition { const definition = this.definitions.get(id); if (!definition) throw new Error(`Unknown sound: ${id}`); return definition; }
 }
 

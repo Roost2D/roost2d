@@ -1,6 +1,6 @@
 # Roost2D
 
-Roost2D is a modular TypeScript 2D game engine with deterministic simulation, optional PixiJS v8 rendering, portable asset/rig contracts, and Node-only build tooling. Install only the packages your game needs; all public `@roost2d/*` packages use one exact lockstep version and are Apache-2.0 licensed.
+Roost2D is a modular, deterministic TypeScript game engine designed for coding agents and browser games. Game logic stays renderer-independent, with an official PixiJS v8 adapter for 2D rendering. The engine also provides portable asset/rig contracts and Node-only build tooling. Install only the packages your game needs; all public `@roost2d/*` packages use one exact lockstep version and are Apache-2.0 licensed.
 
 ## Five-minute browser game
 

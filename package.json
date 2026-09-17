@@ -2,7 +2,7 @@
   "name": "roost2d",
   "version": "0.7.0",
   "private": true,
-  "description": "Framework-agnostic 2D game-engine packages.",
+  "description": "Modular deterministic TypeScript game-engine packages for coding agents and browser games.",
   "type": "module",
   "packageManager": "npm@11.5.2",
   "engines": {

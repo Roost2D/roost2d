@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: Roost2D
-  text: A small, strict TypeScript engine for 2D games
-  tagline: Deterministic scenes, manifest-first assets, renderer-neutral rigs, optional PixiJS, and Node-only production tooling.
+  text: A deterministic TypeScript engine for coding agents and browser games
+  tagline: Renderer-independent game logic, optional PixiJS v8 rendering, manifest-first assets, and Node-only production tooling.
   actions:
     - theme: brand
       text: Build your first scene

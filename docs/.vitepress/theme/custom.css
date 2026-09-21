@@ -1,0 +1,36 @@
+@import '../../../assets/brand/palette.css';
+
+:root {
+  --vp-c-brand-1: var(--r2d-gold-deep);
+  --vp-c-brand-2: color-mix(in srgb, var(--r2d-gold-deep) 82%, black);
+  --vp-c-brand-3: color-mix(in srgb, var(--r2d-gold-deep) 65%, black);
+  --vp-c-brand-soft: color-mix(in srgb, var(--r2d-gold) 14%, transparent);
+}
+
+.dark {
+  --vp-c-bg: var(--r2d-surface-base);
+  --vp-c-bg-alt: var(--r2d-surface-raised);
+  --vp-c-bg-elv: var(--r2d-surface-stage-to);
+  --vp-c-bg-soft: var(--r2d-surface-stage-from);
+  --vp-c-brand-1: var(--r2d-gold);
+  --vp-c-brand-2: var(--r2d-gold-soft);
+  --vp-c-brand-3: var(--r2d-gold-bright);
+  --vp-c-brand-soft: color-mix(in srgb, var(--r2d-gold) 14%, transparent);
+  --vp-c-text-1: var(--r2d-text);
+  --vp-c-text-2: var(--r2d-text-muted);
+  --vp-c-text-3: var(--r2d-text-meta);
+  --vp-c-divider: var(--r2d-border);
+  --vp-c-gutter: var(--r2d-border);
+}
+
+.VPNavBarTitle .logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+.VPLink:focus-visible,
+.VPButton:focus-visible {
+  outline: 3px solid var(--r2d-rift);
+  outline-offset: 3px;
+}

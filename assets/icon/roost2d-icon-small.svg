@@ -8,6 +8,8 @@
   outside the core, so no outline or divider ever crosses the purple. The crest's orange
   therefore meets the core edge to edge and reads as growing out of it.
   
+  This is the 16/32px variant: same construction at heavier weights, because the lighter
+  ones thin out until the centre blade merges into the wings.
   The canvas is intentionally transparent.
 
   Literal colours mirror these tokens in assets/brand/palette.css
@@ -25,8 +27,8 @@
       <path clip-rule="evenodd" d="M-300 -300H900V900H-300Z M256 255.66 350.08 304.94 256 355.34 161.92 304.94Z"/>
     </clipPath>
   </defs>
-  <g transform="translate(-71.68,-2.56) scale(1.28)">
-    <g fill="#08152f" stroke="#08152f" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+  <g transform="translate(-61.44,5.52) scale(1.24)">
+    <g fill="#08152f" stroke="#08152f" stroke-width="34" stroke-linejoin="round" stroke-linecap="round">
       <path d="M239 286 116 202l58-56 96 105z"/>
       <path d="m273 286 123-84-58-56-96 105z"/>
       <path d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>
@@ -34,7 +36,7 @@
     </g>
     <path fill="#852df1" d="M256 255.66 350.08 304.94 256 355.34 161.92 304.94Z"/>
     <path fill="#d55cff" d="M256 280.3 304.16 304.94 256 330.7 207.84 304.94Z"/>
-    <g clip-path="url(#outside-core)" stroke="#08152f" stroke-width="12" stroke-linejoin="round">
+    <g clip-path="url(#outside-core)" stroke="#08152f" stroke-width="16" stroke-linejoin="round">
       <path fill="#ff9f1a" d="M239 286 116 202l58-56 96 105z"/>
       <path fill="#ff9f1a" d="m273 286 123-84-58-56-96 105z"/>
       <path fill="#ff641a" d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>

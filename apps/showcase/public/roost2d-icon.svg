@@ -1,13 +1,43 @@
+<!--
+  Roost2D mark: the committed crest and rift core (4176019) as one object, with the
+  isometric base tile removed.
+
+  Construction. Every path is first filled and fat-stroked in the outline colour, which
+  merges them into a single silhouette and supplies the black edge on the OUTSIDE of the
+  mark. The rift core is then laid down whole, and the crest is drawn clipped to the area
+  outside the core, so no outline or divider ever crosses the purple. The crest's orange
+  therefore meets the core edge to edge and reads as growing out of it.
+  
+  The canvas is intentionally transparent.
+
+  Literal colours mirror these tokens in assets/brand/palette.css
+  (shown without the leading custom-property dashes, which XML comments forbid):
+    #ff9f1a  r2d-roost-amber
+    #ff641a  r2d-roost-orange
+    #08152f  r2d-navy-900
+    #852df1  r2d-rift
+    #d55cff  r2d-rift-soft
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
   <title id="title">Roost2D engine icon</title>
-  <g stroke="#08152f" stroke-width="14" stroke-linejoin="round">
-    <path fill="#ff9f1a" d="M239 286 116 202l58-56 96 105z"/>
-    <path fill="#ff9f1a" d="m273 286 123-84-58-56-96 105z"/>
-    <path fill="#ff641a" d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>
+  <defs>
+    <clipPath id="outside-core">
+      <path clip-rule="evenodd" d="M-300 -300H900V900H-300Z M256 255.66 350.08 304.94 256 355.34 161.92 304.94Z"/>
+    </clipPath>
+  </defs>
+  <g transform="translate(-71.68,-2.56) scale(1.28)">
+    <g fill="#08152f" stroke="#08152f" stroke-width="26" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M239 286 116 202l58-56 96 105z"/>
+      <path d="m273 286 123-84-58-56-96 105z"/>
+      <path d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>
+      <path d="M256 255.66 350.08 304.94 256 355.34 161.92 304.94Z"/>
+    </g>
+    <path fill="#852df1" d="M256 255.66 350.08 304.94 256 355.34 161.92 304.94Z"/>
+    <path fill="#d55cff" d="M256 280.3 304.16 304.94 256 330.7 207.84 304.94Z"/>
+    <g clip-path="url(#outside-core)" stroke="#08152f" stroke-width="12" stroke-linejoin="round">
+      <path fill="#ff9f1a" d="M239 286 116 202l58-56 96 105z"/>
+      <path fill="#ff9f1a" d="m273 286 123-84-58-56-96 105z"/>
+      <path fill="#ff641a" d="m214 260-17-151 59-61 59 61-17 151-42 34z"/>
+    </g>
   </g>
-  <path fill="#0a1735" d="m52 321 204 108v38L52 359z"/>
-  <path fill="#0d1d42" d="m460 321-204 108v38l204-108z"/>
-  <path fill="#142750" stroke="#08152f" stroke-width="14" stroke-linejoin="round" d="M256 218 460 321 256 429 52 321z"/>
-  <path fill="#852df1" d="m256 277 84 44-84 45-84-45z"/>
-  <path fill="#d55cff" d="m256 299 43 22-43 23-43-23z"/>
 </svg>

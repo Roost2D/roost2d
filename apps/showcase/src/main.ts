@@ -8,6 +8,18 @@ import { depthFor, gridToScreen, screenToCell, tileDiamond } from '@roost2d/isom
 import { Camera2D, LayerStack } from '@roost2d/pixi';
 import './style.css';
 
+// Mirrors assets/brand/palette.css. Pixi wants numeric colours, so the tokens are
+// restated here rather than read back out of the cascade at runtime.
+const palette = {
+  canvas: '#09111e',
+  tileA: 0x17383a,
+  tileB: 0x122936,
+  tileEdge: 0x2f665a,
+  player: 0xf2b84b,
+  playerEdge: 0xffdc8a,
+  ink: 0x152238,
+} as const;
+
 const canvasHost = document.querySelector<HTMLDivElement>('#canvas')!;
 const status = document.querySelector<HTMLElement>('#status')!;
 const summary = document.querySelector<HTMLElement>('#summary')!;
@@ -23,7 +35,7 @@ void bootstrap();
 
 async function bootstrap(): Promise<void> {
   const app = new Application();
-  await app.init({ width: 640, height: 430, background: '#09111e', antialias: true, autoDensity: true, resolution: devicePixelRatio });
+  await app.init({ width: 640, height: 430, background: palette.canvas, antialias: true, autoDensity: true, resolution: devicePixelRatio });
   canvasHost.append(app.canvas);
 
   const layers = new LayerStack([
@@ -37,14 +49,14 @@ async function bootstrap(): Promise<void> {
   const projection = { tileWidth: 78, tileHeight: 39, origin: { x: 320, y: 64 } };
   for (let y = 0; y < 7; y += 1) for (let x = 0; x < 7; x += 1) {
     const points = tileDiamond({ x, y }, projection).flatMap((point) => [point.x, point.y]);
-    const color = (x + y) % 2 ? 0x162a3d : 0x122235;
-    layers.get('ground').addChild(new Graphics().poly(points).fill({ color }).stroke({ color: 0x31506b, width: 1 }));
+    const color = (x + y) % 2 ? palette.tileA : palette.tileB;
+    layers.get('ground').addChild(new Graphics().poly(points).fill({ color }).stroke({ color: palette.tileEdge, width: 1 }));
   }
 
   const actor = new Container(); actor.zIndex = depthFor({ x: 3, y: 3 });
   const shadow = new Graphics().ellipse(0, 13, 18, 7).fill({ color: 0x000000, alpha: 0.35 });
-  const body = new Graphics().circle(0, 0, 16).fill({ color: 0xf2b84b }).stroke({ color: 0xffdc8a, width: 3 });
-  const eye = new Graphics().circle(5, -4, 2.4).fill(0x152238);
+  const body = new Graphics().circle(0, 0, 16).fill({ color: palette.player }).stroke({ color: palette.playerEdge, width: 3 });
+  const eye = new Graphics().circle(5, -4, 2.4).fill(palette.ink);
   actor.addChild(shadow, body, eye); layers.get('actors').addChild(actor);
 
   const input = new InputManager(window);

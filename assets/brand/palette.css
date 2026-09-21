@@ -1,0 +1,74 @@
+/*
+ * Roost2D brand palette — the single source of truth for colour in this repo.
+ *
+ * Consumed by apps/showcase/src/style.css. The icon sources in assets/icon/ carry
+ * literal hexes because a favicon SVG cannot import a stylesheet; each one is
+ * annotated with the token it mirrors, so the two stay readable together.
+ *
+ * Gold remains the primary accent and marks the main action, player or subject.
+ * Orange adds depth to the Roost mark, meadow green identifies world/terrain,
+ * and violet identifies Rift/technical energy. Keep those supporting accents
+ * subordinate to gold rather than distributing every colour across every view.
+ */
+:root {
+  /* Brand navy — the icon badge and the isometric ground it stands on. */
+  --r2d-navy-900: #08152f;
+  --r2d-navy-800: #0c1b3c;
+  --r2d-navy-700: #16294f;
+  --r2d-navy-600: #19366b;
+  --r2d-navy-500: #22407c;
+  --r2d-navy-400: #2b4d8f;
+
+  /* Gold — the single accent. */
+  --r2d-gold: #f2b84b;
+  --r2d-gold-soft: #f6cf81;
+  --r2d-gold-bright: #ffdc8a;
+  --r2d-gold-deep: #9a570d;
+  --r2d-gold-ink: #211607; /* text sitting on a gold fill */
+
+  /* Supporting identity accents — use by meaning, never as decoration. */
+  --r2d-roost-amber: #ff9f1a;
+  --r2d-roost-orange: #ff641a;
+  --r2d-roost-shade: #d14708;
+  --r2d-meadow: #4ebd6c;
+  --r2d-meadow-bright: #67d37a;
+  --r2d-meadow-dark: #31945a;
+  --r2d-rift: #852df1;
+  --r2d-rift-soft: #d55cff;
+  --r2d-rift-pale: #e7d9ff;
+  --r2d-rift-deep: #7650e8;
+
+  /* Original Rift-tile faces retained by the transparent engine mark. */
+  --r2d-rift-tile-left: #0a1735;
+  --r2d-rift-tile-right: #0d1d42;
+  --r2d-rift-tile-top: #142750;
+
+  /* Surfaces — site chrome, cooler and darker than the brand navy. */
+  --r2d-surface-base: #070c14;
+  --r2d-surface-raised: #0d1724;
+  --r2d-surface-glow: #1d2b55;
+  --r2d-surface-stage-from: #0b1522;
+  --r2d-surface-stage-to: #111f2f;
+
+  /* Isometric world — the showcase canvas and its tiles. */
+  --r2d-iso-canvas: #09111e;
+  --r2d-iso-tile-a: #17383a;
+  --r2d-iso-tile-b: #122936;
+  --r2d-iso-tile-edge: #2f665a;
+  --r2d-iso-ink: #152238;
+
+  /* Borders, weakest to strongest. */
+  --r2d-border: #25364a;
+  --r2d-border-card: #2b4057;
+  --r2d-border-stage: #304861;
+  --r2d-border-field: #40516c;
+
+  /* Text, brightest to faintest. */
+  --r2d-text: #eff3fa;
+  --r2d-text-strong: #d8e0ee;
+  --r2d-text-muted: #a9b8cb;
+  --r2d-text-code: #9fb0cc;
+  --r2d-text-meta: #91a4bc;
+  --r2d-text-status: #86a4c4;
+  --r2d-text-subtle: #7f94ae;
+}

@@ -42,12 +42,12 @@
     "build:blueprint": "npm run build -w @roost2d/blueprint"
   },
   "devDependencies": {
-    "@types/node": "^22.15.3",
+    "@types/node": "^26.6.2",
     "gsap": "^3.13.0",
     "pixi.js": "^8.11.0",
     "sharp": "^0.35.3",
-    "typescript": "^5.8.3",
-    "vite": "^8.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
     "vitepress": "^1.6.3"
   },
   "overrides": {

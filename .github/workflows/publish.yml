@@ -126,7 +126,8 @@ jobs:
             package_name="$(package_field "$tarball_path" name)"
             package_version="$(package_field "$tarball_path" version)"
             verified=false
-            for attempt in {1..6}; do
+            # npm may accept a signed upload before its processing queue exposes it.
+            for attempt in {1..60}; do
               published_version="$(registry_field "$package_name" "$package_version" version)"
               published_tag="$(registry_field "$package_name" "$package_version" "dist-tags.$RELEASE_TAG")"
               if [[ "$published_version" == "$package_version" && "$published_tag" == "$package_version" ]]; then

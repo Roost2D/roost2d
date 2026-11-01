@@ -15,6 +15,26 @@ const definition = {
   attachmentGroups: { 'head/hat': { id: 'head/hat', slotId: 'head', attachmentIds: ['hat'], exclusive: true } }
 };
 
+test('base slot clipping follows skin changes and clears when its trait is removed', () => {
+  const source = structuredClone(definition);
+  const rect = { x: -20, y: -30, width: 40, height: 60 };
+  source.attachmentGroups['head/hat'].slotClipRects = { body: rect };
+  const makeNode = () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 });
+  const rig = new RigRuntime(source, { createBone: makeNode, createAttachment: makeNode, attach() {}, destroy() {} });
+  rig.attachGroup('head/hat');
+  assert.deepEqual(rig.node('attachment','body-white').clipRect, rect);
+  assert.equal(rig.node('attachment','hat').clipRect, undefined, 'the overlay itself is not clipped');
+  rig.applySkin('red');
+  assert.equal(rig.node('attachment','body-white').clipRect, undefined);
+  assert.deepEqual(rig.node('attachment','body-red').clipRect, rect);
+  rig.setMirrored(true); rig.resetPose();
+  assert.deepEqual(rig.node('attachment','body-red').clipRect, rect, 'pose resets preserve the equipped mask');
+  rig.removeGroup('head/hat');
+  assert.equal(rig.node('attachment','body-red').clipRect, undefined);
+  assert.equal(rig.node('attachment','body-red').visible, true);
+  rig.dispose();
+});
+
 test('skins and trait groups expose only selected attachments', () => {
   const nodes = new Map(); const factory = { createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; }, attach() {}, destroy() {} };
   const rig = new RigRuntime(definition, factory); assert.equal(nodes.get('body-white').visible, true); assert.equal(nodes.get('body-red').visible, false); assert.equal(nodes.get('hat').visible, false);

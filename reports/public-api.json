@@ -96,6 +96,7 @@
         "loadRoostrRig",
         "mergeUniqueSkin",
         "resolveChiknAction",
+        "resolveChiknTraitGroup",
         "resolveUniqueSkin",
         "roostrAnimationMetadataUrl",
         "roostrRigMetadataUrl",
@@ -104,7 +105,7 @@
         "validateCharacterRecipe",
         "validateChiknTraitAnimationProfiles"
       ],
-      "declarationSha256": "1dd176e354c64111dcb77fdf6d176f904cf58bccd2ab0952607056deaacd2a8d"
+      "declarationSha256": "7a858defabccc6bf0790dfe0eb6bf0f0cba508a43c26d4d4e7c02bd1a2d1656d"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
@@ -132,6 +133,7 @@
         "ProtectedAssetRights",
         "RigAttachmentGroupV1",
         "RigBoneV1",
+        "RigClipRectV1",
         "RigDefinitionV1",
         "RigSlotV1",
         "RigSocketV1",
@@ -148,7 +150,7 @@
         "validateRigDefinition",
         "validateRightsManifest"
       ],
-      "declarationSha256": "3839b47298190e41e1f02bc5ad135876a98ab0ac9508347e6e0e6e73d4bb327e"
+      "declarationSha256": "2f4302282e130d6c014c158e2a32629510d41b1aa5601bdf79ef5938e98d1667"
     },
     "@roost2d/core": {
       "entrypoint": ".",
@@ -294,7 +296,7 @@
         "PixiRigFactory",
         "PixiRigNode"
       ],
-      "declarationSha256": "dc20033fe8e0a36e4860b874e906f1dfd2a3ffa85c6a7b3b573e44188d91aaed"
+      "declarationSha256": "1db716f48e226b859e79360568edaecdbbfd16683230b5dc2e5f901702749160"
     },
     "@roost2d/rig2d": {
       "entrypoint": ".",
@@ -308,7 +310,7 @@
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "bc79085ebb95c4d0e85ccd6ebce7128b9ae9bccf9638ff9b493384c7aa23b01a"
+      "declarationSha256": "16de5621cda2f431ee2979729d8c4fd142ef4d0a648e7b4e2630b9db69d61481"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",

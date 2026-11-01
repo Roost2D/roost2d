@@ -71,6 +71,7 @@ const profileCache = new WeakMap<RigDefinitionV1, readonly ChiknTraitAnimationPr
 const clipCache = new WeakMap<RigDefinitionV1, readonly AnimationClipV1[]>();
 
 const MOTION_ADJUSTMENTS: Record<ChiknSecondaryMotion, { amplitude: number; speed: number }> = {
+  anchored: { amplitude: 0, speed: 1 },
   rigid: { amplitude: .72, speed: 1.08 },
   soft: { amplitude: 1, speed: .96 },
   dangling: { amplitude: 1.16, speed: .92 },
@@ -156,7 +157,8 @@ export function validateChiknTraitAnimationProfiles(definition: RigDefinitionV1,
     if (profile.attachmentTargets.join('|') !== group.attachmentIds.join('|')) errors.push(`${profile.traitGroupId}: attachment targets do not match the rig group`);
     if (profile.attachmentTargets.some((id) => !attachmentIds.has(id))) errors.push(`${profile.traitGroupId}: unknown driver attachment`);
     if (!profile.supportedActions.includes('punch') || !profile.supportedActions.includes('kick') || profile.supportedActions.includes('special') !== Boolean(profile.special)) errors.push(`${profile.traitGroupId}: supported actions do not match its capabilities`);
-    if (!(profile.amplitude > 0) || !(profile.speed > 0)) errors.push(`${profile.traitGroupId}: adjustments must be positive`);
+    const validAmplitude = profile.secondaryMotion === 'anchored' ? profile.amplitude === 0 : profile.amplitude > 0;
+    if (!validAmplitude || !(profile.speed > 0)) errors.push(`${profile.traitGroupId}: speed and moving amplitudes must be positive; anchored amplitude must be zero`);
     const numbers = [profile.gripOffset.x, profile.gripOffset.y, profile.tipOffset.x, profile.tipOffset.y, profile.originOffset.x, profile.originOffset.y, profile.timing.anticipationMs, profile.timing.releaseMs, profile.timing.recoveryMs];
     if (numbers.some((value) => !Number.isFinite(value))) errors.push(`${profile.traitGroupId}: calibration values must be finite`);
     if (profile.special?.origin.target === 'attachment' && !attachmentIds.has(profile.special.origin.targetId)) errors.push(`${profile.traitGroupId}: unknown special attachment ${profile.special.origin.targetId}`);
@@ -309,9 +311,14 @@ function tailorActionClip(definition: RigDefinitionV1, base: AnimationClipV1, pr
   const traitTracks: AnimationTrackV1[] = [];
   for (const profile of profiles) {
     const isDriver = profile === driver;
+    // Cropped pieces reconstruct one image (hair fringe or necklace). Keep the
+    // assembly rigid relative to its follower; separate sprite pivots would tear it.
+    const segmented = profile.attachmentTargets.some(id => definition.attachments.find(a => a.id === id)?.texture.region);
     for (const [index, targetId] of profile.attachmentTargets.entries()) {
       const neutral = neutralAttachmentTransform(definition, targetId);
-      const motion = attachmentMotion(profile, isDriver, index);
+      const motion = segmented && !isDriver
+        ? { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }
+        : attachmentMotion(profile, isDriver, index);
       let keyframes: AnimationKeyframeV1[] = [
         { timeMs: 0, durationMs: 0, ...neutral },
         { timeMs: 0, durationMs: Math.max(1, scaleTime(accentAt)), x: neutral.x + motion.x, y: neutral.y + motion.y, rotation: neutral.rotation + motion.rotation, scaleX: neutral.scaleX * motion.scaleX, scaleY: neutral.scaleY * motion.scaleY, ease: 'power2.out' },
@@ -353,6 +360,8 @@ function tailorActionClip(definition: RigDefinitionV1, base: AnimationClipV1, pr
 }
 
 function attachmentMotion(profile: ChiknTraitAnimationProfile, driver: boolean, index: number) {
+  // A perched rider moves with its follower bone; secondary recoil would lift it off its seat.
+  if (profile.secondaryMotion === 'anchored') return { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 };
   const paired = index % 2 === 0 ? 1 : -1;
   if (driver && profile.punchPreset) {
     const values: Record<ChiknPunchPreset, [number, number, number, number, number]> = {
@@ -370,7 +379,7 @@ function attachmentMotion(profile: ChiknTraitAnimationProfile, driver: boolean, 
   }
   if (driver && profile.special?.preset?.startsWith('tail-')) return { x: -11, y: -4, rotation: 1.65, scaleX: 1.1, scaleY: 1.04 };
   const categoryDirection = profile.category === 'Tail' ? -1 : profile.category === 'Feet' ? paired : 1;
-  const rotations: Record<ChiknSecondaryMotion, number> = { rigid: .04, soft: .1, dangling: .16, cloth: .2, feather: .14, bulky: .06, elastic: .22 };
+  const rotations: Record<ChiknSecondaryMotion, number> = { anchored: 0, rigid: .04, soft: .1, dangling: .16, cloth: .2, feather: .14, bulky: .06, elastic: .22 };
   return { x: 0, y: -1.5 * profile.amplitude, rotation: rotations[profile.secondaryMotion] * categoryDirection, scaleX: 1 + .025 * profile.amplitude, scaleY: 1 + .025 * profile.amplitude };
 }
 

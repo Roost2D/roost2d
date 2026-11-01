@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import type { AnimationClipV1, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigDefinitionV1, RigSocketV1, TextureRef } from '@roost2d/contracts';
+import type { AnimationClipV1, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigClipRectV1, RigDefinitionV1, RigSocketV1, TextureRef } from '@roost2d/contracts';
 import { pickAnimationKeyframeValues, validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 
 export interface RigDisplayNode {
@@ -14,6 +14,7 @@ export interface RigDisplayNode {
   tint?: number;
   anchorX?: number;
   anchorY?: number;
+  clipRect?: RigClipRectV1;
 }
 
 export interface RigDisplayFactory {
@@ -255,6 +256,11 @@ export class RigRuntime {
       this.attachments.get(attachment.id)!.visible = visible;
     }
     this.applyGroupDepthOverrides();
+    for (const node of this.attachments.values()) if (node.clipRect !== undefined) node.clipRect = undefined;
+    for (const group of this.activeGroups.values()) for (const [slotId, rect] of Object.entries(group.slotClipRects ?? {})) {
+      const attachmentId = this.slotTransformAttachmentId(slotId);
+      if (attachmentId) this.attachments.get(attachmentId)!.clipRect = { ...rect };
+    }
     this.resolveFollowerParents();
     this.resolveSocketParents();
   }

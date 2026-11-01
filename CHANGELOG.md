@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.0 - 2026-11-01
+
+- Correct Chikn/Roostr trait placements, source orientation and multipart layering against the V2 visuals, including hair, horns, Samurai, footwear, mounted riders, chains, eggs, held props, shorts, muscles and claws.
+- Keep wings and complete animated leg branches behind all 13 coat-like garments, restoring their original depths when garments are removed. Anchor Chikn Jockey to the back during action reactions.
+- Add original-image texture regions, reversible base-sprite clipping and category-aware NFT trait-label resolution with documented aliases. Preserve atlas integrity and shared texture ownership.
+- Require recorded owner release approval bound to the exact rig/rendering source fingerprint before publishing.
+
 ## 0.7.0 - 2026-09-16
 
 - Add stable `SeededRandom` checkpoints with bounded serialized cursors, validation, and exact historical sequence compatibility.

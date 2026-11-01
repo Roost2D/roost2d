@@ -1,0 +1,8 @@
+{
+    "schema":  "roost2d.trait-assembly-review/v1",
+    "status":  "approved",
+    "approvedBy":  "Repository owner (session instruction, 2026-11-01)",
+    "evidence":  "Owner reviewed coat previews and instructed: see coats, the leg should be behind the coats, generally, and then release the new lib so it can be used in other games. General coat-leg correction implemented and verified across all 13 garments, 19 skins and every feet group; Chromium/mobile WebKit previews pass. See docs/release-0.8.0.md.",
+    "sourceSha256":  "b8acdcd98c04e285cb59db3ad82d0e50e72bb4b941360d2b1db32ad8318fb4d8",
+    "requiredReview":  "Owner review of all Chikn and Roostr trait previews before publishing next or latest."
+}

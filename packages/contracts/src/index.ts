@@ -4,6 +4,8 @@ export interface TextureRef {
   frameId?: string;
   /** Display size in rig/layout coordinates without changing the sampled source pixels. */
   layoutScale?: number;
+  /** Optional crop in the original image's pixel coordinates, before layoutScale. */
+  region?: { x: number; y: number; width: number; height: number };
 }
 
 export interface TransformV1 {
@@ -53,6 +55,8 @@ export interface RigSlotV1 {
   defaultAttachmentId?: string;
 }
 
+export interface RigClipRectV1 { x: number; y: number; width: number; height: number; }
+
 export interface RigAttachmentGroupV1 {
   id: string;
   slotId: string;
@@ -61,6 +65,8 @@ export interface RigAttachmentGroupV1 {
   replacesSlotIds?: string[];
   /** Temporary base-slot transform depths used while this group is active. */
   slotZIndexOverrides?: Record<string, number>;
+  /** Clips the active base sprite in attachment-local layout coordinates while equipped. */
+  slotClipRects?: Record<string, RigClipRectV1>;
   exclusive?: boolean;
   metadata?: Record<string, string | number | boolean>;
 }
@@ -499,6 +505,10 @@ export function validateRigDefinition(rig: unknown): string[] {
     else {
       if (texture.frameId !== undefined && !isNonEmptyString(texture.frameId)) errors.push(`${label}: texture frameId must be a string`);
       if (texture.layoutScale !== undefined && (!isFiniteNumber(texture.layoutScale) || texture.layoutScale <= 0)) errors.push(`${label}: texture layoutScale must be a positive finite number`);
+      if (texture.region !== undefined) {
+        const region = texture.region;
+        if (!isRecord(region) || !['x', 'y', 'width', 'height'].every(key => Number.isInteger(region[key])) || Number(region.x) < 0 || Number(region.y) < 0 || Number(region.width) <= 0 || Number(region.height) <= 0) errors.push(`${label}: texture region must contain non-negative integer origins and positive integer dimensions`);
+      }
     }
     if (!isFiniteNumber(attachment.zIndex)) errors.push(`${label}: attachment zIndex must be a finite number`);
     if (attachment.depthTarget !== undefined && attachment.depthTarget !== 'attachment' && attachment.depthTarget !== 'bone') errors.push(`${label}: depthTarget must be attachment or bone`);
@@ -530,6 +540,13 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (group.replacesSlotIds !== undefined) {
       if (!Array.isArray(group.replacesSlotIds)) errors.push(`${groupId}: replacesSlotIds must be an array`);
       else for (const slotId of group.replacesSlotIds as unknown[]) if (!isNonEmptyString(slotId) || !slots.has(slotId)) errors.push(`${groupId}: unknown replacement slot ${String(slotId)}`);
+    }
+    if (group.slotClipRects !== undefined) {
+      if (!isRecord(group.slotClipRects)) errors.push(`${groupId}: slotClipRects must be an object`);
+      else for (const [slotId, rect] of Object.entries(group.slotClipRects)) {
+        if (!slots.has(slotId)) errors.push(`${groupId}: unknown clip slot ${slotId}`);
+        if (!isRecord(rect) || !['x','y','width','height'].every(key => isFiniteNumber(rect[key])) || Number(rect.width) <= 0 || Number(rect.height) <= 0) errors.push(`${groupId}: clip rect for ${slotId} must have finite coordinates and positive dimensions`);
+      }
     }
     if (group.slotZIndexOverrides !== undefined) {
       if (!isRecord(group.slotZIndexOverrides)) errors.push(`${groupId}: slotZIndexOverrides must be an object`);

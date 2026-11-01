@@ -215,6 +215,65 @@ test('rig layoutScale changes logical bounds without changing sampled pixels or 
   factory.destroyRoot();
 });
 
+test('rig regions crop trimmed atlas frames before layout scaling and preserve their shared source', () => {
+  for (const rotate of [0, 2]) {
+    const source = new Texture({
+      source: Texture.WHITE.source,
+      frame: new Rectangle(10, 20, rotate ? 6 : 8, rotate ? 8 : 6),
+      orig: new Rectangle(0, 0, 20, 16),
+      trim: new Rectangle(4, 2, 8, 6), rotate,
+    });
+    const factory = new PixiRigFactory(new Map([['part', source]]));
+    // Partly transparent crop: only x=4..8/y=3..6 intersects stored atlas pixels.
+    const node = factory.createAttachment('crop', { assetId: 'part', region: { x: 2, y: 3, width: 6, height: 3 }, layoutScale: .5 });
+    const crop = node.display.texture;
+    const rect = value => [value.x, value.y, value.width, value.height];
+    assert.deepEqual(rect(crop.frame), rotate ? [12, 20, 3, 4] : [10, 21, 4, 3]);
+    assert.deepEqual(rect(crop.orig), [0, 0, 3, 1.5]);
+    assert.deepEqual(rect(crop.trim), [1, 0, 2, 1.5]);
+    assert.equal(crop.rotate, rotate);
+    assert.equal(crop.source, source.source);
+    assert.deepEqual(rect(source.frame), rotate ? [10, 20, 6, 8] : [10, 20, 8, 6]);
+    factory.destroy(node);
+    assert.equal(crop.destroyed, true);
+    assert.equal(source.destroyed, false);
+    factory.destroyRoot(); source.destroy(false);
+  }
+});
+
+test('rig regions support untrimmed sources and reject invalid or fully transparent crops', () => {
+  const source = new Texture({ source: Texture.WHITE.source, frame: new Rectangle(0, 0, 20, 16) });
+  const factory = new PixiRigFactory(new Map([['part', source]]));
+  const node = factory.createAttachment('crop', { assetId: 'part', region: { x: 2, y: 3, width: 6, height: 4 } });
+  assert.deepEqual([node.display.texture.frame.x, node.display.texture.frame.y, node.display.texture.width, node.display.texture.height], [2, 3, 6, 4]);
+  for (const region of [{ x: -1, y: 0, width: 2, height: 2 }, { x: 19, y: 0, width: 2, height: 2 }, { x: 0, y: 0, width: 0, height: 2 }, { x: .5, y: 0, width: 2, height: 2 }]) assert.throws(() => factory.createAttachment('bad', { assetId: 'part', region }), /inside/);
+  const trimmed = new Texture({ source: Texture.WHITE.source, frame: new Rectangle(0, 0, 2, 2), orig: new Rectangle(0, 0, 20, 16), trim: new Rectangle(4, 4, 2, 2) });
+  const trimmedFactory = new PixiRigFactory(new Map([['part', trimmed]]));
+  assert.throws(() => trimmedFactory.createAttachment('empty', { assetId: 'part', region: { x: 0, y: 0, width: 2, height: 2 } }), /no sampled pixels/);
+  factory.destroy(node); factory.destroyRoot(); trimmedFactory.destroyRoot(); source.destroy(false); trimmed.destroy(false);
+});
+
+test('local rig clips reuse the texture and release their mask when cleared or destroyed', () => {
+  const source = new Texture({ source: Texture.WHITE.source });
+  const factory = new PixiRigFactory(new Map([['part', source]]));
+  const node = factory.createAttachment('head', { assetId: 'part' });
+  const rect = { x: -10, y: -20, width: 30, height: 40 };
+  node.clipRect = rect;
+  const mask = node.display.children[0];
+  assert.deepEqual(node.clipRect, rect);
+  assert.equal(mask.parent, node.display, 'the mask follows sprite animation and mirroring');
+  assert.equal(node.display.texture, source, 'clipping does not edit the atlas texture');
+  node.clipRect = undefined;
+  assert.equal(mask.destroyed, true);
+  assert.equal(node.display.children.length, 0);
+  node.clipRect = rect;
+  const replacement = node.display.children[0];
+  factory.destroy(node);
+  assert.equal(replacement.destroyed, true);
+  assert.equal(source.destroyed, false);
+  factory.destroyRoot(); source.destroy(false);
+});
+
 test('rig layoutScale 1 reuses the preloaded texture', () => {
   const source = new Texture({ source: Texture.WHITE.source });
   const factory = new PixiRigFactory(new Map([['part', source]]));

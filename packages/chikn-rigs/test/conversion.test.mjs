@@ -4,6 +4,26 @@ import { validateAnimationClip, validateRigDefinition } from '@roost2d/contracts
 import { readFile } from 'node:fs/promises';
 import { applyCharacterRecipe, CHARACTER_RECIPE_SCHEMA, CHIKN_RIG_ART_SCALE, convertLegacyAnimations, convertLegacyRig, createChiknActionClips, createChiknTraitAnimationProfiles, listChiknSpecials, loadChiknRig, mergeUniqueSkin, resolveChiknAction, UNIQUE_SKINS, uniqueAssetId, uniqueAssetPrefix, validateCharacterRecipe, validateChiknTraitAnimationProfiles } from '../dist/index.js';
 import { RigActionController, RigRuntime } from '@roost2d/rig2d';
+import { resolveChiknTraitGroup } from '../dist/index.js';
+
+test('NFT label aliases resolve within their category without swallowing unknown traits', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8'));
+  const definition = convertLegacyRig(source, 'roostr', 'Roostr');
+  assert.equal(resolveChiknTraitGroup(definition, 'head', 'Hairy Old Man')?.id, 'head/beard');
+  assert.equal(resolveChiknTraitGroup(definition, 'Head', 'Ropians Hat')?.id, 'head/grandpa');
+  assert.equal(resolveChiknTraitGroup(definition, 'feet', 'Blue Timbs')?.id, 'feet/blue-timbs');
+  assert.equal(resolveChiknTraitGroup(definition, 'head', 'Blue Timbs'), undefined);
+  assert.equal(resolveChiknTraitGroup(definition, 'head', 'Unreleased hat'), undefined);
+  assert.equal(resolveChiknTraitGroup(definition, 'head', ''), undefined);
+});
+
+test('every equipped trait piece has an authored transform rather than an accidental origin fallback', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const names = new Set(source.rig.map(part => part.name));
+    for (const category of Object.values(source.traits)) for (const trait of Object.values(category)) for (const part of trait.attachments) assert.ok(names.has(part.name), `${species}: ${part.name} is calibrated`);
+  }
+});
 
 test('converts attachment texture metadata into a manifest alias', () => {
   const rig = convertLegacyRig({ skins: { Gold: { Torso: { name: 'Gold_Torso', texture: 'Gold Torso' } } }, rig: [{ name: 'Gold_Torso', x: 2, y: 3, z_index: 4 }] }, 'chikn', 'Chikn');
@@ -89,27 +109,238 @@ test('trait depth hierarchy and replacement ownership match character compositio
     const feet = groups.filter(({ metadata }) => metadata.category === 'Feet');
     const heads = groups.filter(({ metadata }) => metadata.category === 'Head');
     assert.ok(Object.values(source.traits?.Head ?? {}).every(({ replaces }) => replaces === undefined), `${species} source head traits remain overlays`);
-    assert.ok(tails.length > 0 && tails.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'Tail'));
-    assert.ok(tails.every(({ slotZIndexOverrides }) => slotZIndexOverrides?.Tail === 6));
+    assert.ok(tails.length > 0);
+    for (const group of tails) {
+      const declared = source.traits.Tail[group.metadata.name].replaces ?? ['Tail'];
+      assert.deepEqual(group.replacesSlotIds ?? [], declared);
+      assert.equal(group.slotZIndexOverrides?.Tail, declared.includes('Tail') ? 6 : undefined);
+    }
     for (const trait of Object.values(source.traits?.Tail ?? {})) for (const part of trait.attachments) {
       const sourcePart = source.rig.find(({ name }) => name === part.name) ?? part;
       const bone = rig.bones.find(({ id }) => id === `bone:${part.name}`);
-      assert.equal(bone.followSlotId, 'Tail', `${species} ${part.name} follows the animated base tail`);
-      assert.equal(bone.x, (sourcePart.x ?? 0) + 12, `${species} ${part.name} is inset toward the torso`);
+      const follower = sourcePart.follow_slot ?? 'Tail';
+      assert.equal(bone.followSlotId, follower, `${species} ${part.name} follows its authored body part`);
+      assert.equal(bone.x, (sourcePart.x ?? 0) + (follower === 'Tail' ? 12 : 0), `${species} ${part.name} preserves its authored inset`);
     }
-    assert.ok(feet.length > 0 && feet.every(({ replacesSlotIds }) => replacesSlotIds?.join('|') === 'LegFoot A|LegFoot B'));
+    assert.ok(feet.length > 0);
+    for (const group of feet) {
+      const declared = source.traits.Feet[group.metadata.name].replaces ?? ['LegFoot A', 'LegFoot B'];
+      assert.deepEqual(group.replacesSlotIds ?? [], declared, `${species} ${group.id} honours its authored replacement ownership`);
+    }
     assert.ok(heads.length > 0 && heads.every(({ replacesSlotIds }) => replacesSlotIds === undefined), 'head traits never hide the base head');
 
     for (const [category, zIndex] of [['Torso', 9], ['Neck', 20], ['Head', 30], ['Feet', 20]]) {
       const attachmentIds = new Set(groups.filter(({ metadata }) => metadata.category === category).flatMap(({ attachmentIds }) => attachmentIds));
-      assert.ok(attachmentIds.size > 0 && rig.attachments.filter(({ id }) => attachmentIds.has(id)).every((attachment) => attachment.zIndex === zIndex), `${species} ${category} depth`);
+      assert.ok(attachmentIds.size > 0 && rig.attachments.filter(({ id }) => attachmentIds.has(id)).every((attachment) => attachment.zIndex === (source.rig.find(p => p.name === attachment.id)?.render_order ?? zIndex)), `${species} ${category} depth`);
     }
 
-    for (const trait of Object.values(source.traits?.Feet ?? {}).filter(({ attachments }) => attachments.length === 1)) {
+    for (const trait of Object.values(source.traits?.Feet ?? {}).filter(({ attachments, replaces }) => attachments.length === 1 && replaces === undefined)) {
       const sourcePart = source.rig.find(({ name }) => name === trait.attachments[0].name);
       const bone = rig.bones.find(({ id }) => id === `bone:${trait.attachments[0].name}`);
       assert.equal(bone.x, (sourcePart?.x ?? 0) + 8, `${species} ${trait.attachments[0].name} right offset`);
       assert.equal(bone.followSlotId, 'LegFoot A');
+    }
+  }
+});
+
+test('all 44 held torso props stay behind the visible front wing on every base skin', async () => {
+  const expected = {
+    chikn: 'nugget-wand spell-wand popsicle cutlass fresh-fish mighty-broadsword peacemaker big-ol-corn-cob summer-days a-fresh-baguette old-fashioned-romance',
+    roostr: 'lord-quas gameboi goldfish hendrix floppy-disk boombox mcfly banjo not-football bone zippo fancy-sword rubber-chikn fresh-fish katana omelette home-run hoops avax-banger gainz banger cd-rw sword big-stick starfish big-ol-corn-cob shovel spork spelunker 9-iron the-key toot-toot a-fresh-baguette',
+  };
+  const makeNode = id => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, alpha: 1, visible: true });
+  const depthPath = node => { const result = []; for (let current = node; current; current = current.parent) result.unshift(current); return result; };
+  const assertBehind = (back, front, label) => {
+    const a = depthPath(back), b = depthPath(front);
+    const index = a.findIndex((node, i) => node !== b[i]);
+    assert.ok(index >= 0 && b[index], `${label}: distinct sibling branches`);
+    assert.ok((a[index].zIndex ?? 0) < (b[index].zIndex ?? 0), `${label}: behind the front wing at their common ancestor`);
+  };
+  for (const species of ['chikn','roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const runtime = new RigRuntime(definition, { createBone: makeNode, createAttachment: makeNode, attach(parent, child) { child.parent = parent; }, destroy() {} });
+    for (const skinId of Object.keys(definition.skins)) for (const name of expected[species].split(' ')) {
+      const id = `torso/${name}`;
+      applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: [id] }, definition);
+      const wingId = definition.skins[skinId]['Wing A'];
+      assert.ok(runtime.activeAttachmentIds().includes(wingId), `${species}/${skinId}/${id}: front wing remains visible`);
+      for (const partId of definition.attachmentGroups[id].attachmentIds) assertBehind(runtime.node('attachment', partId), runtime.node('attachment', wingId), `${species}/${skinId}/${id}`);
+    }
+    if (species === 'chikn') {
+      const cutlass = definition.bones.find(b => b.id === 'bone:Trait_Torso_Cutlass');
+      assert.equal(cutlass.scaleX, 1, 'the V2 right-facing Cutlass texture is not independently mirrored');
+      assert.equal(cutlass.rotation, 0, 'Cutlass keeps its original V2 blade angle');
+      assert.ok(cutlass.x > 0, 'the right-pointing blade extends from the front wing grip');
+      const broadsword = definition.bones.find(b => b.id === 'bone:Trait_Torso_MightyBroadsword');
+      assert.equal(broadsword.scaleX, -1, 'Broadsword source art points the opposite way and needs its V2 horizontal flip');
+      assert.ok(broadsword.rotation < 0 && broadsword.rotation > -.2, 'Broadsword keeps its shallow V2 diagonal adjustment');
+      assert.ok(broadsword.x > 0, 'the Broadsword extends right of its grip in the V2 setup');
+    } else {
+      const skinId = definition.defaultSkinId;
+      applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: ['head/samurai'] }, definition);
+      assertBehind(runtime.node('attachment', 'Trait_Head_Samurai_B'), runtime.node('attachment', definition.skins[skinId].Head), 'Samurai rear flap');
+      assertBehind(runtime.node('attachment', definition.skins[skinId].Head), runtime.node('attachment', 'Trait_Head_Samurai_A'), 'Samurai front helmet');
+      for (const skinId of Object.keys(definition.skins)) {
+        applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: ['head/samurai'] }, definition);
+        const headId = definition.skins[skinId].Head;
+        assert.deepEqual(runtime.node('attachment', headId).clipRect, { x: -100, y: -29, width: 200, height: 200 }, `${skinId}: helmet conceals the comb without replacing the face`);
+        runtime.removeGroup('head/samurai');
+        assert.equal(runtime.node('attachment', headId).clipRect, undefined, `${skinId}: removing the helmet restores the full head`);
+      }
+    }
+    runtime.dispose();
+  }
+});
+
+test('all 13 coat-like outfits cover wings and every equipped leg branch, restoring depths when removed', async () => {
+  const coats = {
+    chikn: ['business-boy','karate-kid'],
+    roostr: ['doctor-coq','dad-shirt','grande-lecoq','kevlar','tweed','black-t-shirt','white-t-shirt','red-t-shirt','play-boy','breastplate','golden-breastplate'],
+  };
+  const node = id => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, alpha: 1, visible: true });
+  for (const species of ['chikn','roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const runtime = new RigRuntime(definition, { createBone: node, createAttachment: node, attach(parent, child) { child.parent = parent; }, destroy() {} });
+    for (const skinId of Object.keys(definition.skins)) for (const coat of coats[species]) {
+      const id = `torso/${coat}`;
+      applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: [id] }, definition);
+      const wingId = definition.skins[skinId]['Wing A'];
+      const wing = runtime.node('bone', `bone:${wingId}`);
+      const torso = runtime.node('bone', `bone:${definition.skins[skinId].Torso}`);
+      const legs = ['LegUpper A', 'LegUpper B'].map(slot => runtime.node('bone', `bone:${definition.skins[skinId][slot]}`));
+      for (const leg of legs) {
+        assert.equal(leg.parent, torso);
+        assert.ok(leg.zIndex < 0, `${species}/${skinId}/${coat}: torso and coat occlude the upper leg`);
+      }
+      assert.ok(runtime.activeAttachmentIds().includes(wingId), `${species}/${skinId}/${coat}: underlying wing remains present`);
+      for (const partId of definition.attachmentGroups[id].attachmentIds) {
+        const garment = runtime.node('bone', `bone:${partId}`);
+        assert.equal(wing.parent, garment.parent, 'garment and wing use the same torso branch');
+        assert.ok(wing.zIndex < garment.zIndex, `${species}/${skinId}/${coat}: front wing is beneath the garment`);
+      }
+      for (const feet of Object.values(definition.attachmentGroups).filter(group => group.metadata.category === 'Feet')) {
+        runtime.attachGroup(feet.id);
+        for (const partId of feet.attachmentIds) {
+          let branch = runtime.node('bone', `bone:${partId}`);
+          while (branch.parent && branch.parent !== torso) branch = branch.parent;
+          assert.ok(legs.includes(branch), `${species}/${skinId}/${coat}/${feet.id}: footwear inherits a leg branch behind the coat`);
+        }
+      }
+      runtime.resetPose();
+      for (const leg of legs) assert.ok(leg.zIndex < 0, 'pose reset preserves garment occlusion');
+      runtime.removeGroup(id);
+      assert.equal(wing.zIndex, 11, `${species}/${skinId}/${coat}: removing the coat restores the front wing`);
+      for (const slot of ['LegUpper A', 'LegUpper B']) {
+        const attachmentId = definition.skins[skinId][slot];
+        assert.equal(runtime.node('bone', `bone:${attachmentId}`).zIndex, definition.attachments.find(part => part.id === attachmentId).zIndex, 'removing the coat restores the leg depth');
+      }
+    }
+    runtime.dispose();
+  }
+});
+
+test('the jockey stays seated during trait actions and PermaBull uses front/rear horns without local mirroring', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8'));
+  const definition = convertLegacyRig(source, 'roostr', 'Roostr');
+  const jockeyId = definition.attachmentGroups['tail/chikn-jockey'].attachmentIds[0];
+  const jockey = definition.bones.find(b => b.id === `bone:${jockeyId}`);
+  assert.equal(jockey.followSlotId, 'Torso');
+  assert.equal(jockey.rotation, 0);
+  assert.ok(jockey.scaleX < .7 && jockey.scaleX > .6, 'the V2 perched rider is smaller than the base sprite');
+  const seatBottom = jockey.y + 393 * .0929 * jockey.scaleY / 2;
+  assert.ok(seatBottom > -22 && seatBottom < -20, 'the lower edge meets the back contact area');
+  for (const input of ['punch','kick']) {
+    const action = resolveChiknAction({ species: 'roostr', traitGroupIds: ['tail/chikn-jockey'] }, definition, input);
+    const track = action.clip.tracks.find(t => t.target === 'attachment' && t.targetId === jockeyId);
+    assert.ok(track);
+    for (const frame of track.keyframes) for (const [property,value] of Object.entries({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 })) assert.equal(frame[property], value, `${input}/${property}: no independent bounce or tilt`);
+  }
+  const front = definition.attachments.find(a => a.id === 'Trait_Head_Permabull');
+  const rear = definition.attachments.find(a => a.id === 'Trait_Head_Permabull_B');
+  assert.ok(front.zIndex > 0 && rear.zIndex < 0, 'the left horn covers the head and the far horn passes behind it');
+  for (const part of [front,rear]) assert.ok(definition.bones.find(b => b.id === part.boneId).scaleX > 0, 'horn source art retains its own left/right orientation');
+});
+
+test('feet never disappear when accessories replace only their actual anatomy, across every skin', async () => {
+  for (const species of ['chikn', 'roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const makeNode = () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, alpha: 1, visible: true });
+    const runtime = new RigRuntime(definition, { createBone: makeNode, createAttachment: makeNode, attach() {}, destroy() {} });
+    for (const skinId of Object.keys(definition.skins)) {
+      for (const group of Object.values(definition.attachmentGroups).filter(g => g.metadata.category === 'Feet')) {
+        applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: [group.id] }, definition);
+        const active = new Set(runtime.activeAttachmentIds());
+        assert.ok(group.attachmentIds.every(id => active.has(id)), `${skinId}/${group.id}: every equipped piece is visible`);
+        for (const slotId of ['LegFoot A','LegFoot B','LegLower A','LegLower B']) {
+          const baseId = definition.skins[skinId][slotId];
+          assert.equal(active.has(baseId), !(group.replacesSlotIds ?? []).includes(slotId), `${skinId}/${group.id}/${slotId}`);
+        }
+      }
+    }
+    runtime.dispose();
+  }
+});
+
+test('coloured Chikn feet equip two toes and two shins on the matching animated limbs', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/chikn-rig.json', import.meta.url), 'utf8'));
+  const definition = convertLegacyRig(source, 'chikn', 'Chikn');
+  for (const colour of ['purple','red','green','blue']) {
+    const group = definition.attachmentGroups[`feet/${colour}-feet`];
+    assert.equal(group.attachmentIds.length, 4);
+    const bones = group.attachmentIds.map(id => definition.bones.find(b => b.id === `bone:${id}`));
+    assert.deepEqual(bones.map(b => b.followSlotId).sort(), ['LegFoot A','LegFoot B','LegLower A','LegLower B']);
+    assert.ok(bones.every(b => b.x === 0 && b.y === 0), 'toes and shins use their base limb pivots');
+  }
+});
+
+test('ankle accessories preserve both toes and rear head panels keep authored order', async () => {
+  const source = JSON.parse(await readFile(new URL('../data/roostr-rig.json', import.meta.url), 'utf8'));
+  const definition = convertLegacyRig(source, 'roostr', 'Roostr');
+  for (const id of ['feet/greaves','feet/golden-greaves','feet/spurs','feet/ball-n-chain','feet/ironclaw']) assert.deepEqual(definition.attachmentGroups[id].replacesSlotIds ?? [], [], id);
+  assert.equal(definition.attachments.find(a => a.id === 'Trait_Head_Boxhead_B').zIndex, -1);
+  for (const stem of ['GreenPartyHat','Bucket','Rosebud','SeshHat']) assert.equal(definition.attachments.find(a => a.id === `Trait_Head_${stem}_B`).zIndex, -1, `${stem}: rear pieces stay behind the face`);
+  assert.equal(definition.bones.find(b => b.id === 'bone:Trait_Head_PanicBuy_B').followSlotId, 'Torso');
+  assert.ok(definition.attachments.find(a => a.id === 'Trait_Head_PanicBuy_B').zIndex < definition.attachments.find(a => a.id === source.skins.SnowWhite.Head.name).zIndex, 'paper passes behind the head and roll');
+  for (const stem of ['GreenPartyHat','SeshHat']) assert.ok(definition.bones.find(b => b.id === `bone:Trait_Head_${stem}_B`).y < -20, `${stem}: hat back does not float on the neck`);
+  for (const stem of ['GoldenPauldrons','ShoulderArmour']) for (const side of ['A','B']) assert.equal(definition.bones.find(b => b.id === `bone:Trait_Neck_${stem}_${side}`).followSlotId, 'Torso');
+});
+
+test('eggs, exhausts and perched riders preserve tail feathers while replacement plumage hides them', async () => {
+  const examples = { chikn: ['golden-egg','very-fresh-egg','nyan','led','liarliar','big-mama-fat-pipes','gas-guzzler'], roostr: ['chikn-jockey','big-mama-fat-pipes','gas-guzzler','smokestack'] };
+  for (const species of ['chikn','roostr']) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const makeNode = () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1, alpha: 1, visible: true });
+    const runtime = new RigRuntime(definition, { createBone: makeNode, createAttachment: makeNode, attach() {}, destroy() {} });
+    for (const skinId of Object.keys(definition.skins)) {
+      for (const name of examples[species]) {
+        applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: [`tail/${name}`] }, definition);
+        assert.ok(runtime.activeAttachmentIds().includes(definition.skins[skinId].Tail), `${species}/${skinId}/${name}: tail remains`);
+      }
+      applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: [species === 'chikn' ? 'tail/golden-plumage' : 'tail/foliage'] }, definition);
+      assert.ok(!runtime.activeAttachmentIds().includes(definition.skins[skinId].Tail), 'replacement plumage owns the tail');
+    }
+    runtime.dispose();
+  }
+});
+
+test('segmented necklaces and fringes remain assembled during attack reactions', async () => {
+  for (const [species, groupId] of [['chikn','head/cheeky-redhead'], ['roostr','neck/avax-degen']]) {
+    const source = JSON.parse(await readFile(new URL(`../data/${species}-rig.json`, import.meta.url), 'utf8'));
+    const definition = convertLegacyRig(source, species, species);
+    const group = definition.attachmentGroups[groupId];
+    assert.ok(group.attachmentIds.some(id => definition.attachments.find(a => a.id === id).texture.region));
+    const action = resolveChiknAction({ species, traitGroupIds: [groupId] }, definition, 'punch');
+    for (const id of group.attachmentIds) {
+      const attachment = definition.attachments.find(a => a.id === id);
+      const track = action.clip.tracks.find(t => t.target === 'attachment' && t.targetId === id);
+      assert.ok(track, id);
+      for (const frame of track.keyframes) {
+        for (const property of ['x','y','rotation','scaleX','scaleY']) assert.equal(frame[property], attachment[property], `${id}/${property}: no independent crop drift`);
+      }
     }
   }
 });

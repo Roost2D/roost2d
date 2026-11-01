@@ -1,9 +1,9 @@
-import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigDefinitionV1 } from '@roost2d/contracts';
+import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigClipRectV1, RigDefinitionV1 } from '@roost2d/contracts';
 export * from './actions.js';
 export * from './trait-profiles.js';
 
-interface LegacyPart { name: string; texture?: string; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; z_index?: number; pivot_x?: number; pivot_y?: number; }
-interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; }
+interface LegacyPart { name: string; texture?: string; asset_id?: string; texture_region?: { x: number; y: number; width: number; height: number }; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; scale_x?: number; scale_y?: number; z_index?: number; pivot_x?: number; pivot_y?: number; follow_slot?: string; render_order?: number; }
+interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; slot_clip_rects?: Record<string, RigClipRectV1>; aliases?: string[]; }
 interface LegacyRig { skins?: Record<string, Record<string, LegacyPart>>; traits?: Record<string, Record<string, LegacyTrait>>; rig: LegacyPart[]; }
 interface LegacyTween { target: string; at: number; properties: { x?: number; y?: number; rotation?: number; scale?: number; alpha?: number; duration?: number; ease?: string }; }
 interface LegacyAnimations { animations: Record<string, { duration?: number; loop?: boolean; loopMode?: 'repeat' | 'ping-pong'; tweens?: LegacyTween[] }>; }
@@ -54,6 +54,19 @@ export const UNIQUE_SKINS: readonly UniqueSkinDefinition[] = [
 export function resolveUniqueSkin(species: ChiknSpecies, token: number | string): UniqueSkinDefinition | undefined {
   const numericToken = typeof token === 'string' ? Number(token) : token;
   return UNIQUE_SKINS.find((entry) => entry.species === species && entry.token === numericToken);
+}
+
+/** Resolves NFT labels inside their category, including documented upstream name differences. */
+export function resolveChiknTraitGroup(definition: RigDefinitionV1, category: string, name: string): RigAttachmentGroupV1 | undefined {
+  const normalize = (value: string) => value.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const categoryKey = normalize(category);
+  const nameKey = normalize(name);
+  if (!nameKey) return undefined;
+  return Object.values(definition.attachmentGroups ?? {}).find(group => {
+    if (normalize(String(group.metadata?.category ?? '')) !== categoryKey) return false;
+    const aliases = typeof group.metadata?.aliases === 'string' ? group.metadata.aliases.split('|') : [];
+    return [group.id, String(group.metadata?.name ?? ''), ...aliases].some(label => normalize(label) === nameKey);
+  });
 }
 
 export function uniqueAssetPrefix(unique: UniqueSkinDefinition): string { return `assembled-unique/${unique.species}/${assetToken(unique.skinId)}/`; }
@@ -173,7 +186,9 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
   }
   const attachmentGroups: Record<string, RigAttachmentGroupV1> = Object.create(null);
   for (const [traitGroupId, traitGroup] of Object.entries(source.traits ?? {})) for (const [traitId, trait] of Object.entries(traitGroup)) {
-    if (slug(traitGroupId) === 'feet' && trait.attachments.length === 1) singleFeetAttachmentIds.add(trait.attachments[0]!.name);
+    // The historical inset is for a composite pair of feet, never an ankle accessory
+    // or a one-foot prosthesis. Explicit ownership takes precedence over image count.
+    if (slug(traitGroupId) === 'feet' && trait.attachments.length === 1 && trait.replaces === undefined) singleFeetAttachmentIds.add(trait.attachments[0]!.name);
     for (const part of trait.attachments) {
       textureByAttachment.set(part.name, part.texture ?? part.name);
       slotByAttachment.set(part.name, trait.slot);
@@ -181,29 +196,30 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
     }
     const groupId = `${slug(traitGroupId)}/${slug(traitId)}`;
     const replacesSlotIds = normalizedReplacementSlots(traitGroupId, trait.replaces);
-    const slotZIndexOverrides = trait.slot_z_index_overrides ?? defaultSlotZIndexOverrides(traitGroupId);
+    const slotZIndexOverrides = trait.slot_z_index_overrides ?? defaultSlotZIndexOverrides(traitGroupId, replacesSlotIds);
     attachmentGroups[groupId] = {
       id: groupId,
       slotId: trait.slot,
       attachmentIds: trait.attachments.map(({ name }) => name),
       ...(replacesSlotIds?.length ? { replacesSlotIds } : {}),
       ...(slotZIndexOverrides ? { slotZIndexOverrides } : {}),
+      ...(trait.slot_clip_rects ? { slotClipRects: trait.slot_clip_rects } : {}),
       exclusive: true,
-      metadata: { category: traitGroupId, name: traitId }
+      metadata: { category: traitGroupId, name: traitId, ...(trait.aliases?.length ? { aliases: trait.aliases.join('|') } : {}) }
     };
   }
   const partNames = new Set(rigParts.map((part) => part.name));
   const attachments: AttachmentDefinitionV1[] = rigParts.map((part, index) => ({
     id: part.name,
     slotId: slotByAttachment.get(part.name) ?? slotName(part.name),
-    texture: { assetId: `${id}.rig.${assetToken(textureByAttachment.get(part.name) ?? part.name)}`, ...(layoutScale ? { layoutScale } : {}) },
+    texture: { assetId: part.asset_id ?? `${id}.rig.${assetToken(textureByAttachment.get(part.name) ?? part.name)}`, ...(layoutScale ? { layoutScale } : {}), ...(part.texture_region ? { region: { ...part.texture_region } } : {}) },
     boneId: `bone:${part.name}`,
     x: 0,
     y: 0,
     rotation: 0,
     scaleX: 1,
     scaleY: 1,
-    zIndex: normalizedTraitZIndex(traitCategoryByAttachment.get(part.name), part.z_index ?? index),
+    zIndex: part.render_order ?? normalizedTraitZIndex(traitCategoryByAttachment.get(part.name), part.z_index ?? index),
     depthTarget: 'bone',
     visible: false,
     anchorX: part.pivot_x ?? 0.5,
@@ -223,7 +239,7 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
       // inner pose branch and therefore compose cleanly with the caller's mirrored state.
       { id: 'pose', parentId: 'root', x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
       ...rigParts.map((part) => {
-        const followSlotId = traitFollowSlot(part.name);
+        const followSlotId = part.follow_slot ?? traitFollowSlot(part.name);
         return {
           id: `bone:${part.name}`,
           ...(followSlotId ? { followSlotId } : { parentId: part.parent && partNames.has(part.parent) ? `bone:${part.parent}` : 'pose' }),
@@ -232,8 +248,8 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
             + (followSlotId === 'Tail' ? TAIL_TRAIT_X_OFFSET : 0),
           y: part.y ?? 0,
           rotation: radians(part.rotation ?? 0),
-          scaleX: part.scale ?? 1,
-          scaleY: part.scale ?? 1
+          scaleX: part.scale_x ?? part.scale ?? 1,
+          scaleY: part.scale_y ?? part.scale ?? 1
         };
       })
     ],
@@ -288,8 +304,8 @@ function normalizedReplacementSlots(category: string, declared?: string[]): stri
   if (normalized === 'feet') return declared ?? ['LegFoot A', 'LegFoot B'];
   return declared;
 }
-function defaultSlotZIndexOverrides(category: string): Record<string, number> | undefined {
-  return slug(category) === 'tail' ? { Tail: 6 } : undefined;
+function defaultSlotZIndexOverrides(category: string, replacesSlotIds?: string[]): Record<string, number> | undefined {
+  return slug(category) === 'tail' && replacesSlotIds?.includes('Tail') ? { Tail: 6 } : undefined;
 }
 function normalizedTraitZIndex(category: string | undefined, zIndex: number): number {
   if (!category) return zIndex;

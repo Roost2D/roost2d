@@ -24,6 +24,19 @@ const rig = {
 };
 const clip = { schema: 'roost2d.animation/v1', id: 'walk', durationMs: 100, tracks: [{ target: 'slot', targetId: 'body', keyframes: [{ timeMs: 0, x: 1 }] }] };
 
+test('texture regions use non-negative integer origins and positive pixel dimensions', () => {
+  const crop = region => ({ ...rig, attachments: [{ ...rig.attachments[0], texture: { assetId: 'one', region } }] });
+  assert.deepEqual(validateRigDefinition(crop({ x: 0, y: 12, width: 30, height: 20 })), []);
+  for (const region of [null, {}, { x: -1, y: 0, width: 1, height: 1 }, { x: 0, y: .5, width: 1, height: 1 }, { x: 0, y: 0, width: 0, height: 1 }, { x: 0, y: 0, width: 1, height: Infinity }]) assert.match(validateRigDefinition(crop(region)).join('\n'), /texture region/);
+});
+
+test('base slot clips require known slots and finite rectangles with positive dimensions', () => {
+  const value = slotClipRects => ({ ...rig, attachmentGroups: { clip: { id: 'clip', slotId: 'body', attachmentIds: [], slotClipRects } } });
+  assert.deepEqual(validateRigDefinition(value({ body: { x: -20, y: -30, width: 40, height: 60 } })), []);
+  for (const rect of [null, {}, { x: 0, y: 0, width: 0, height: 1 }, { x: 0, y: Infinity, width: 1, height: 1 }]) assert.match(validateRigDefinition(value({ body: rect })).join('\n'), /clip rect/);
+  assert.match(validateRigDefinition(value({ missing: { x: 0, y: 0, width: 1, height: 1 } })).join('\n'), /unknown clip slot/);
+});
+
 test('accepts exactly SHA-256 SRI values', () => {
   assert.equal(isSha256SRI(sri), true);
   assert.equal(isSha256SRI('sha256-short'), false);

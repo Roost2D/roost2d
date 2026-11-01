@@ -25,6 +25,7 @@ jobs:
       - run: npm install --global npm@11.5.2
       - run: npm --version
       - run: npm ci
+      - run: npm run assembly:approval
       # The dist-tag reaches the shell as an environment variable, never as expression interpolation.
       - run: node scripts/assert-release-channel.mjs "$RELEASE_TAG"
         env: { RELEASE_TAG: "${{ inputs.tag }}" }

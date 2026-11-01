@@ -1,6 +1,6 @@
 {
   "name": "@roost2d/diagnostics",
-  "version": "0.7.0",
+  "version": "0.8.0-rc.0",
   "description": "Opt-in diagnostics and performance counters for Roost2D.",
   "license": "Apache-2.0",
   "repository": {

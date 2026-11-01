@@ -1,6 +1,6 @@
 {
   "name": "roost2d",
-  "version": "0.7.0",
+  "version": "0.8.0-rc.0",
   "private": true,
   "description": "Modular deterministic TypeScript game-engine packages for coding agents and browser games.",
   "type": "module",
@@ -15,6 +15,7 @@
   "scripts": {
     "build": "npm run build:contracts && npm run build:core && npm run build:assets && npm run build:effects && npm run build:rig2d && npm run build:pixi && npm run build:chikn-rigs && npm run build:input && npm run build:audio && npm run build:isometric && npm run build:net && npm run build:diagnostics && npm run build:tooling && npm run build:blueprint",
     "build:contracts": "npm run build -w @roost2d/contracts",
+    "assembly:approval": "node scripts/verify-assembly-approval.mjs",
     "build:core": "npm run build -w @roost2d/core",
     "build:assets": "npm run build -w @roost2d/assets",
     "build:pixi": "npm run build -w @roost2d/pixi",

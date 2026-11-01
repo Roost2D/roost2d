@@ -2,6 +2,8 @@
 
 Apache-2.0 Chikn/Roostr rig definitions and animation metadata for Roost2D. This package contains no Chikn images and grants no rights to the separately licensed artwork.
 
+The V2 trait-assembly corrections were authorized for release on 1 November 2026, including wings and legs behind all coat-like garments. See [assembly review and publication gate](../../docs/trait-assembly-review.md). Games should use `resolveChiknTraitGroup(definition, category, nftLabel)` for NFT labels and report unresolved labels instead of silently dropping them.
+
 ```sh
 npm install @roost2d/contracts @roost2d/rig2d @roost2d/chikn-rigs
 ```
@@ -47,7 +49,7 @@ const playback = new RigActionController(rig).play(action.clip, { controlled: tr
 playback.advance(frameMs);
 ```
 
-Every attachment group receives one checked-in immutable profile with its supported actions, driver attachments, calibrated offsets and timing, functional preset, and explicit rigid/soft/dangling/cloth/feather/bulky/elastic secondary motion. Weapons replace Punch with their own draw, slash, thrust, golf, pickaxe, shot, swing, or casting motion. Feet select tailored paired or combined kicks, and `listChiknSpecials` returns only specials granted by equipped traits.
+Every attachment group receives one checked-in immutable profile with its supported actions, driver attachments, calibrated offsets and timing, functional preset, and explicit anchored/rigid/soft/dangling/cloth/feather/bulky/elastic secondary motion. Anchored parts such as the perched Chikn Jockey move only with their follower bone, keeping contact during actions. Weapons replace Punch with their own draw, slash, thrust, golf, pickaxe, shot, swing, or casting motion. Feet select tailored paired or combined kicks, and `listChiknSpecials` returns only specials granted by equipped traits.
 
 Golden Egg and Very Fresh Egg use a dedicated 1,000 ms action: the inner `pose` bone turns away while game-owned root facing stays untouched, the bird bends, the displayed egg releases at 400 ms, and a texture-identical detached clone follows an aimed arc until presentation contact at 800 ms. The equipped egg regrows and the setup pose returns at 1,000 ms. Floppy Disk and Omelette also launch exact equipped art; Omelette uses its pan motion and is never classified as an egg.
 

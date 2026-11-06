@@ -2,6 +2,12 @@
 
 Apache-2.0 Chikn/Roostr rig definitions and animation metadata for Roost2D. This package contains no Chikn images and grants no rights to the separately licensed artwork.
 
+Version 0.9.0 explicitly classifies all 108 ordinary head traits as covering,
+partially covering or open accessories. The 64 covering groups with keep masks
+conceal the comb under the brim while preserving the face. The masks require
+the matching 0.9.0 Rig2D and renderer packages. Hair, glasses, horns and open
+accessories retain their authored visibility; unique artwork is unchanged.
+
 The V2 trait-assembly corrections were authorized for release on 1 November 2026, including wings and legs behind all coat-like garments. See [assembly review and publication gate](../../docs/trait-assembly-review.md). Games should use `resolveChiknTraitGroup(definition, category, nftLabel)` for NFT labels and report unresolved labels instead of silently dropping them.
 
 ```sh

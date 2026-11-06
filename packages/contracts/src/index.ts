@@ -57,6 +57,9 @@ export interface RigSlotV1 {
 
 export interface RigClipRectV1 { x: number; y: number; width: number; height: number; }
 
+/** Keep region in normalized, untrimmed attachment-image coordinates (0..1). */
+export interface RigClipPolygonV1 { points: [number, number][]; }
+
 export interface RigAttachmentGroupV1 {
   id: string;
   slotId: string;
@@ -67,6 +70,8 @@ export interface RigAttachmentGroupV1 {
   slotZIndexOverrides?: Record<string, number>;
   /** Clips the active base sprite in attachment-local layout coordinates while equipped. */
   slotClipRects?: Record<string, RigClipRectV1>;
+  /** Curved keep regions; a polygon takes precedence over a rectangle for the same slot. */
+  slotClipPolygons?: Record<string, RigClipPolygonV1>;
   exclusive?: boolean;
   metadata?: Record<string, string | number | boolean>;
 }
@@ -546,6 +551,22 @@ export function validateRigDefinition(rig: unknown): string[] {
       else for (const [slotId, rect] of Object.entries(group.slotClipRects)) {
         if (!slots.has(slotId)) errors.push(`${groupId}: unknown clip slot ${slotId}`);
         if (!isRecord(rect) || !['x','y','width','height'].every(key => isFiniteNumber(rect[key])) || Number(rect.width) <= 0 || Number(rect.height) <= 0) errors.push(`${groupId}: clip rect for ${slotId} must have finite coordinates and positive dimensions`);
+      }
+    }
+    if (group.slotClipPolygons !== undefined) {
+      if (!isRecord(group.slotClipPolygons)) errors.push(`${groupId}: slotClipPolygons must be an object`);
+      else for (const [slotId, polygon] of Object.entries(group.slotClipPolygons)) {
+        if (!slots.has(slotId)) errors.push(`${groupId}: unknown clip slot ${slotId}`);
+        const points = isRecord(polygon) ? polygon.points : undefined;
+        if (!Array.isArray(points) || points.length < 3 || !points.every(point => Array.isArray(point) && point.length === 2 && point.every(value => isFiniteNumber(value) && value >= 0 && value <= 1))) {
+          errors.push(`${groupId}: clip polygon for ${slotId} needs at least three normalized finite points`);
+        } else {
+          const area = points.reduce((sum, point, index) => {
+            const next = points[(index + 1) % points.length];
+            return sum + point[0] * next[1] - next[0] * point[1];
+          }, 0);
+          if (Math.abs(area) < 1e-12) errors.push(`${groupId}: clip polygon for ${slotId} must have nonzero area`);
+        }
       }
     }
     if (group.slotZIndexOverrides !== undefined) {

@@ -20,6 +20,25 @@ const manifest = {
   bundles: []
 };
 
+test('refreshing follower parents preserves an already sorted front/rear draw order', () => {
+  const factory = new PixiRigFactory(new Map([['head', Texture.EMPTY]]));
+  const head = factory.createBone('head');
+  const face = factory.createAttachment('face', {assetId:'head'});
+  const front = factory.createBone('hat-front'); front.zIndex = 30;
+  const rear = factory.createBone('hat-rear'); rear.zIndex = -1;
+  for (const child of [face, front, rear]) factory.attach(head, child);
+  head.display.sortChildren();
+  const expected = [rear.display, face.display, front.display];
+  assert.deepEqual(head.display.children, expected);
+  for (const child of [face, front, rear]) factory.attach(head, child);
+  assert.deepEqual(head.display.children, expected, 'same-parent refresh must not move a rear panel over the eye');
+  const nextSkin = factory.createBone('next-skin');
+  factory.attach(nextSkin, rear);
+  assert.equal(rear.display.parent, nextSkin.display, 'a real skin change still reparents');
+  for (const child of [face, front, rear, head, nextSkin]) factory.destroy(child);
+  factory.destroyRoot();
+});
+
 /** Counts decodes and closes so page sharing and teardown are observable. */
 function stubImageBitmaps() {
   const state = { decodes: 0, closed: 0 };
@@ -272,6 +291,34 @@ test('local rig clips reuse the texture and release their mask when cleared or d
   assert.equal(replacement.destroyed, true);
   assert.equal(source.destroyed, false);
   factory.destroyRoot(); source.destroy(false);
+});
+
+test('normalized polygons honor untrimmed dimensions, anchors and layout scale before mirroring', () => {
+  for (const rotate of [0,2]) {
+    const source = new Texture({ source: Texture.WHITE.source, frame: new Rectangle(0,0,2,2), orig: new Rectangle(0,0,100,200), trim: new Rectangle(40,70,2,2), rotate });
+    const factory = new PixiRigFactory(new Map([['head',source]]));
+    const node = factory.createAttachment('head', { assetId: 'head', layoutScale: .5 });
+    node.display.anchor.set(.5,.5);
+    const rect = { x: -1, y: -2, width: 2, height: 4 };
+    node.clipRect = rect;
+    const polygon = { points: [[0,.4],[.5,.25],[1,.4],[1,1],[0,1]] };
+    node.clipPolygon = polygon;
+    const mask = node.display.children[0];
+    const bounds = mask.getLocalBounds();
+    assert.deepEqual([bounds.x,bounds.y,bounds.width,bounds.height], [-25,-25,50,75], 'polygon overrides rectangle using original image size');
+    node.display.scale.x = -1;
+    assert.equal(mask.parent,node.display, 'mask follows facing and the head animation');
+    assert.deepEqual(node.clipPolygon,polygon);
+    assert.notEqual(node.clipPolygon.points,polygon.points);
+    node.clipPolygon = undefined;
+    const fallback = mask.getLocalBounds();
+    assert.deepEqual([fallback.x,fallback.y,fallback.width,fallback.height],[-1,-2,2,4]);
+    node.clipPolygon = polygon;
+    factory.destroy(node);
+    assert.equal(mask.destroyed,true);
+    assert.equal(source.destroyed,false, 'shared source texture survives mask teardown');
+    factory.destroyRoot(); source.destroy(false);
+  }
 });
 
 test('rig layoutScale 1 reuses the preloaded texture', () => {

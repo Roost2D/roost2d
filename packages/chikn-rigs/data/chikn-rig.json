@@ -470,7 +470,62 @@
                         "name": "Trait_Head_DaftPunk",
                         "texture": "DaftPunk"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "tungsten cube": {
                 "slot": "Head",
@@ -479,7 +534,8 @@
                         "name": "Trait_Head_TungstenCube",
                         "texture": "TungstenCube"
                     }
-                ]
+                ],
+                "head_coverage": "partial"
             },
             "golden bone daddy": {
                 "slot": "Head",
@@ -488,7 +544,62 @@
                         "name": "Trait_Head_GoldenBoneDaddy",
                         "texture": "GoldenBoneDaddy"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "boxhead": {
                 "slot": "Head",
@@ -501,7 +612,62 @@
                         "name": "Trait_Head_Boxhead_B",
                         "texture": "Boxhead B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "murica": {
                 "slot": "Head",
@@ -510,7 +676,62 @@
                         "name": "Trait_Head_Murica",
                         "texture": "Murica"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "hamlet": {
                 "slot": "Head",
@@ -519,7 +740,62 @@
                         "name": "Trait_Head_Hamlet",
                         "texture": "Hamlet"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "inherited royalty": {
                 "slot": "Head",
@@ -528,7 +804,62 @@
                         "name": "Trait_Head_InheritedRoyalty",
                         "texture": "Inherited Royalty"
                     }
-                ]
+                ],
+                "head_coverage": "partial",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "pineapple": {
                 "slot": "Head",
@@ -537,7 +868,62 @@
                         "name": "Trait_Head_Pineapple",
                         "texture": "Pineapple"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "icey stare": {
                 "slot": "Head",
@@ -546,7 +932,8 @@
                         "name": "Trait_Head_IceyStare",
                         "texture": "Icey Stare"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "golden crusader": {
                 "slot": "Head",
@@ -555,7 +942,62 @@
                         "name": "Trait_Head_GoldenCrusader",
                         "texture": "GoldenCrusader"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "super saiyan": {
                 "slot": "Head",
@@ -564,7 +1006,8 @@
                         "name": "Trait_Head_SuperSaiyan",
                         "texture": "SuperSaiyan"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "luckiest red cap": {
                 "slot": "Head",
@@ -573,7 +1016,62 @@
                         "name": "Trait_Head_LuckiestRedCap",
                         "texture": "LuckiestRedCap"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "laser eye": {
                 "slot": "Head",
@@ -582,7 +1080,8 @@
                         "name": "Trait_Head_LaserEye",
                         "texture": "LaserEye"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "goose": {
                 "slot": "Head",
@@ -591,7 +1090,8 @@
                         "name": "Trait_Head_Goose",
                         "texture": "Goose"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "cheeky redhead": {
                 "slot": "Head",
@@ -608,7 +1108,8 @@
                         "name": "Trait_Head_CheekyRedhead_Bang",
                         "texture": "Cheeky Redhead"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "charcoal brunette": {
                 "slot": "Head",
@@ -625,7 +1126,8 @@
                         "name": "Trait_Head_CharcoalBrunette_Bang",
                         "texture": "CharcoalBrunette"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "smoking lounge": {
                 "slot": "Head",
@@ -634,7 +1136,62 @@
                         "name": "Trait_Head_SmokingLounge",
                         "texture": "SmokingLounge"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "saint": {
                 "slot": "Head",
@@ -643,7 +1200,8 @@
                         "name": "Trait_Head_Saint",
                         "texture": "Saint"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "mysterious fez": {
                 "slot": "Head",
@@ -652,7 +1210,62 @@
                         "name": "Trait_Head_MysteriousFez",
                         "texture": "MysteriousFez"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "all seeing eye": {
                 "slot": "Head",
@@ -661,7 +1274,8 @@
                         "name": "Trait_Head_AllSeeingEye",
                         "texture": "AllSeeingEye"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "hothead": {
                 "slot": "Head",
@@ -670,7 +1284,8 @@
                         "name": "Trait_Head_Hothead",
                         "texture": "HotHead"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "gentlechikn": {
                 "slot": "Head",
@@ -679,7 +1294,62 @@
                         "name": "Trait_Head_Gentlechikn",
                         "texture": "Gentlechikn"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "mfd": {
                 "slot": "Head",
@@ -688,7 +1358,62 @@
                         "name": "Trait_Head_Mfd",
                         "texture": "MFD"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "avax safety officer": {
                 "slot": "Head",
@@ -697,7 +1422,62 @@
                         "name": "Trait_Head_AvaxSafetyOfficer",
                         "texture": "AVAXSafetyOfficer"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "frothy crown": {
                 "slot": "Head",
@@ -706,7 +1486,62 @@
                         "name": "Trait_Head_FrothyCrown",
                         "texture": "Frothy Crown"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "golden blonde": {
                 "slot": "Head",
@@ -723,7 +1558,8 @@
                         "name": "Trait_Head_GoldenBlonde_Bang",
                         "texture": "GoldenBlonde"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "low vision admiral": {
                 "slot": "Head",
@@ -732,7 +1568,62 @@
                         "name": "Trait_Head_LowVisionAdmiral",
                         "texture": "LowVisionAdmiral"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "crusader": {
                 "slot": "Head",
@@ -741,7 +1632,62 @@
                         "name": "Trait_Head_Crusader",
                         "texture": "Crusader"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "lucky blue cap": {
                 "slot": "Head",
@@ -750,7 +1696,62 @@
                         "name": "Trait_Head_LuckyBlueCap",
                         "texture": "LuckyBlueCap"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "construction helmet": {
                 "slot": "Head",
@@ -759,7 +1760,62 @@
                         "name": "Trait_Head_ConstructionHelmet",
                         "texture": "ConstructionHelmet"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "red mage": {
                 "slot": "Head",
@@ -768,7 +1824,62 @@
                         "name": "Trait_Head_RedMage",
                         "texture": "Red Mage"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "pixel cigarette": {
                 "slot": "Head",
@@ -777,7 +1888,8 @@
                         "name": "Trait_Head_PixelCigarette",
                         "texture": "PixelCigarette"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "gentleman's pipe": {
                 "slot": "Head",
@@ -786,7 +1898,8 @@
                         "name": "Trait_Head_GentlemanSPipe",
                         "texture": "GentlemansPipe"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "hubba bubba": {
                 "slot": "Head",
@@ -795,7 +1908,8 @@
                         "name": "Trait_Head_HubbaBubba",
                         "texture": "HubbaBubba"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "sucker": {
                 "slot": "Head",
@@ -804,7 +1918,8 @@
                         "name": "Trait_Head_Sucker",
                         "texture": "Sucker"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "maverick": {
                 "slot": "Head",
@@ -813,7 +1928,8 @@
                         "name": "Trait_Head_Maverick",
                         "texture": "Maverick"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "top of the morning": {
                 "slot": "Head",
@@ -822,7 +1938,62 @@
                         "name": "Trait_Head_TopOfTheMorning",
                         "texture": "TopOfTheMorning"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "nerdlinger": {
                 "slot": "Head",
@@ -831,7 +2002,8 @@
                         "name": "Trait_Head_Nerdlinger",
                         "texture": "Nerdlinger"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "cool dude 69": {
                 "slot": "Head",
@@ -840,7 +2012,8 @@
                         "name": "Trait_Head_CoolDude69",
                         "texture": "Cool Dude 69"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "blue mage": {
                 "slot": "Head",
@@ -849,7 +2022,62 @@
                         "name": "Trait_Head_BlueMage",
                         "texture": "Blue Mage"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "black sweatband": {
                 "slot": "Head",
@@ -858,7 +2086,8 @@
                         "name": "Trait_Head_BlackSweatband",
                         "texture": "BlackSweatband"
                     }
-                ]
+                ],
+                "head_coverage": "partial"
             },
             "savage beast": {
                 "slot": "Head",
@@ -867,7 +2096,8 @@
                         "name": "Trait_Head_SavageBeast",
                         "texture": "SavageBeast"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "moustache": {
                 "slot": "Head",
@@ -876,7 +2106,8 @@
                         "name": "Trait_Head_Moustache",
                         "texture": "Moustache"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "uniquehorn": {
                 "slot": "Head",
@@ -885,7 +2116,8 @@
                         "name": "Trait_Head_Uniquehorn",
                         "texture": "Uniquehorn"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "deal with it": {
                 "slot": "Head",
@@ -894,7 +2126,8 @@
                         "name": "Trait_Head_DealWithIt",
                         "texture": "DealWithIt"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "purple sweatband": {
                 "slot": "Head",
@@ -903,7 +2136,8 @@
                         "name": "Trait_Head_PurpleSweatband",
                         "texture": "PurpleSweatband"
                     }
-                ]
+                ],
+                "head_coverage": "partial"
             },
             "covid safe": {
                 "slot": "Head",
@@ -912,7 +2146,8 @@
                         "name": "Trait_Head_CovidSafe",
                         "texture": "CovidSafe"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "pillager": {
                 "slot": "Head",
@@ -921,7 +2156,62 @@
                         "name": "Trait_Head_Pillager",
                         "texture": "Pillager"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "admiral": {
                 "slot": "Head",
@@ -930,7 +2220,62 @@
                         "name": "Trait_Head_Admiral",
                         "texture": "Admiral"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.43
+                            ],
+                            [
+                                0.12,
+                                0.33
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.26,
+                                0.22
+                            ],
+                            [
+                                0.39,
+                                0.18
+                            ],
+                            [
+                                0.5,
+                                0.17
+                            ],
+                            [
+                                0.59,
+                                0.18
+                            ],
+                            [
+                                0.68,
+                                0.19
+                            ],
+                            [
+                                0.76,
+                                0.23
+                            ],
+                            [
+                                1,
+                                0.23
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             }
         },
         "Neck": {

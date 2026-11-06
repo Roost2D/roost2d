@@ -28,7 +28,7 @@ The feedback view covers 95 reported traits, with 93 complete V2 outfits and two
 
 Tests cover replacement visibility on every base skin, matching coloured limb followers, all curated animation profiles, and explicit transforms for every equipped trait piece. Rendering checks supplement these tests; they do not replace the owner's visual review.
 
-`RigAttachmentGroupV1.slotClipRects` clips a selected base sprite in attachment-local layout units while a group is equipped. Runtime reapplies the clip after skin changes and pose resets, then clears it when the group is removed. Pixi owns the sprite-local mask and its teardown; shared atlas textures remain unchanged. Samurai uses this to hide only the top of the base head under its helmet. Other traits retain the full head.
+`RigAttachmentGroupV1.slotClipRects` clips a selected base sprite in attachment-local layout units while a group is equipped. Version 0.9.0 adds normalized `slotClipPolygons` for curved brims and explicitly audits all ordinary headwear. A polygon takes precedence over a rectangle for the same slot. Runtime reapplies the clip after skin changes and pose resets, then clears it when the group is removed. Pixi owns the sprite-local mask and its teardown; shared atlas textures remain unchanged. See [headwear release](./release-0.9.0.md).
 
 ## Publication gate
 

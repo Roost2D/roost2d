@@ -35,6 +35,29 @@ test('base slot clipping follows skin changes and clears when its trait is remov
   rig.dispose();
 });
 
+test('polygon clips follow skin changes and restore the full head after replacing or removing a hat', () => {
+  const source = structuredClone(definition);
+  const polygon = { points: [[0,.4],[.5,.3],[1,.4],[1,1],[0,1]] };
+  source.attachmentGroups['head/hat'].slotClipRects = { body: { x: -20, y: -30, width: 40, height: 60 } };
+  source.attachmentGroups['head/hat'].slotClipPolygons = { body: polygon };
+  source.attachmentGroups.glasses = { id: 'glasses', slotId: 'head', attachmentIds: ['hat'], exclusive: true };
+  const makeNode = () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 });
+  const rig = new RigRuntime(source, { createBone: makeNode, createAttachment: makeNode, attach() {}, destroy() {} });
+  rig.attachGroup('head/hat');
+  assert.deepEqual(rig.node('attachment','body-white').clipPolygon, polygon);
+  assert.notEqual(rig.node('attachment','body-white').clipPolygon.points, polygon.points, 'runtime owns its mask copy');
+  assert.equal(rig.node('attachment','hat').clipPolygon, undefined, 'the hat itself remains untouched');
+  rig.applySkin('red'); rig.setMirrored(true); rig.resetPose();
+  assert.equal(rig.node('attachment','body-white').clipPolygon, undefined);
+  assert.deepEqual(rig.node('attachment','body-red').clipPolygon, polygon);
+  rig.attachGroup('glasses');
+  assert.equal(rig.node('attachment','body-red').clipPolygon, undefined, 'glasses restore the complete head');
+  assert.equal(rig.node('attachment','body-red').clipRect, undefined);
+  rig.attachGroup('head/hat'); rig.removeGroup('head/hat');
+  assert.equal(rig.node('attachment','body-red').clipPolygon, undefined);
+  rig.dispose();
+});
+
 test('skins and trait groups expose only selected attachments', () => {
   const nodes = new Map(); const factory = { createBone: (id) => ({ id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), createAttachment: (id) => { const node = { id, x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }; nodes.set(id, node); return node; }, attach() {}, destroy() {} };
   const rig = new RigRuntime(definition, factory); assert.equal(nodes.get('body-white').visible, true); assert.equal(nodes.get('body-red').visible, false); assert.equal(nodes.get('hat').visible, false);

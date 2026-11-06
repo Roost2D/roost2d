@@ -184,13 +184,54 @@ test('all 44 held torso props stay behind the visible front wing on every base s
       for (const skinId of Object.keys(definition.skins)) {
         applyCharacterRecipe(runtime, { schema: CHARACTER_RECIPE_SCHEMA, species, skinId, traitGroupIds: ['head/samurai'] }, definition);
         const headId = definition.skins[skinId].Head;
-        assert.deepEqual(runtime.node('attachment', headId).clipRect, { x: -100, y: -29, width: 200, height: 200 }, `${skinId}: helmet conceals the comb without replacing the face`);
+        assert.deepEqual(runtime.node('attachment', headId).clipPolygon, definition.attachmentGroups['head/samurai'].slotClipPolygons.Head, `${skinId}: helmet conceals the comb without replacing the face`);
         runtime.removeGroup('head/samurai');
-        assert.equal(runtime.node('attachment', headId).clipRect, undefined, `${skinId}: removing the helmet restores the full head`);
+        assert.equal(runtime.node('attachment', headId).clipPolygon, undefined, `${skinId}: removing the helmet restores the full head`);
       }
     }
     runtime.dispose();
   }
+});
+
+test('every head trait has an explicit coverage policy and masks preserve faces across all 19 skins', async () => {
+  const contains = (points,x,y) => {
+    let inside=false;
+    for(let i=0,j=points.length-1;i<points.length;j=i++) {
+      const [xi,yi]=points[i], [xj,yj]=points[j];
+      if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)inside=!inside;
+    }
+    return inside;
+  };
+  let count=0,skins=0;
+  for (const species of ['chikn','roostr']) {
+    const source=JSON.parse(await readFile(new URL(`../data/${species}-rig.json`,import.meta.url),'utf8'));
+    const definition=convertLegacyRig(source,species,species);
+    const node=()=>({x:0,y:0,rotation:0,scaleX:1,scaleY:1});
+    const runtime=new RigRuntime(definition,{createBone:node,createAttachment:node,attach(){},destroy(){}});
+    const groups=Object.values(definition.attachmentGroups).filter(group=>group.metadata.category.toLowerCase()==='head');
+    count+=groups.length;skins+=Object.keys(definition.skins).length;
+    for(const group of groups){
+      assert.ok(['covering','partial','accessory'].includes(group.metadata.headCoverage),`${species}/${group.id}: explicit audited policy`);
+      const polygon=group.slotClipPolygons?.Head;
+      if(group.metadata.headCoverage==='covering')assert.ok(polygon,`${species}/${group.id}: covering hat conceals the comb`);
+      if(group.metadata.headCoverage==='accessory')assert.equal(polygon,undefined,`${species}/${group.id}: accessory keeps its natural head`);
+      if(polygon){
+        for(const [x,y]of [[.5,.25],[.85,.30],[.6,.4],[.45,.75]])assert.ok(contains(polygon.points,x,y),`${species}/${group.id}: eye/beak/wattle/neck keep point ${x},${y}`);
+        for(const [x,y]of [[.35,.05],[.6,.05],[.13,.20]])assert.ok(!contains(polygon.points,x,y),`${species}/${group.id}: comb hidden at ${x},${y}`);
+      }
+      for(const skinId of Object.keys(definition.skins)){
+        applyCharacterRecipe(runtime,{schema:CHARACTER_RECIPE_SCHEMA,species,skinId,traitGroupIds:[group.id]},definition);
+        const head=runtime.node('attachment',definition.skins[skinId].Head);
+        assert.deepEqual(head.clipPolygon,polygon);
+        assert.ok(runtime.activeAttachmentIds().includes(definition.skins[skinId].Head),'the underlying face remains available');
+        for(const attachmentId of group.attachmentIds)assert.equal(runtime.node('attachment',attachmentId).clipPolygon,undefined,'mask never cuts hat art');
+        runtime.setMirrored(true);runtime.resetPose();assert.deepEqual(head.clipPolygon,polygon);
+        runtime.removeGroup(group.id);assert.equal(head.clipPolygon,undefined,'removal restores full comb');
+      }
+    }
+    runtime.dispose();
+  }
+  assert.equal(count,108);assert.equal(skins,19);
 });
 
 test('all 13 coat-like outfits cover wings and every equipped leg branch, restoring depths when removed', async () => {

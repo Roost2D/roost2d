@@ -1,9 +1,9 @@
-import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigClipRectV1, RigDefinitionV1 } from '@roost2d/contracts';
+import type { AnimationClipV1, AttachmentDefinitionV1, RigAttachmentGroupV1, RigClipPolygonV1, RigClipRectV1, RigDefinitionV1 } from '@roost2d/contracts';
 export * from './actions.js';
 export * from './trait-profiles.js';
 
 interface LegacyPart { name: string; texture?: string; asset_id?: string; texture_region?: { x: number; y: number; width: number; height: number }; parent?: string | null; x?: number; y?: number; rotation?: number; scale?: number; scale_x?: number; scale_y?: number; z_index?: number; pivot_x?: number; pivot_y?: number; follow_slot?: string; render_order?: number; }
-interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; slot_clip_rects?: Record<string, RigClipRectV1>; aliases?: string[]; }
+interface LegacyTrait { slot: string; attachments: LegacyPart[]; replaces?: string[]; slot_z_index_overrides?: Record<string, number>; slot_clip_rects?: Record<string, RigClipRectV1>; slot_clip_polygons?: Record<string, RigClipPolygonV1>; head_coverage?: 'covering' | 'partial' | 'accessory'; aliases?: string[]; }
 interface LegacyRig { skins?: Record<string, Record<string, LegacyPart>>; traits?: Record<string, Record<string, LegacyTrait>>; rig: LegacyPart[]; }
 interface LegacyTween { target: string; at: number; properties: { x?: number; y?: number; rotation?: number; scale?: number; alpha?: number; duration?: number; ease?: string }; }
 interface LegacyAnimations { animations: Record<string, { duration?: number; loop?: boolean; loopMode?: 'repeat' | 'ping-pong'; tweens?: LegacyTween[] }>; }
@@ -204,8 +204,9 @@ export function convertLegacyRig(source: LegacyRig, id: string, displayName: str
       ...(replacesSlotIds?.length ? { replacesSlotIds } : {}),
       ...(slotZIndexOverrides ? { slotZIndexOverrides } : {}),
       ...(trait.slot_clip_rects ? { slotClipRects: trait.slot_clip_rects } : {}),
+      ...(trait.slot_clip_polygons ? { slotClipPolygons: trait.slot_clip_polygons } : {}),
       exclusive: true,
-      metadata: { category: traitGroupId, name: traitId, ...(trait.aliases?.length ? { aliases: trait.aliases.join('|') } : {}) }
+      metadata: { category: traitGroupId, name: traitId, ...(trait.head_coverage ? { headCoverage: trait.head_coverage } : {}), ...(trait.aliases?.length ? { aliases: trait.aliases.join('|') } : {}) }
     };
   }
   const partNames = new Set(rigParts.map((part) => part.name));

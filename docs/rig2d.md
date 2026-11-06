@@ -39,3 +39,19 @@ Loop clips can use `loopMode: 'ping-pong'`. The runtime plays forward and then b
 Clips are validated whether you `registerClip` them or hand one straight to `play`. A keyframe may carry only `timeMs`, `durationMs`, `ease`, and the contract's animatable properties — `x`, `y`, `rotation`, `scaleX`, `scaleY`, `alpha`, `visible`, `tint` — each of the declared type. Any other property is rejected rather than forwarded, so clip data loaded from JSON cannot reach the animation library's own options or write arbitrary properties onto a display node.
 
 Dispose the runtime and destroy the factory root when the character leaves its owning scene.
+
+Groups can preserve a curved part of an underlying slot with `slotClipPolygons`:
+
+```ts
+slotClipPolygons: {
+  Head: { points: [[0, 1], [0, 0.4], [0.5, 0.18], [1, 0.25], [1, 1]] },
+}
+```
+
+Points are normalized to the untrimmed attachment image, before its anchor and
+transform are applied. They travel with the sprite when it is mirrored or
+animated. The polygon keeps its interior and takes precedence over
+`slotClipRects` for the same slot. Only the selected base sprite is masked;
+equipped overlay pieces and shared atlas textures are unchanged. Removing the
+group or switching skins reapplies the correct visibility. Custom renderers
+implement the optional `RigDisplayNode.clipPolygon` property to support it.

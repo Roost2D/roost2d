@@ -1,7 +1,7 @@
 import { Application, Container, Graphics, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode, RigRuntime } from '@roost2d/rig2d';
-import type { AtlasFrameV1, RigClipRectV1, TextureRef } from '@roost2d/contracts';
+import type { AtlasFrameV1, RigClipPolygonV1, RigClipRectV1, TextureRef } from '@roost2d/contracts';
 import { sampleProceduralEffect, type ProceduralEffectDescriptor } from '@roost2d/effects';
 
 export interface PixiHostOptions extends Partial<ApplicationOptions> {
@@ -189,12 +189,22 @@ export class PixiAssetLoader {
 
 export class PixiRigNode implements RigDisplayNode {
   private clipping?: RigClipRectV1;
+  private polygon?: RigClipPolygonV1;
   private clipGraphic?: Graphics;
   constructor(readonly display: Container) {}
   get clipRect(): RigClipRectV1 | undefined { return this.clipping; }
   set clipRect(value: RigClipRectV1 | undefined) {
     this.clipping = value ? { ...value } : undefined;
-    if (!value) {
+    this.updateClip();
+  }
+  get clipPolygon(): RigClipPolygonV1 | undefined { return this.polygon; }
+  set clipPolygon(value: RigClipPolygonV1 | undefined) {
+    if (value && !(this.display instanceof Sprite)) throw new Error('Normalized polygon clips require an attachment sprite');
+    this.polygon = value ? { points: value.points.map(point => [...point] as [number, number]) } : undefined;
+    this.updateClip();
+  }
+  private updateClip(): void {
+    if (!this.clipping && !this.polygon) {
       this.display.mask = null;
       this.clipGraphic?.destroy(); this.clipGraphic = undefined;
       return;
@@ -204,7 +214,15 @@ export class PixiRigNode implements RigDisplayNode {
       this.clipGraphic.measurable = false;
       this.display.addChild(this.clipGraphic);
     }
-    this.clipGraphic.clear().rect(value.x, value.y, value.width, value.height).fill(0xffffff);
+    this.clipGraphic.clear();
+    if (this.polygon && this.display instanceof Sprite) {
+      const sprite = this.display;
+      const { orig } = sprite.texture;
+      this.clipGraphic.poly(this.polygon.points.flatMap(([u, v]) => [(u - sprite.anchor.x) * orig.width, (v - sprite.anchor.y) * orig.height])).fill(0xffffff);
+    } else if (this.clipping) {
+      const { x, y, width, height } = this.clipping;
+      this.clipGraphic.rect(x, y, width, height).fill(0xffffff);
+    }
     this.display.mask = this.clipGraphic;
   }
   get x(): number { return this.display.x; } set x(value: number) { this.display.x = value; }
@@ -247,9 +265,17 @@ export class PixiRigFactory implements RigDisplayFactory {
     const displayTexture = layoutScale === 1 && !texture.region ? resolved : this.deriveLayoutTexture(resolved, layoutScale, texture.region);
     const display = new Sprite(displayTexture); display.label = id; return new PixiRigNode(display);
   }
-  attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void { const parentDisplay = parent instanceof PixiRigNode ? parent.display : this.root; const childDisplay = child instanceof PixiRigNode ? child.display : undefined; if (!childDisplay) throw new Error('PixiRigFactory received a foreign display node'); parentDisplay.addChild(childDisplay); }
+  attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void {
+    const parentDisplay = parent instanceof PixiRigNode ? parent.display : this.root;
+    const childDisplay = child instanceof PixiRigNode ? child.display : undefined;
+    if (!childDisplay) throw new Error('PixiRigFactory received a foreign display node');
+    // Re-adding an existing child changes its draw position without necessarily
+    // marking Pixi's depth sort dirty. Skin/trait refreshes must preserve order.
+    if (childDisplay.parent !== parentDisplay) parentDisplay.addChild(childDisplay);
+  }
   destroy(node: RigDisplayNode): void {
     if (!(node instanceof PixiRigNode)) return;
+    node.clipPolygon = undefined;
     node.clipRect = undefined;
     const texture = node.display instanceof Sprite ? node.display.texture : undefined;
     node.display.destroy({ children: false, texture: false, textureSource: false });

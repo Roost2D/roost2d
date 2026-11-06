@@ -24,6 +24,16 @@ const rig = {
 };
 const clip = { schema: 'roost2d.animation/v1', id: 'walk', durationMs: 100, tracks: [{ target: 'slot', targetId: 'body', keyframes: [{ timeMs: 0, x: 1 }] }] };
 
+test('normalized polygon clips require known slots, finite bounded points and visible area', () => {
+  const withPolygon = (polygon, slot = 'body') => ({ ...rig, attachmentGroups: { hat: { id: 'hat', slotId: 'body', attachmentIds: ['body.a'], slotClipPolygons: { [slot]: polygon } } } });
+  const polygon = { points: [[0,.4],[.6,.2],[1,.4],[1,1],[0,1]] };
+  assert.deepEqual(validateRigDefinition(withPolygon(polygon)), []);
+  assert.match(validateRigDefinition(withPolygon(polygon, 'missing')).join('\n'), /unknown clip slot/);
+  for (const points of [[], [[0,0],[1,1]], [[0,0],[.5,.5],[1,1]], [[0,0],[Infinity,0],[1,1]], [[-1,0],[1,0],[1,1]], [[0,0],[1.1,0],[1,1]], [[0,0,1],[1,0],[1,1]]]) {
+    assert.match(validateRigDefinition(withPolygon({ points })).join('\n'), /clip polygon/);
+  }
+});
+
 test('texture regions use non-negative integer origins and positive pixel dimensions', () => {
   const crop = region => ({ ...rig, attachments: [{ ...rig.attachments[0], texture: { assetId: 'one', region } }] });
   assert.deepEqual(validateRigDefinition(crop({ x: 0, y: 12, width: 30, height: 20 })), []);

@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import type { AnimationClipV1, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigClipRectV1, RigDefinitionV1, RigSocketV1, TextureRef } from '@roost2d/contracts';
+import type { AnimationClipV1, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigClipPolygonV1, RigClipRectV1, RigDefinitionV1, RigSocketV1, TextureRef } from '@roost2d/contracts';
 import { pickAnimationKeyframeValues, validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 
 export interface RigDisplayNode {
@@ -15,6 +15,7 @@ export interface RigDisplayNode {
   anchorX?: number;
   anchorY?: number;
   clipRect?: RigClipRectV1;
+  clipPolygon?: RigClipPolygonV1;
 }
 
 export interface RigDisplayFactory {
@@ -256,10 +257,17 @@ export class RigRuntime {
       this.attachments.get(attachment.id)!.visible = visible;
     }
     this.applyGroupDepthOverrides();
-    for (const node of this.attachments.values()) if (node.clipRect !== undefined) node.clipRect = undefined;
+    for (const node of this.attachments.values()) {
+      if (node.clipRect !== undefined) node.clipRect = undefined;
+      if (node.clipPolygon !== undefined) node.clipPolygon = undefined;
+    }
     for (const group of this.activeGroups.values()) for (const [slotId, rect] of Object.entries(group.slotClipRects ?? {})) {
       const attachmentId = this.slotTransformAttachmentId(slotId);
       if (attachmentId) this.attachments.get(attachmentId)!.clipRect = { ...rect };
+    }
+    for (const group of this.activeGroups.values()) for (const [slotId, polygon] of Object.entries(group.slotClipPolygons ?? {})) {
+      const attachmentId = this.slotTransformAttachmentId(slotId);
+      if (attachmentId) this.attachments.get(attachmentId)!.clipPolygon = { points: polygon.points.map(point => [...point] as [number, number]) };
     }
     this.resolveFollowerParents();
     this.resolveSocketParents();

@@ -32,7 +32,7 @@ npm ci
 npm run release:verify
 ```
 
-The release gate compiles all packages, tests all public entry points, builds the showcase/docs, checks boundaries, and inspects all 13 npm tarballs.
+The release gate compiles all packages, tests all public entry points, builds the showcase/docs, checks boundaries, and inspects all 14 npm tarballs.
 
 ## Releases
 

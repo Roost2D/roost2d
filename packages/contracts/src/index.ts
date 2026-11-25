@@ -4,6 +4,8 @@ export interface TextureRef {
   frameId?: string;
   /** Display size in rig/layout coordinates without changing the sampled source pixels. */
   layoutScale?: number;
+  /** Optional crop in the original image's pixel coordinates, before layoutScale. */
+  region?: { x: number; y: number; width: number; height: number };
 }
 
 export interface TransformV1 {
@@ -53,6 +55,11 @@ export interface RigSlotV1 {
   defaultAttachmentId?: string;
 }
 
+export interface RigClipRectV1 { x: number; y: number; width: number; height: number; }
+
+/** Keep region in normalized, untrimmed attachment-image coordinates (0..1). */
+export interface RigClipPolygonV1 { points: [number, number][]; }
+
 export interface RigAttachmentGroupV1 {
   id: string;
   slotId: string;
@@ -61,6 +68,10 @@ export interface RigAttachmentGroupV1 {
   replacesSlotIds?: string[];
   /** Temporary base-slot transform depths used while this group is active. */
   slotZIndexOverrides?: Record<string, number>;
+  /** Clips the active base sprite in attachment-local layout coordinates while equipped. */
+  slotClipRects?: Record<string, RigClipRectV1>;
+  /** Curved keep regions; a polygon takes precedence over a rectangle for the same slot. */
+  slotClipPolygons?: Record<string, RigClipPolygonV1>;
   exclusive?: boolean;
   metadata?: Record<string, string | number | boolean>;
 }
@@ -86,6 +97,26 @@ export interface RigDefinitionV1 {
   sockets?: RigSocketV1[];
   metadata?: Record<string, string | number | boolean>;
 }
+
+/** Multiplicative slot color. Components use the inclusive range 0..1. */
+export interface RigSlotColorV2 { red: number; green: number; blue: number; alpha: number; }
+
+export interface RigSlotV2 extends RigSlotV1 {
+  /** Logical skin-relative attachment name in the setup pose; null explicitly hides the slot. */
+  defaultAttachmentName?: string | null;
+  color?: RigSlotColorV2;
+}
+
+/** Native sampled rigs require slot-global drawing and skin-relative attachment lookup. */
+export interface RigDefinitionV2 extends Omit<RigDefinitionV1, 'schema' | 'slots'> {
+  schema: 'roost2d.rig/v2';
+  slots: RigSlotV2[];
+  renderOrder: 'slots';
+  /** skin -> slot -> logical attachment name -> physical attachment id. `default` is the fallback. */
+  attachmentNames: Record<string, Record<string, Record<string, string>>>;
+}
+
+export type RigDefinition = RigDefinitionV1 | RigDefinitionV2;
 
 export interface AnimationKeyframeV1 extends TransformV1 {
   timeMs: number;
@@ -123,6 +154,32 @@ export interface AnimationClipV1 {
   cues?: AnimationCueV1[];
   tracks: AnimationTrackV1[];
 }
+
+/** Outgoing cubic controls are absolute [timeMs, value, timeMs, value], including overshoot. */
+export type AnimationCurveV2 = 'linear' | 'stepped' | { type: 'bezier'; controlPoints: [number, number, number, number] };
+export interface AnimationNumberKeyframeV2 { timeMs: number; value: number; curve?: AnimationCurveV2; }
+export type AnimationBonePropertyV2 = 'x' | 'y' | 'rotation' | 'scaleX' | 'scaleY';
+export type AnimationSlotPropertyV2 = 'red' | 'green' | 'blue' | 'alpha';
+export interface AnimationNumberChannelV2 {
+  kind: 'number';
+  target: 'bone' | 'slot';
+  targetId: string;
+  property: AnimationBonePropertyV2 | AnimationSlotPropertyV2;
+  /** Absolute setup-resolved engine values, y-down coordinates and radian rotations. */
+  keyframes: AnimationNumberKeyframeV2[];
+}
+export interface AnimationAttachmentChannelV2 {
+  kind: 'attachment';
+  target: 'slot';
+  targetId: string;
+  keyframes: Array<{ timeMs: number; name: string | null }>;
+}
+export type AnimationChannelV2 = AnimationNumberChannelV2 | AnimationAttachmentChannelV2;
+export interface AnimationClipV2 extends Omit<AnimationClipV1, 'schema' | 'tracks'> {
+  schema: 'roost2d.animation/v2';
+  channels: AnimationChannelV2[];
+}
+export type AnimationClip = AnimationClipV1 | AnimationClipV2;
 
 export interface AtlasFrameV1 {
   x: number;
@@ -190,6 +247,11 @@ export interface AssetFileV1 {
   attribution?: string;
   /** Generic packs may declare independently licensed replacement content. */
   license?: AssetLicense | (string & {});
+  /** Licence provenance: source document path and its corresponding runtime-pack path. */
+  licenseDocument?: string;
+  runtimeLicenseDocument?: string;
+  /** SHA-256 of the referenced licence document. */
+  licenseDocumentSha256?: string;
   ownership?: ProtectedAssetRights['ownership'];
   hostingAuthorized?: boolean;
   communityUseAuthorized?: boolean;
@@ -229,6 +291,11 @@ export interface RightsAssetV1 {
   category: string;
   series?: string;
   license: AssetLicense;
+  /** Licence provenance: source document path and its corresponding runtime-pack path. */
+  licenseDocument?: string;
+  runtimeLicenseDocument?: string;
+  /** SHA-256 of the referenced licence document. */
+  licenseDocumentSha256?: string;
   commercialUse: 'allowed' | 'separate-agreement-required' | 'prohibited';
   attribution: string;
   approved?: boolean;
@@ -450,7 +517,7 @@ export function validateAtlasManifest(atlas: unknown): string[] {
 export function validateRigDefinition(rig: unknown): string[] {
   if (!isRecord(rig)) return ['rig definition must be an object'];
   const errors: string[] = [];
-  if (rig.schema !== 'roost2d.rig/v1') errors.push('schema must be roost2d.rig/v1');
+  if (rig.schema !== 'roost2d.rig/v1' && rig.schema !== 'roost2d.rig/v2') errors.push('schema must be roost2d.rig/v1 or roost2d.rig/v2');
   if (!isNonEmptyString(rig.id)) errors.push('rig id is required');
 
   const boneEntries = readEntries(rig.bones, 'bones', errors);
@@ -483,6 +550,11 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (!isFiniteNumber(slot.zIndex)) errors.push(`${label}: slot zIndex must be a finite number`);
     if (slot.boneId !== undefined && (!isNonEmptyString(slot.boneId) || !bones.has(slot.boneId))) errors.push(`${label}: unknown bone ${String(slot.boneId)}`);
     if (slot.defaultAttachmentId !== undefined && (!isNonEmptyString(slot.defaultAttachmentId) || !attachments.has(slot.defaultAttachmentId))) errors.push(`${label}: unknown default attachment ${String(slot.defaultAttachmentId)}`);
+    if (rig.schema === 'roost2d.rig/v2') {
+      if (slot.defaultAttachmentName !== undefined && slot.defaultAttachmentName !== null && !isNonEmptyString(slot.defaultAttachmentName)) errors.push(`${label}: defaultAttachmentName must be a string or null`);
+      const color = slot.color;
+      if (color !== undefined && (!isRecord(color) || !['red', 'green', 'blue', 'alpha'].every(key => isFiniteNumber(color[key]) && color[key] >= 0 && color[key] <= 1))) errors.push(`${label}: slot color components must be in [0, 1]`);
+    }
   }
 
   for (const bone of boneEntries) {
@@ -499,6 +571,10 @@ export function validateRigDefinition(rig: unknown): string[] {
     else {
       if (texture.frameId !== undefined && !isNonEmptyString(texture.frameId)) errors.push(`${label}: texture frameId must be a string`);
       if (texture.layoutScale !== undefined && (!isFiniteNumber(texture.layoutScale) || texture.layoutScale <= 0)) errors.push(`${label}: texture layoutScale must be a positive finite number`);
+      if (texture.region !== undefined) {
+        const region = texture.region;
+        if (!isRecord(region) || !['x', 'y', 'width', 'height'].every(key => Number.isInteger(region[key])) || Number(region.x) < 0 || Number(region.y) < 0 || Number(region.width) <= 0 || Number(region.height) <= 0) errors.push(`${label}: texture region must contain non-negative integer origins and positive integer dimensions`);
+      }
     }
     if (!isFiniteNumber(attachment.zIndex)) errors.push(`${label}: attachment zIndex must be a finite number`);
     if (attachment.depthTarget !== undefined && attachment.depthTarget !== 'attachment' && attachment.depthTarget !== 'bone') errors.push(`${label}: depthTarget must be attachment or bone`);
@@ -520,6 +596,27 @@ export function validateRigDefinition(rig: unknown): string[] {
   // `Object.hasOwn` so a `defaultSkinId` of `toString` cannot resolve through the prototype.
   if (rig.defaultSkinId !== undefined && (!isNonEmptyString(rig.defaultSkinId) || !skins || !Object.hasOwn(skins, rig.defaultSkinId))) errors.push(`unknown default skin ${String(rig.defaultSkinId)}`);
 
+  if (rig.schema === 'roost2d.rig/v2') {
+    if (rig.renderOrder !== 'slots') errors.push('v2 rig renderOrder must be slots');
+    const names = readRecord(rig.attachmentNames, 'attachmentNames', errors);
+    if (rig.attachmentNames === undefined) errors.push('attachmentNames is required for a v2 rig');
+    const attachmentSlots = new Map(attachmentEntries.map(entry => [entry.id, entry.slotId]));
+    for (const [skinId, skin] of Object.entries(names ?? {})) {
+      if (!isRecord(skin)) { errors.push(`${skinId}: attachment name skin must be an object`); continue; }
+      for (const [slotId, entries] of Object.entries(skin)) {
+        if (!slots.has(slotId)) errors.push(`${skinId}: unknown attachment name slot ${slotId}`);
+        if (!isRecord(entries)) { errors.push(`${skinId}:${slotId}: attachment names must be an object`); continue; }
+        for (const [name, id] of Object.entries(entries)) {
+          if (!name || !isNonEmptyString(id) || !attachments.has(id)) errors.push(`${skinId}:${slotId}: unknown named attachment ${String(id)}`);
+          else if (attachmentSlots.get(id) !== slotId) errors.push(`${skinId}:${slotId}: named attachment ${id} belongs to another slot`);
+        }
+      }
+    }
+    for (const [skinId, skin] of Object.entries(skins ?? {})) if (isRecord(skin)) for (const [slotId, id] of Object.entries(skin)) {
+      if (isNonEmptyString(id) && attachmentSlots.get(id) !== slotId) errors.push(`${skinId}:${slotId}: attachment ${id} belongs to another slot`);
+    }
+  }
+
   const groups = readRecord(rig.attachmentGroups, 'attachmentGroups', errors);
   for (const [groupId, group] of Object.entries(groups ?? {})) {
     if (!isRecord(group)) { errors.push(`${groupId}: attachment group must be an object`); continue; }
@@ -530,6 +627,29 @@ export function validateRigDefinition(rig: unknown): string[] {
     if (group.replacesSlotIds !== undefined) {
       if (!Array.isArray(group.replacesSlotIds)) errors.push(`${groupId}: replacesSlotIds must be an array`);
       else for (const slotId of group.replacesSlotIds as unknown[]) if (!isNonEmptyString(slotId) || !slots.has(slotId)) errors.push(`${groupId}: unknown replacement slot ${String(slotId)}`);
+    }
+    if (group.slotClipRects !== undefined) {
+      if (!isRecord(group.slotClipRects)) errors.push(`${groupId}: slotClipRects must be an object`);
+      else for (const [slotId, rect] of Object.entries(group.slotClipRects)) {
+        if (!slots.has(slotId)) errors.push(`${groupId}: unknown clip slot ${slotId}`);
+        if (!isRecord(rect) || !['x','y','width','height'].every(key => isFiniteNumber(rect[key])) || Number(rect.width) <= 0 || Number(rect.height) <= 0) errors.push(`${groupId}: clip rect for ${slotId} must have finite coordinates and positive dimensions`);
+      }
+    }
+    if (group.slotClipPolygons !== undefined) {
+      if (!isRecord(group.slotClipPolygons)) errors.push(`${groupId}: slotClipPolygons must be an object`);
+      else for (const [slotId, polygon] of Object.entries(group.slotClipPolygons)) {
+        if (!slots.has(slotId)) errors.push(`${groupId}: unknown clip slot ${slotId}`);
+        const points = isRecord(polygon) ? polygon.points : undefined;
+        if (!Array.isArray(points) || points.length < 3 || !points.every(point => Array.isArray(point) && point.length === 2 && point.every(value => isFiniteNumber(value) && value >= 0 && value <= 1))) {
+          errors.push(`${groupId}: clip polygon for ${slotId} needs at least three normalized finite points`);
+        } else {
+          const area = points.reduce((sum, point, index) => {
+            const next = points[(index + 1) % points.length];
+            return sum + point[0] * next[1] - next[0] * point[1];
+          }, 0);
+          if (Math.abs(area) < 1e-12) errors.push(`${groupId}: clip polygon for ${slotId} must have nonzero area`);
+        }
+      }
     }
     if (group.slotZIndexOverrides !== undefined) {
       if (!isRecord(group.slotZIndexOverrides)) errors.push(`${groupId}: slotZIndexOverrides must be an object`);
@@ -598,7 +718,7 @@ export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
   if (!isRecord(clip)) return ['animation clip must be an object'];
   const errors: string[] = [];
   const label = isNonEmptyString(clip.id) ? clip.id : 'animation clip';
-  if (clip.schema !== 'roost2d.animation/v1') errors.push('schema must be roost2d.animation/v1');
+  if (clip.schema !== 'roost2d.animation/v1' && clip.schema !== 'roost2d.animation/v2') errors.push('schema must be roost2d.animation/v1 or roost2d.animation/v2');
   if (!isNonEmptyString(clip.id)) errors.push('animation clip id is required');
   const durationMs = isFiniteNumber(clip.durationMs) && clip.durationMs > 0 ? clip.durationMs : undefined;
   if (durationMs === undefined) errors.push(`${label}: durationMs must be positive`);
@@ -621,6 +741,11 @@ export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
     if (cue.data !== undefined && (!isRecord(cue.data) || Object.values(cue.data).some((value) => !['string', 'number', 'boolean'].includes(typeof value) || (typeof value === 'number' && !Number.isFinite(value))))) errors.push(`${label}: cue data values must be finite primitive values`);
   }
 
+  if (clip.schema === 'roost2d.animation/v2') {
+    if (clip.tracks !== undefined) errors.push(`${label}: v2 clips use channels, not tracks`);
+    return [...errors, ...nativeChannelErrors(clip, rig, durationMs, label)];
+  }
+  if (clip.channels !== undefined) errors.push(`${label}: native channels require roost2d.animation/v2`);
   const tracks = readEntries(clip.tracks, `${label}.tracks`, errors);
   if (!tracks) return errors;
   const targetIds = rigTargetIds(rig);
@@ -640,6 +765,58 @@ export function validateAnimationClip(clip: unknown, rig?: unknown): string[] {
       if (keyframe.durationMs !== undefined && (!isFiniteNumber(keyframe.durationMs) || keyframe.durationMs < 0)) errors.push(`${trackLabel}: negative duration`);
       if (keyframe.ease !== undefined && typeof keyframe.ease !== 'string') errors.push(`${trackLabel}: ease must be a string`);
       errors.push(...keyframeValueErrors(keyframe, trackLabel));
+    }
+  }
+  return errors;
+}
+
+function nativeChannelErrors(clip: Record<string, unknown>, rig: unknown, durationMs: number | undefined, label: string): string[] {
+  const errors: string[] = [];
+  if (rig !== undefined && (!isRecord(rig) || rig.schema !== 'roost2d.rig/v2')) errors.push(`${label}: v2 clips require a v2 rig`);
+  const channels = readEntries(clip.channels, `${label}.channels`, errors);
+  const targets = rigTargetIds(rig);
+  const seen = new Set<string>();
+  for (const channel of channels ?? []) {
+    const target = channel.target;
+    if (target !== 'bone' && target !== 'slot') { errors.push(`${label}: invalid native target ${String(target)}`); continue; }
+    if (!isNonEmptyString(channel.targetId)) { errors.push(`${label}: channel targetId is required`); continue; }
+    const channelLabel = `${label}:${channel.targetId}`;
+    if (targets && !targets[target].has(channel.targetId)) errors.push(`${label}: unknown ${target} ${channel.targetId}`);
+    if (channel.kind !== 'number' && channel.kind !== 'attachment') { errors.push(`${channelLabel}: invalid channel kind`); continue; }
+    if (channel.kind === 'attachment' && target !== 'slot') errors.push(`${channelLabel}: attachment channels require a slot`);
+    if (channel.kind === 'number') {
+      const properties = target === 'bone' ? ['x', 'y', 'rotation', 'scaleX', 'scaleY'] : ['red', 'green', 'blue', 'alpha'];
+      if (!properties.includes(String(channel.property))) errors.push(`${channelLabel}: unsupported native property ${String(channel.property)}`);
+    }
+    const key = `${target}:${channel.targetId}:${channel.kind === 'number' ? String(channel.property) : 'attachment'}`;
+    if (seen.has(key)) errors.push(`${channelLabel}: duplicate native channel`);
+    seen.add(key);
+    const frames = readEntries(channel.keyframes, `${channelLabel}.keyframes`, errors);
+    if (!frames) continue;
+    if (!frames.length) errors.push(`${channelLabel}: native channel keyframes must not be empty`);
+    let previous = -1;
+    for (let index = 0; index < frames.length; index += 1) {
+      const frame = frames[index]!;
+      const time = frame.timeMs;
+      if (!isFiniteNumber(time) || time < previous || time < 0 || (durationMs !== undefined && time > durationMs)) errors.push(`${channelLabel}: native keyframe times must be non-decreasing and within the clip`);
+      else previous = time;
+      const allowed = channel.kind === 'number' ? ['timeMs', 'value', 'curve'] : ['timeMs', 'name'];
+      for (const field of Object.keys(frame)) if (!allowed.includes(field)) errors.push(`${channelLabel}: unsupported native keyframe property ${field}`);
+      if (channel.kind === 'attachment') {
+        if (frame.name !== null && !isNonEmptyString(frame.name)) errors.push(`${channelLabel}: attachment name must be a string or null`);
+        continue;
+      }
+      if (!isFiniteNumber(frame.value)) errors.push(`${channelLabel}: native value must be finite`);
+      else if (target === 'slot' && (frame.value < 0 || frame.value > 1)) errors.push(`${channelLabel}: slot color value must be in [0, 1]`);
+      const curve = frame.curve;
+      if (curve === undefined || curve === 'linear' || curve === 'stepped') continue;
+      if (!isRecord(curve) || curve.type !== 'bezier' || !Array.isArray(curve.controlPoints) || curve.controlPoints.length !== 4 || !curve.controlPoints.every(isFiniteNumber)) {
+        errors.push(`${channelLabel}: curve must be linear, stepped or four finite cubic controls`);
+        continue;
+      }
+      const next = frames[index + 1];
+      const [firstTime, , secondTime] = curve.controlPoints as number[];
+      if (!next || !isFiniteNumber(time) || !isFiniteNumber(next.timeMs) || firstTime! < time || firstTime! > next.timeMs || secondTime! < time || secondTime! > next.timeMs) errors.push(`${channelLabel}: cubic control times must stay within the outgoing segment`);
     }
   }
   return errors;

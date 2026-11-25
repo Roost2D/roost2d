@@ -36,7 +36,7 @@ test('multi-package publishing is resumable only for byte-identical existing ver
 
 test('publishing verifies every package version and requested dist-tag after registry propagation', async () => {
   const workflow = await readFile(resolve('.github/workflows/publish.yml'), 'utf8');
-  assert.match(workflow, /for attempt in \{1\.\.6\}/);
+  assert.match(workflow, /for attempt in \{1\.\.60\}/);
   assert.match(workflow, /dist-tags\.\$RELEASE_TAG/);
   assert.match(workflow, /Registry postflight passed/);
 });

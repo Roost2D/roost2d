@@ -96,6 +96,7 @@
         "loadRoostrRig",
         "mergeUniqueSkin",
         "resolveChiknAction",
+        "resolveChiknTraitGroup",
         "resolveUniqueSkin",
         "roostrAnimationMetadataUrl",
         "roostrRigMetadataUrl",
@@ -104,18 +105,27 @@
         "validateCharacterRecipe",
         "validateChiknTraitAnimationProfiles"
       ],
-      "declarationSha256": "1dd176e354c64111dcb77fdf6d176f904cf58bccd2ab0952607056deaacd2a8d"
+      "declarationSha256": "b3c0ff4f686da2db5d947bce82b44fcbc9bc48c154cbbedd0c5d8c2fb63d016d"
     },
     "@roost2d/contracts": {
       "entrypoint": ".",
       "exports": [
         "ANIMATION_KEYFRAME_KEYS",
+        "AnimationAttachmentChannelV2",
+        "AnimationBonePropertyV2",
+        "AnimationChannelV2",
+        "AnimationClip",
         "AnimationClipV1",
+        "AnimationClipV2",
         "AnimationCuePhase",
         "AnimationCueV1",
+        "AnimationCurveV2",
         "AnimationKeyframeKey",
         "AnimationKeyframeV1",
         "AnimationKeyframeValues",
+        "AnimationNumberChannelV2",
+        "AnimationNumberKeyframeV2",
+        "AnimationSlotPropertyV2",
         "AnimationTrackV1",
         "AssetBundleItemV1",
         "AssetBundleV1",
@@ -132,8 +142,14 @@
         "ProtectedAssetRights",
         "RigAttachmentGroupV1",
         "RigBoneV1",
+        "RigClipPolygonV1",
+        "RigClipRectV1",
+        "RigDefinition",
         "RigDefinitionV1",
+        "RigDefinitionV2",
+        "RigSlotColorV2",
         "RigSlotV1",
+        "RigSlotV2",
         "RigSocketV1",
         "RightsAssetV1",
         "RightsManifestV1",
@@ -148,7 +164,7 @@
         "validateRigDefinition",
         "validateRightsManifest"
       ],
-      "declarationSha256": "3839b47298190e41e1f02bc5ad135876a98ab0ac9508347e6e0e6e73d4bb327e"
+      "declarationSha256": "891e0e557d51803c1e08786bbdbb7640b625f4ab2dbcdc291effcc3c34d35451"
     },
     "@roost2d/core": {
       "entrypoint": ".",
@@ -294,7 +310,7 @@
         "PixiRigFactory",
         "PixiRigNode"
       ],
-      "declarationSha256": "dc20033fe8e0a36e4860b874e906f1dfd2a3ffa85c6a7b3b573e44188d91aaed"
+      "declarationSha256": "c609dedd1656729931fd3ecf3e70dd70c6bfea761f28f30bfa23ea63f082f4c5"
     },
     "@roost2d/rig2d": {
       "entrypoint": ".",
@@ -308,7 +324,7 @@
         "RigPlayOptions",
         "RigRuntime"
       ],
-      "declarationSha256": "bc79085ebb95c4d0e85ccd6ebce7128b9ae9bccf9638ff9b493384c7aa23b01a"
+      "declarationSha256": "c667aa7b49bdc3c653c9e72ccffe656db5645187585d8b3ff6d316bcc29403f9"
     },
     "@roost2d/tooling": {
       "entrypoint": ".",
@@ -324,6 +340,9 @@
         "JsonReadResult",
         "PixiAtlasImportOptions",
         "PixiAtlasImportResult",
+        "Spine42ImportOptions",
+        "Spine42ImportResult",
+        "Spine42TextureContext",
         "assertBudgets",
         "buildAssetManifest",
         "buildAtlases",
@@ -331,6 +350,7 @@
         "createProject",
         "findDuplicateImages",
         "importPixiAtlas",
+        "importSpine42",
         "inspectImages",
         "readJsonFile",
         "sha256Hex",
@@ -344,7 +364,7 @@
         "verifyToolingBoundary",
         "verifyToolingPackageGraph"
       ],
-      "declarationSha256": "9e7b2347770d063cdba9043f8e877ec699b40995430b825d02cfdc19b9434a04"
+      "declarationSha256": "4a4ccd14868011093c37308418350889de34161e7fee1a8649d8e1f8da0795e1"
     }
   }
 }

@@ -1,7 +1,7 @@
-import { Application, Container, Graphics, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
+import { Application, Container, Graphics, ImageSource, Rectangle, RenderLayer, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode, RigRuntime } from '@roost2d/rig2d';
-import type { AtlasFrameV1, TextureRef } from '@roost2d/contracts';
+import type { AtlasFrameV1, RigClipPolygonV1, RigClipRectV1, RigDefinition, TextureRef } from '@roost2d/contracts';
 import { sampleProceduralEffect, type ProceduralEffectDescriptor } from '@roost2d/effects';
 
 export interface PixiHostOptions extends Partial<ApplicationOptions> {
@@ -188,7 +188,43 @@ export class PixiAssetLoader {
 }
 
 export class PixiRigNode implements RigDisplayNode {
+  private clipping?: RigClipRectV1;
+  private polygon?: RigClipPolygonV1;
+  private clipGraphic?: Graphics;
   constructor(readonly display: Container) {}
+  get clipRect(): RigClipRectV1 | undefined { return this.clipping; }
+  set clipRect(value: RigClipRectV1 | undefined) {
+    this.clipping = value ? { ...value } : undefined;
+    this.updateClip();
+  }
+  get clipPolygon(): RigClipPolygonV1 | undefined { return this.polygon; }
+  set clipPolygon(value: RigClipPolygonV1 | undefined) {
+    if (value && !(this.display instanceof Sprite)) throw new Error('Normalized polygon clips require an attachment sprite');
+    this.polygon = value ? { points: value.points.map(point => [...point] as [number, number]) } : undefined;
+    this.updateClip();
+  }
+  private updateClip(): void {
+    if (!this.clipping && !this.polygon) {
+      this.display.mask = null;
+      this.clipGraphic?.destroy(); this.clipGraphic = undefined;
+      return;
+    }
+    if (!this.clipGraphic) {
+      this.clipGraphic = new Graphics();
+      this.clipGraphic.measurable = false;
+      this.display.addChild(this.clipGraphic);
+    }
+    this.clipGraphic.clear();
+    if (this.polygon && this.display instanceof Sprite) {
+      const sprite = this.display;
+      const { orig } = sprite.texture;
+      this.clipGraphic.poly(this.polygon.points.flatMap(([u, v]) => [(u - sprite.anchor.x) * orig.width, (v - sprite.anchor.y) * orig.height])).fill(0xffffff);
+    } else if (this.clipping) {
+      const { x, y, width, height } = this.clipping;
+      this.clipGraphic.rect(x, y, width, height).fill(0xffffff);
+    }
+    this.display.mask = this.clipGraphic;
+  }
   get x(): number { return this.display.x; } set x(value: number) { this.display.x = value; }
   get y(): number { return this.display.y; } set y(value: number) { this.display.y = value; }
   get rotation(): number { return this.display.rotation; } set rotation(value: number) { this.display.rotation = value; }
@@ -219,6 +255,7 @@ function textureOptions(source: TextureSource, frame: AtlasFrameV1, scale: numbe
 export class PixiRigFactory implements RigDisplayFactory {
   readonly root = new Container();
   private readonly derivedTextures = new Set<Texture>();
+  private drawLayer?: RenderLayer;
   constructor(private readonly textures: ReadonlyMap<string, Texture>) { this.root.sortableChildren = true; }
   createBone(id: string): PixiRigNode { const display = new Container(); display.label = id; display.sortableChildren = true; return new PixiRigNode(display); }
   createAttachment(id: string, texture: TextureRef): PixiRigNode {
@@ -226,23 +263,64 @@ export class PixiRigFactory implements RigDisplayFactory {
     if (!resolved) throw new Error(`Rig texture is not preloaded: ${texture.assetId}${texture.frameId ? `#${texture.frameId}` : ''}`);
     const layoutScale = texture.layoutScale ?? 1;
     if (!Number.isFinite(layoutScale) || layoutScale <= 0) throw new Error('Rig texture layoutScale must be a positive finite number');
-    const displayTexture = layoutScale === 1 ? resolved : this.deriveLayoutTexture(resolved, layoutScale);
+    const displayTexture = layoutScale === 1 && !texture.region ? resolved : this.deriveLayoutTexture(resolved, layoutScale, texture.region);
     const display = new Sprite(displayTexture); display.label = id; return new PixiRigNode(display);
   }
-  attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void { const parentDisplay = parent instanceof PixiRigNode ? parent.display : this.root; const childDisplay = child instanceof PixiRigNode ? child.display : undefined; if (!childDisplay) throw new Error('PixiRigFactory received a foreign display node'); parentDisplay.addChild(childDisplay); }
+  attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void {
+    const parentDisplay = parent instanceof PixiRigNode ? parent.display : this.root;
+    const childDisplay = child instanceof PixiRigNode ? child.display : undefined;
+    if (!childDisplay) throw new Error('PixiRigFactory received a foreign display node');
+    // Re-adding an existing child changes its draw position without necessarily
+    // marking Pixi's depth sort dirty. Skin/trait refreshes must preserve order.
+    if (childDisplay.parent !== parentDisplay) parentDisplay.addChild(childDisplay);
+  }
+  setDrawOrder(attachments: readonly RigDisplayNode[]): void {
+    const displays = attachments.map(node => {
+      if (!(node instanceof PixiRigNode) || !(node.display instanceof Sprite)) throw new Error('Global rig draw order requires Pixi attachment sprites');
+      return node.display;
+    });
+    if (!this.drawLayer) {
+      this.drawLayer = new RenderLayer({ sortableChildren: false });
+      this.drawLayer.label = 'rig-slot-order';
+      this.root.addChild(this.drawLayer);
+    }
+    this.drawLayer.detachAll();
+    this.drawLayer.attach(...displays);
+  }
   destroy(node: RigDisplayNode): void {
     if (!(node instanceof PixiRigNode)) return;
+    node.clipPolygon = undefined;
+    node.clipRect = undefined;
     const texture = node.display instanceof Sprite ? node.display.texture : undefined;
     node.display.destroy({ children: false, texture: false, textureSource: false });
     if (texture && this.derivedTextures.delete(texture)) texture.destroy(false);
   }
   destroyRoot(): void {
+    this.drawLayer?.detachAll();
     this.root.destroy({ children: true, texture: false, textureSource: false });
+    this.drawLayer = undefined;
     for (const texture of this.derivedTextures) texture.destroy(false);
     this.derivedTextures.clear();
   }
 
-  private deriveLayoutTexture(texture: Texture, layoutScale: number): Texture {
+  private deriveLayoutTexture(texture: Texture, layoutScale: number, region?: TextureRef['region']): Texture {
+    let frame = texture.frame.clone();
+    let orig = texture.orig.clone();
+    let trim = texture.trim?.clone();
+    if (region) {
+      if (![region.x, region.y, region.width, region.height].every(Number.isInteger) || region.x < 0 || region.y < 0 || region.width <= 0 || region.height <= 0 || region.x + region.width > orig.width || region.y + region.height > orig.height) throw new Error('Rig texture region must stay inside the original image');
+      const sourceTrim = trim ?? new Rectangle(0, 0, orig.width, orig.height);
+      const x = Math.max(region.x, sourceTrim.x); const y = Math.max(region.y, sourceTrim.y);
+      const width = Math.min(region.x + region.width, sourceTrim.x + sourceTrim.width) - x;
+      const height = Math.min(region.y + region.height, sourceTrim.y + sourceTrim.height) - y;
+      if (width <= 0 || height <= 0) throw new Error('Rig texture region has no sampled pixels');
+      const offsetX = x - sourceTrim.x; const offsetY = y - sourceTrim.y;
+      if (texture.rotate === 0) frame = new Rectangle(frame.x + offsetX, frame.y + offsetY, width, height);
+      else if (texture.rotate === 2) frame = new Rectangle(frame.x + sourceTrim.height - offsetY - height, frame.y + offsetX, height, width);
+      else throw new Error('Rig texture regions support unrotated and clockwise atlas frames');
+      orig = new Rectangle(0, 0, region.width, region.height);
+      trim = new Rectangle(x - region.x, y - region.y, width, height);
+    }
     const scaled = (rectangle: Rectangle) => new Rectangle(
       rectangle.x * layoutScale,
       rectangle.y * layoutScale,
@@ -251,9 +329,9 @@ export class PixiRigFactory implements RigDisplayFactory {
     );
     const derived = new Texture({
       source: texture.source,
-      frame: texture.frame.clone(),
-      orig: scaled(texture.orig),
-      trim: texture.trim ? scaled(texture.trim) : undefined,
+      frame,
+      orig: scaled(orig),
+      trim: trim ? scaled(trim) : undefined,
       rotate: texture.rotate,
     });
     this.derivedTextures.add(derived);
@@ -285,7 +363,7 @@ export class PixiProceduralEffect {
    * Creates an effect at its authored rig origin. Detached effects are immediately reparented while
    * preserving the release transform, so later recoil or recovery cannot drag a projectile.
    */
-  static fromRig(descriptor: ProceduralEffectDescriptor, rig: RigRuntime, effectRoot: Container): PixiProceduralEffect {
+  static fromRig(descriptor: ProceduralEffectDescriptor, rig: RigRuntime<RigDefinition>, effectRoot: Container): PixiProceduralEffect {
     const origin = descriptor.origin ?? { target: 'socket' as const, targetId: 'weapon' };
     const node = rig.node(origin.target, origin.targetId);
     if (!(node instanceof PixiRigNode)) throw new Error(`Effect origin is unavailable in the Pixi rig: ${origin.target}:${origin.targetId}`);

@@ -7,3 +7,4 @@ dist-pack/
 docs/.vitepress/.temp/
 docs/.vitepress/dist/
 apps/showcase/dist/
+.release/

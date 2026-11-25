@@ -149,7 +149,7 @@ Application code does not apply Chikn/Roostr scale constants, move trait bones, 
 
 Do not compose a character by centering independently scaled source PNGs. The source files have different trimmed bounds, and some traits replace base slots while others overlay them. Persist the recipe's skin and trait-group IDs; the rig definition owns positioning, depth, animation following, and replacement semantics.
 
-Chikn/Roostr replacement tails raise the active tail branch above the body torso. Torso traits use the band below the foreground wing, neck traits sit above torso traits, and head traits sit above the base head and neck without hiding the selected head. Feet traits render above their foot branch and replace both base feet; single-image composite feet receive the adapter's authored rightward correction before composition.
+Chikn/Roostr replacement tails raise the active tail branch above the body torso. Overlay tails preserve the original feathers and depth. Torso traits use the band below the foreground wing; explicitly authored rear panels and foreground head/neck pieces preserve their own ordering without hiding the selected head. Footwear ownership is declared per group: shoes replace toes, coloured legs replace shins and toes, and greaves/spurs/ankle accessories preserve the underlying feet. Consumers must not infer replacement ownership or placement from image count. See [the candidate assembly review](./trait-assembly-review.md) before adopting the unpublished corrections.
 
 Both species expose 40 matching clips spanning movement, combat, reactions, emotes, and ambient states. IDs use the species prefix, such as `chikn.run`, `roostr.wing_slap`, or `chikn.idle_breathe`. Repeat clips close at neutral; authored holds and reversible state loops declare their loop mode in the clip. Actions are one-shots, with persistent end states such as `knockdown` intentionally left posed for a following `get_up` or `resetPose()`.
 
@@ -158,6 +158,34 @@ Both species expose 40 matching clips spanning movement, combat, reactions, emot
 The engine does not require Chikn content. To use different or commercially cleared artwork, publish a `roost2d.assets/v1` manifest whose logical files point to your independently licensed images, then supply that manifest's base URL to the same `AssetManifestResolver` and `PixiAssetLoader` flow.
 
 Your replacement pack may keep your game's preferred logical IDs; only the optional `@roost2d/chikn-rigs` metadata expects the `chikn.rig.*` aliases. Generic scenes, rendering, asset integrity, atlases, input, and simulation packages work without that adapter or the Chikn repository.
+
+## Separate Official Coqfight set
+
+The optional `coqfight-v1` set uses native V2 rig/animation contracts. Its source
+data comes from the separately licensed asset pack; `@roost2d/chikn-rigs` continues
+to supply the authored V1 rigs, locomotion, recipes, and actions. Selecting the
+official set never retargets a saved authored recipe or replaces its walk/fly clips.
+
+Use the asset helper's `loadCoqfightCatalog({ pack })` to enumerate the snapshot,
+then `loadCoqfightCharacter({ pack, recipe })` to compose a selected character.
+The separate recipe schema is `chikn.coqfight-character/v1`; its `setId` is
+`coqfight-v1`, and `species`, `bodySkinId`, `traitSkinIds`, and `animationName` use
+the catalog's exact upstream names. Load the returned `assetIds` through the normal
+integrity-checked texture loader, then construct `RigRuntime` with the returned
+`definition` and `clips`. A Pixi rig supports the required global slot ordering.
+
+Idle, IdleHurt, Walk, Run, Victory and Flap repeat by default; combat/reaction clips play once. Upstream loop
+flags and game-script curves remain source metadata. Optional approach/lunge motion
+belongs below an application-owned display root and never moves authoritative
+positions, collision shapes, or hit timings. The pinned catalog includes the
+upstream locomotion additions; authored locomotion still remains a separate set.
+The new source does not provide particle artwork or sound recordings.
+
+This candidate is tested with local, code-only package tarballs. It does not imply
+a package publication or deployment. Later Roostrift/Bokstrike adoption must pin the
+reviewed library versions, immutable media hashes, and metadata together and keep
+their existing game-owned action/locomotion policies. Bokstrike rendering changes
+must cover web, Steam, and Windows native consumers in the same integration.
 
 ## Troubleshooting
 

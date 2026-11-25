@@ -1,4 +1,4 @@
-export type ChiknSecondaryMotion = 'rigid' | 'soft' | 'dangling' | 'cloth' | 'feather' | 'bulky' | 'elastic';
+export type ChiknSecondaryMotion = 'anchored' | 'rigid' | 'soft' | 'dangling' | 'cloth' | 'feather' | 'bulky' | 'elastic';
 export type ChiknPunchPreset = 'katana' | 'sword' | 'snips' | 'thrust' | 'golf' | 'pickaxe' | 'heavy-swing' | 'light-swing' | 'gun' | 'wand';
 export type ChiknKickPreset = 'natural' | 'fast' | 'heavy' | 'roller' | 'stiletto' | 'spur' | 'pendulum' | 'ironclaw';
 export type ChiknSpecialPreset = 'egg' | 'laser' | 'flame' | 'sonic' | 'disk' | 'pan' | 'wand' | 'energy' | 'liquid' | 'exhaust' | 'tail-stab' | 'tail-sweep' | 'tail-snap' | 'tail-slam';
@@ -291,7 +291,7 @@ roostr|tail/royal-flush|feather
 roostr|tail/foliage|feather
 roostr|tail/smokestack|rigid
 roostr|tail/gas-guzzler|rigid
-roostr|tail/chikn-jockey|elastic
+roostr|tail/chikn-jockey|anchored
 `;
 
 const catalog = new Map<string, CuratedTraitProfile>();

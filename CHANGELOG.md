@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.10.0-rc.1 - Unpublished candidate
+
+- Add explicit native V2 rig and animation contracts, with sampled cubic/stepped curves, named attachment changes, signed scales and slot RGBA while preserving authored V1 playback.
+- Preserve global slot ordering through Pixi RenderLayer independently of bone parenting; require PixiJS 8.11 or newer.
+- Add a bounded build-time Spine 4.2 region importer. Source content and converted official data remain in the separately licensed asset distribution, outside engine npm packages.
+- Keep the existing sampling/action APIs and add deterministic overlay cleanup, source compatibility tests and selected-character CPU measurements.
+
+## 0.8.0 - 2026-11-01
+
+- Correct Chikn/Roostr trait placements, source orientation and multipart layering against the V2 visuals, including hair, horns, Samurai, footwear, mounted riders, chains, eggs, held props, shorts, muscles and claws.
+- Keep wings and complete animated leg branches behind all 13 coat-like garments, restoring their original depths when garments are removed. Anchor Chikn Jockey to the back during action reactions.
+- Add original-image texture regions, reversible base-sprite clipping and category-aware NFT trait-label resolution with documented aliases. Preserve atlas integrity and shared texture ownership.
+- Require recorded owner release approval bound to the exact rig/rendering source fingerprint before publishing.
+
 ## 0.7.0 - 2026-09-16
 
 - Add stable `SeededRandom` checkpoints with bounded serialized cursors, validation, and exact historical sequence compatibility.

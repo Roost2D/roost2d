@@ -428,7 +428,62 @@
                         "name": "Trait_Head_Boxhead_B",
                         "texture": "Boxhead_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Hole in One": {
                 "slot": "Head",
@@ -437,7 +492,62 @@
                         "name": "Trait_Head_HoleInOne",
                         "texture": "Hole In One"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Panic Buy": {
                 "slot": "Head",
@@ -450,7 +560,62 @@
                         "name": "Trait_Head_PanicBuy_B",
                         "texture": "Panic Buy_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Smol Brain In Jar": {
                 "slot": "Head",
@@ -459,7 +624,62 @@
                         "name": "Trait_Head_SmolBrainInJar",
                         "texture": "Smol Brain In Jar"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Robocoq": {
                 "slot": "Head",
@@ -468,7 +688,62 @@
                         "name": "Trait_Head_Robocoq",
                         "texture": "Robocoq"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Green Party Hat": {
                 "slot": "Head",
@@ -481,7 +756,62 @@
                         "name": "Trait_Head_GreenPartyHat_B",
                         "texture": "Green Party Hat_B"
                     }
-                ]
+                ],
+                "head_coverage": "partial",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Bucket": {
                 "slot": "Head",
@@ -494,7 +824,62 @@
                         "name": "Trait_Head_Bucket_B",
                         "texture": "Bucket_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Quarter Pounder": {
                 "slot": "Head",
@@ -503,7 +888,62 @@
                         "name": "Trait_Head_QuarterPounder",
                         "texture": "Quarter Pounder"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Feed Bag": {
                 "slot": "Head",
@@ -512,7 +952,62 @@
                         "name": "Trait_Head_FeedBag",
                         "texture": "Feed Bag"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "CRT": {
                 "slot": "Head",
@@ -521,7 +1016,62 @@
                         "name": "Trait_Head_Crt",
                         "texture": "CRT"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Conspiracy Theorist": {
                 "slot": "Head",
@@ -530,7 +1080,62 @@
                         "name": "Trait_Head_ConspiracyTheorist",
                         "texture": "ConspiracyTheorist"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Golden Templar": {
                 "slot": "Head",
@@ -539,7 +1144,62 @@
                         "name": "Trait_Head_GoldenTemplar",
                         "texture": "Golden Templar"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Beaker": {
                 "slot": "Head",
@@ -548,7 +1208,62 @@
                         "name": "Trait_Head_Beaker",
                         "texture": "Beaker"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Quarterback": {
                 "slot": "Head",
@@ -557,7 +1272,62 @@
                         "name": "Trait_Head_Quarterback",
                         "texture": "Quarterback"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Plague Doctor": {
                 "slot": "Head",
@@ -566,7 +1336,8 @@
                         "name": "Trait_Head_PlagueDoctor",
                         "texture": "Plague Doctor"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Jell-O": {
                 "slot": "Head",
@@ -575,7 +1346,62 @@
                         "name": "Trait_Head_JellO",
                         "texture": "Jell-O"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Golden Bone Daddy": {
                 "slot": "Head",
@@ -584,7 +1410,62 @@
                         "name": "Trait_Head_GoldenBoneDaddy",
                         "texture": "GoldenBoneDaddy"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Gas Mask": {
                 "slot": "Head",
@@ -593,7 +1474,8 @@
                         "name": "Trait_Head_GasMask",
                         "texture": "Gasmask"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "OASIS": {
                 "slot": "Head",
@@ -602,7 +1484,8 @@
                         "name": "Trait_Head_Oasis",
                         "texture": "OASIS"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Hipster": {
                 "slot": "Head",
@@ -611,7 +1494,62 @@
                         "name": "Trait_Head_Hipster",
                         "texture": "Hipster"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Batter-Up": {
                 "slot": "Head",
@@ -620,7 +1558,62 @@
                         "name": "Trait_Head_BatterUp",
                         "texture": "Batter Up"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Templar": {
                 "slot": "Head",
@@ -629,7 +1622,62 @@
                         "name": "Trait_Head_Templar",
                         "texture": "Templar"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "MFD": {
                 "slot": "Head",
@@ -638,7 +1686,62 @@
                         "name": "Trait_Head_Mfd",
                         "texture": "MFD"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Daffy": {
                 "slot": "Head",
@@ -647,7 +1750,8 @@
                         "name": "Trait_Head_Daffy",
                         "texture": "Daffy"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Inherited Royalty": {
                 "slot": "Head",
@@ -656,7 +1760,62 @@
                         "name": "Trait_Head_InheritedRoyalty",
                         "texture": "Inherited Royalty"
                     }
-                ]
+                ],
+                "head_coverage": "partial",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Sombrero": {
                 "slot": "Head",
@@ -665,7 +1824,62 @@
                         "name": "Trait_Head_Sombrero",
                         "texture": "Sombrero"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Rosebud": {
                 "slot": "Head",
@@ -678,7 +1892,8 @@
                         "name": "Trait_Head_Rosebud_B",
                         "texture": "Rosebud_B"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Samurai": {
                 "slot": "Head",
@@ -691,7 +1906,62 @@
                         "name": "Trait_Head_Samurai_B",
                         "texture": "Samurai_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Construction Helmet": {
                 "slot": "Head",
@@ -700,25 +1970,142 @@
                         "name": "Trait_Head_ConstructionHelmet",
                         "texture": "ConstructionHelmet"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Grandpa": {
+                "aliases": [
+                    "Ropians Hat"
+                ],
                 "slot": "Head",
                 "attachments": [
                     {
                         "name": "Trait_Head_Grandpa",
                         "texture": "Grandpa"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Beard": {
+                "aliases": [
+                    "Hairy Old Man"
+                ],
                 "slot": "Head",
                 "attachments": [
                     {
                         "name": "Trait_Head_Beard",
                         "texture": "Beard"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Chef": {
                 "slot": "Head",
@@ -727,7 +2114,62 @@
                         "name": "Trait_Head_Chef",
                         "texture": "Chef"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Sunnies": {
                 "slot": "Head",
@@ -736,7 +2178,8 @@
                         "name": "Trait_Head_Sunnies",
                         "texture": "Sunnies"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "SuperVillain": {
                 "slot": "Head",
@@ -745,7 +2188,62 @@
                         "name": "Trait_Head_Supervillain",
                         "texture": "Super Villian"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Chrome Dome": {
                 "slot": "Head",
@@ -754,7 +2252,62 @@
                         "name": "Trait_Head_ChromeDome",
                         "texture": "Chrome Dome"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "PermaBull": {
                 "slot": "Head",
@@ -767,7 +2320,8 @@
                         "name": "Trait_Head_Permabull_B",
                         "texture": "Permabull_B"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Gentlechikn": {
                 "slot": "Head",
@@ -776,7 +2330,62 @@
                         "name": "Trait_Head_Gentlechikn",
                         "texture": "Gentlechikn"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Mullet": {
                 "slot": "Head",
@@ -785,7 +2394,8 @@
                         "name": "Trait_Head_Mullet",
                         "texture": "Mullet"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Woody": {
                 "slot": "Head",
@@ -794,7 +2404,62 @@
                         "name": "Trait_Head_Woody",
                         "texture": "Woody"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Roodboi Rootie": {
                 "slot": "Head",
@@ -803,7 +2468,62 @@
                         "name": "Trait_Head_RoodboiRootie",
                         "texture": "Roodboi Rootie"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Coqpit Commander": {
                 "slot": "Head",
@@ -812,7 +2532,62 @@
                         "name": "Trait_Head_CoqpitCommander",
                         "texture": "Coqpit Commander"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Snorkel": {
                 "slot": "Head",
@@ -821,7 +2596,8 @@
                         "name": "Trait_Head_Snorkel",
                         "texture": "Snorkel"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Sesh Hat": {
                 "slot": "Head",
@@ -834,7 +2610,62 @@
                         "name": "Trait_Head_SeshHat_B",
                         "texture": "Sesh Hat_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Beret": {
                 "slot": "Head",
@@ -843,7 +2674,62 @@
                         "name": "Trait_Head_Beret",
                         "texture": "Beret"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Framez": {
                 "slot": "Head",
@@ -852,7 +2738,8 @@
                         "name": "Trait_Head_Framez",
                         "texture": "Framez"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Coachella": {
                 "slot": "Head",
@@ -861,7 +2748,62 @@
                         "name": "Trait_Head_Coachella",
                         "texture": "Coachella"
                     }
-                ]
+                ],
+                "head_coverage": "partial",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Fez": {
                 "slot": "Head",
@@ -870,7 +2812,62 @@
                         "name": "Trait_Head_Fez",
                         "texture": "Fez"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Laser Eye": {
                 "slot": "Head",
@@ -879,7 +2876,8 @@
                         "name": "Trait_Head_LaserEye",
                         "texture": "Laser Eye"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Happy Birthday": {
                 "slot": "Head",
@@ -888,7 +2886,62 @@
                         "name": "Trait_Head_HappyBirthday",
                         "texture": "Happy Birthday"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Dirty Bird": {
                 "slot": "Head",
@@ -897,7 +2950,8 @@
                         "name": "Trait_Head_DirtyBird",
                         "texture": "Cigar_B"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Beanie": {
                 "slot": "Head",
@@ -906,7 +2960,62 @@
                         "name": "Trait_Head_Beanie",
                         "texture": "Beanie"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Winterproof": {
                 "slot": "Head",
@@ -919,7 +3028,62 @@
                         "name": "Trait_Head_Winterproof_B",
                         "texture": "Winterproof_B"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Gentleman's Pipe": {
                 "slot": "Head",
@@ -928,7 +3092,8 @@
                         "name": "Trait_Head_GentlemanSPipe",
                         "texture": "Gentleman_s Pipe_B"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "3D Specs": {
                 "slot": "Head",
@@ -937,7 +3102,8 @@
                         "name": "Trait_Head_3dSpecs",
                         "texture": "3D Specs"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Cap": {
                 "slot": "Head",
@@ -946,7 +3112,62 @@
                         "name": "Trait_Head_Cap",
                         "texture": "Cap"
                     }
-                ]
+                ],
+                "head_coverage": "covering",
+                "slot_clip_polygons": {
+                    "Head": {
+                        "points": [
+                            [
+                                0,
+                                1
+                            ],
+                            [
+                                0,
+                                0.4
+                            ],
+                            [
+                                0.18,
+                                0.32
+                            ],
+                            [
+                                0.23,
+                                0.235
+                            ],
+                            [
+                                0.31,
+                                0.18
+                            ],
+                            [
+                                0.41,
+                                0.15
+                            ],
+                            [
+                                0.53,
+                                0.145
+                            ],
+                            [
+                                0.64,
+                                0.155
+                            ],
+                            [
+                                0.73,
+                                0.18
+                            ],
+                            [
+                                0.79,
+                                0.2
+                            ],
+                            [
+                                1,
+                                0.2
+                            ],
+                            [
+                                1,
+                                1
+                            ]
+                        ]
+                    }
+                }
             },
             "Golden Comb": {
                 "slot": "Head",
@@ -955,7 +3176,8 @@
                         "name": "Trait_Head_GoldenComb",
                         "texture": "Golden Comb"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Celestial Comb": {
                 "slot": "Head",
@@ -964,7 +3186,8 @@
                         "name": "Trait_Head_CelestialComb",
                         "texture": "Celestial Comb"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Green Comb": {
                 "slot": "Head",
@@ -973,7 +3196,8 @@
                         "name": "Trait_Head_GreenComb",
                         "texture": "Green Comb"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             },
             "Purple Comb": {
                 "slot": "Head",
@@ -982,7 +3206,8 @@
                         "name": "Trait_Head_PurpleComb",
                         "texture": "Purple Comb"
                     }
-                ]
+                ],
+                "head_coverage": "accessory"
             }
         },
         "Neck": {
@@ -1001,6 +3226,18 @@
                     {
                         "name": "Trait_Neck_AvaxDegen",
                         "texture": "AVAX Degen"
+                    },
+                    {
+                        "name": "Trait_Neck_AvaxDegen_ChainLeft",
+                        "texture": "chain-avaxdegen-left"
+                    },
+                    {
+                        "name": "Trait_Neck_AvaxDegen_ChainRight",
+                        "texture": "chain-avaxdegen-right"
+                    },
+                    {
+                        "name": "Trait_Neck_AvaxDegen_ChainLink",
+                        "texture": "chain-avaxdegen-link"
                     }
                 ]
             },
@@ -1010,6 +3247,18 @@
                     {
                         "name": "Trait_Neck_CoqMaxi",
                         "texture": "Coq Maxi"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqMaxi_ChainLeft",
+                        "texture": "chain-bitcoinbling-left"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqMaxi_ChainRight",
+                        "texture": "chain-bitcoinbling-right"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqMaxi_ChainLink",
+                        "texture": "chain-bitcoinbling-link"
                     }
                 ]
             },
@@ -1032,6 +3281,18 @@
                     {
                         "name": "Trait_Neck_GweiGuzzler",
                         "texture": "Gwei Guzzler"
+                    },
+                    {
+                        "name": "Trait_Neck_GweiGuzzler_ChainLeft",
+                        "texture": "chain-ethereumgweiguzzler-left"
+                    },
+                    {
+                        "name": "Trait_Neck_GweiGuzzler_ChainRight",
+                        "texture": "chain-ethereumgweiguzzler-right"
+                    },
+                    {
+                        "name": "Trait_Neck_GweiGuzzler_ChainLink",
+                        "texture": "chain-ethereumgweiguzzler-link"
                     }
                 ]
             },
@@ -1041,6 +3302,18 @@
                     {
                         "name": "Trait_Neck_BitcoinMaxi",
                         "texture": "Bitcoin Maxi"
+                    },
+                    {
+                        "name": "Trait_Neck_BitcoinMaxi_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_BitcoinMaxi_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_BitcoinMaxi_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1050,6 +3323,18 @@
                     {
                         "name": "Trait_Neck_ChickMagnet",
                         "texture": "Chick Magnet"
+                    },
+                    {
+                        "name": "Trait_Neck_ChickMagnet_ChainLeft",
+                        "texture": "chain-bitcoinbling-left"
+                    },
+                    {
+                        "name": "Trait_Neck_ChickMagnet_ChainRight",
+                        "texture": "chain-bitcoinbling-right"
+                    },
+                    {
+                        "name": "Trait_Neck_ChickMagnet_ChainLink",
+                        "texture": "chain-bitcoinbling-link"
                     }
                 ]
             },
@@ -1059,6 +3344,18 @@
                     {
                         "name": "Trait_Neck_Clockchain",
                         "texture": "Clockchain"
+                    },
+                    {
+                        "name": "Trait_Neck_Clockchain_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_Clockchain_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_Clockchain_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1068,6 +3365,18 @@
                     {
                         "name": "Trait_Neck_MakeAWish",
                         "texture": "Make a Wish"
+                    },
+                    {
+                        "name": "Trait_Neck_MakeAWish_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_MakeAWish_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_MakeAWish_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1090,6 +3399,18 @@
                     {
                         "name": "Trait_Neck_StopLoss",
                         "texture": "Stop Loss"
+                    },
+                    {
+                        "name": "Trait_Neck_StopLoss_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_StopLoss_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_StopLoss_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1108,6 +3429,18 @@
                     {
                         "name": "Trait_Neck_JosephDrip",
                         "texture": "Joseph Drip"
+                    },
+                    {
+                        "name": "Trait_Neck_JosephDrip_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_JosephDrip_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_JosephDrip_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1126,6 +3459,18 @@
                     {
                         "name": "Trait_Neck_CoqTags",
                         "texture": "Coq Tags"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqTags_ChainLeft",
+                        "texture": "chain-bitcoinmaxi-left"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqTags_ChainRight",
+                        "texture": "chain-bitcoinmaxi-right"
+                    },
+                    {
+                        "name": "Trait_Neck_CoqTags_ChainLink",
+                        "texture": "chain-bitcoinmaxi-link"
                     }
                 ]
             },
@@ -1214,7 +3559,12 @@
                         "name": "Trait_Torso_GoldenBreastplate",
                         "texture": "Golden Breastplate"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Midas Muscles": {
                 "slot": "Torso",
@@ -1236,7 +3586,12 @@
                         "name": "Trait_Torso_DoctorCoq",
                         "texture": "Doctor Coq"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Dad Shirt": {
                 "slot": "Torso",
@@ -1245,7 +3600,12 @@
                         "name": "Trait_Torso_DadShirt",
                         "texture": "Dad Shirt"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Snib Snibs": {
                 "slot": "Torso",
@@ -1267,7 +3627,12 @@
                         "name": "Trait_Torso_GrandeLecoq",
                         "texture": "Grande LeCoq"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Kevlar": {
                 "slot": "Torso",
@@ -1276,7 +3641,12 @@
                         "name": "Trait_Torso_Kevlar",
                         "texture": "Kevlar"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Lord Quas": {
                 "slot": "Torso",
@@ -1294,7 +3664,12 @@
                         "name": "Trait_Torso_Tweed",
                         "texture": "Tweed"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Gameboi": {
                 "slot": "Torso",
@@ -1325,7 +3700,12 @@
                         "name": "Trait_Torso_BlackTShirt",
                         "texture": "Black T-Shirt"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "GoldFish": {
                 "slot": "Torso",
@@ -1343,7 +3723,12 @@
                         "name": "Trait_Torso_WhiteTShirt",
                         "texture": "White T-Shirt"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Red T-Shirt": {
                 "slot": "Torso",
@@ -1352,7 +3737,12 @@
                         "name": "Trait_Torso_RedTShirt",
                         "texture": "Red T-Shirt"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Breastplate": {
                 "slot": "Torso",
@@ -1361,7 +3751,12 @@
                         "name": "Trait_Torso_Breastplate",
                         "texture": "Breastplate"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Hendrix": {
                 "slot": "Torso",
@@ -1496,7 +3891,12 @@
                         "name": "Trait_Torso_PlayBoy",
                         "texture": "Play Boy"
                     }
-                ]
+                ],
+                "slot_z_index_overrides": {
+                    "Wing A": 8,
+                    "LegUpper A": -0.5,
+                    "LegUpper B": -1.5
+                }
             },
             "Shield": {
                 "slot": "Torso",
@@ -1682,7 +4082,8 @@
                         "name": "Trait_Feet_GoldenGreaves_B",
                         "texture": "GoldenGreaves_B"
                     }
-                ]
+                ],
+                "replaces": []
             },
             "Red Stilettos": {
                 "slot": "Feet",
@@ -1721,7 +4122,8 @@
                         "name": "Trait_Feet_Greaves_B",
                         "texture": "Greaves_B"
                     }
-                ]
+                ],
+                "replaces": []
             },
             "Blue Timbs": {
                 "slot": "Feet",
@@ -1747,7 +4149,8 @@
                         "name": "Trait_Feet_Spurs_B",
                         "texture": "Spur_B"
                     }
-                ]
+                ],
+                "replaces": []
             },
             "Ball'n Chain": {
                 "slot": "Feet",
@@ -1756,7 +4159,8 @@
                         "name": "Trait_Feet_BallNChain",
                         "texture": "BallNChain"
                     }
-                ]
+                ],
+                "replaces": []
             },
             "All Stars": {
                 "slot": "Feet",
@@ -1817,6 +4221,12 @@
                         "name": "Trait_Feet_GoldenFeet",
                         "texture": "Golden Feet"
                     }
+                ],
+                "replaces": [
+                    "LegFoot A",
+                    "LegFoot B",
+                    "LegLower A",
+                    "LegLower B"
                 ]
             },
             "IronClaw": {
@@ -1826,7 +4236,8 @@
                         "name": "Trait_Feet_IronClaw",
                         "texture": "IronClaw"
                     }
-                ]
+                ],
+                "replaces": []
             },
             "Celestial Feet": {
                 "slot": "Feet",
@@ -1835,6 +4246,12 @@
                         "name": "Trait_Feet_CelestialFeet",
                         "texture": "Celestial Feet"
                     }
+                ],
+                "replaces": [
+                    "LegFoot A",
+                    "LegFoot B",
+                    "LegLower A",
+                    "LegLower B"
                 ]
             },
             "Green Feet": {
@@ -1844,6 +4261,12 @@
                         "name": "Trait_Feet_GreenFeet",
                         "texture": "Green Feet"
                     }
+                ],
+                "replaces": [
+                    "LegFoot A",
+                    "LegFoot B",
+                    "LegLower A",
+                    "LegLower B"
                 ]
             },
             "Red Feet": {
@@ -1853,6 +4276,12 @@
                         "name": "Trait_Feet_RedFeet",
                         "texture": "Red Feet"
                     }
+                ],
+                "replaces": [
+                    "LegFoot A",
+                    "LegFoot B",
+                    "LegLower A",
+                    "LegLower B"
                 ]
             }
         },
@@ -1930,6 +4359,7 @@
                 ]
             },
             "Big Mama Fat Pipes": {
+                "replaces": [],
                 "slot": "Tail",
                 "attachments": [
                     {
@@ -1957,6 +4387,7 @@
                 ]
             },
             "Smokestack": {
+                "replaces": [],
                 "slot": "Tail",
                 "attachments": [
                     {
@@ -1966,6 +4397,7 @@
                 ]
             },
             "Gas Guzzler": {
+                "replaces": [],
                 "slot": "Tail",
                 "attachments": [
                     {
@@ -1975,6 +4407,7 @@
                 ]
             },
             "chikn Jockey": {
+                "replaces": [],
                 "slot": "Tail",
                 "attachments": [
                     {
@@ -2039,7 +4472,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Celestial_LegUpperA",
@@ -2160,7 +4594,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Bullion_LegUpperA",
@@ -2281,7 +4716,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Obsidian_LegUpperA",
@@ -2402,7 +4838,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Midnight_LegUpperA",
@@ -2523,7 +4960,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "MutantPurple_LegUpperA",
@@ -2644,7 +5082,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "FrogGreen_LegUpperA",
@@ -2765,7 +5204,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "PassionRed_LegUpperA",
@@ -2886,7 +5326,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "NighstalkerBlue_LegUpperA",
@@ -3007,7 +5448,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "SnowWhite_LegUpperA",
@@ -3095,7 +5537,8 @@
             "scale": 1.0,
             "z_index": 0,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Trait_Head_HoleInOne",
@@ -3122,13 +5565,15 @@
         {
             "name": "Trait_Head_PanicBuy_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 27,
+            "y": -9,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": 9,
+            "follow_slot": "Torso"
         },
         {
             "name": "Trait_Head_SmolBrainInJar",
@@ -3166,13 +5611,14 @@
         {
             "name": "Trait_Head_GreenPartyHat_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 11.0,
+            "y": -42.0,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Trait_Head_Bucket_A",
@@ -3190,11 +5636,12 @@
             "parent": null,
             "x": 0.0,
             "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Trait_Head_QuarterPounder",
@@ -3364,8 +5811,8 @@
         {
             "name": "Trait_Head_Mfd",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
+            "x": 5.0,
+            "y": -20.0,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -3408,8 +5855,8 @@
         {
             "name": "Trait_Head_Rosebud_A",
             "parent": null,
-            "x": -4.5,
-            "y": 10.5,
+            "x": -7.5,
+            "y": 1.0,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -3419,35 +5866,38 @@
         {
             "name": "Trait_Head_Rosebud_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
-            "z_index": 20,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Head_Samurai_A",
-            "parent": null,
-            "x": 1.0,
-            "y": -39.0,
+            "x": -6,
+            "y": -25,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Head_Samurai_A",
+            "parent": null,
+            "x": -3.5,
+            "y": -27.5,
+            "rotation": -5,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "render_order": 30
         },
         {
             "name": "Trait_Head_Samurai_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 14.6,
+            "y": -16.3,
+            "rotation": -5,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Trait_Head_ConstructionHelmet",
@@ -3496,10 +5946,10 @@
         {
             "name": "Trait_Head_Supervillain",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 5.0,
+            "y": -20.0,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
             "pivot_y": 0.5
@@ -3518,13 +5968,14 @@
         {
             "name": "Trait_Head_Permabull",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": -23.345627,
+            "y": -31.809037,
+            "rotation": -5,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": 30
         },
         {
             "name": "Trait_Head_Gentlechikn",
@@ -3606,13 +6057,14 @@
         {
             "name": "Trait_Head_SeshHat_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 1.5,
+            "y": -28.0,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "render_order": -1
         },
         {
             "name": "Trait_Head_Beret",
@@ -3718,8 +6170,8 @@
             "parent": null,
             "x": 0.0,
             "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
             "pivot_y": 0.5
@@ -3837,30 +6289,34 @@
         {
             "name": "Trait_Neck_GoldenPauldrons_A",
             "parent": null,
-            "x": -18.0,
-            "y": 17.0,
+            "x": -7,
+            "y": -29,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 12
         },
         {
             "name": "Trait_Neck_GoldenPauldrons_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 36,
+            "y": -29,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 9
         },
         {
             "name": "Trait_Neck_GweiGuzzler",
             "parent": null,
-            "x": 9.5,
-            "y": 37.0,
+            "x": 6,
+            "y": 24,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -3914,24 +6370,28 @@
         {
             "name": "Trait_Neck_ShoulderArmour_A",
             "parent": null,
-            "x": -14.5,
-            "y": 16.0,
+            "x": -7,
+            "y": -29,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 12
         },
         {
             "name": "Trait_Neck_ShoulderArmour_B",
             "parent": null,
-            "x": 0.0,
-            "y": 0.0,
-            "rotation": 0,
-            "scale": 1,
+            "x": 36,
+            "y": -29,
+            "rotation": 0.0,
+            "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 9
         },
         {
             "name": "Trait_Neck_StopLoss",
@@ -3958,8 +6418,8 @@
         {
             "name": "Trait_Neck_JosephDrip",
             "parent": null,
-            "x": 10.5,
-            "y": 33.5,
+            "x": 6,
+            "y": 25,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4068,57 +6528,67 @@
         {
             "name": "Trait_Torso_SnipSnips_A",
             "parent": null,
-            "x": 47.5,
-            "y": -4.0,
+            "x": 19,
+            "y": -10.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_SnipSnips_B",
             "parent": null,
-            "x": 14.5,
-            "y": -3.5,
+            "x": 62.5,
+            "y": -18,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing B",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_GoldenBreastplate",
             "parent": null,
-            "x": 10.5,
-            "y": 3.0,
+            "x": 8,
+            "y": 4,
             "rotation": 0.0,
-            "scale": 1.0,
+            "scale": 0.95,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 9
         },
         {
             "name": "Trait_Torso_MidasMuscles_A",
             "parent": null,
-            "x": 49.0,
-            "y": -30.0,
+            "x": 59.5,
+            "y": -27,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing B",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_MidasMuscles_B",
             "parent": null,
-            "x": -3.5,
-            "y": -25.0,
+            "x": -7,
+            "y": -27.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_DoctorCoq",
@@ -4145,24 +6615,28 @@
         {
             "name": "Trait_Torso_SnibSnibs_A",
             "parent": null,
-            "x": 48.5,
-            "y": -7.0,
+            "x": 19,
+            "y": -10.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_SnibSnibs_B",
             "parent": null,
-            "x": 18.5,
-            "y": -4.5,
+            "x": 62.5,
+            "y": -18,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing B",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_GrandeLecoq",
@@ -4189,13 +6663,15 @@
         {
             "name": "Trait_Torso_LordQuas",
             "parent": null,
-            "x": 9.0,
-            "y": 31.5,
+            "x": 20,
+            "y": 26,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Tweed",
@@ -4211,35 +6687,41 @@
         {
             "name": "Trait_Torso_Gameboi",
             "parent": null,
-            "x": 7.5,
-            "y": 30.0,
+            "x": 18.5,
+            "y": 24.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_HumanGrowthHormones_A",
             "parent": null,
-            "x": 46.5,
-            "y": -28.5,
+            "x": 59.5,
+            "y": -27,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing B",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_HumanGrowthHormones_B",
             "parent": null,
-            "x": 0.0,
-            "y": -24.5,
+            "x": -7,
+            "y": -27.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": 1
         },
         {
             "name": "Trait_Torso_BlackTShirt",
@@ -4255,13 +6737,15 @@
         {
             "name": "Trait_Torso_Goldfish",
             "parent": null,
-            "x": 6.0,
-            "y": 25.0,
+            "x": 17,
+            "y": 19.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_WhiteTShirt",
@@ -4288,35 +6772,41 @@
         {
             "name": "Trait_Torso_Breastplate",
             "parent": null,
-            "x": 10.0,
-            "y": 9.5,
+            "x": 8,
+            "y": 4,
             "rotation": 0.0,
-            "scale": 1.0,
+            "scale": 0.95,
             "z_index": 20,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 9
         },
         {
             "name": "Trait_Torso_Hendrix",
             "parent": null,
-            "x": 24.0,
-            "y": 34.5,
+            "x": 35,
+            "y": 29,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_FloppyDisk",
             "parent": null,
-            "x": 5.5,
-            "y": 31.5,
+            "x": 16.5,
+            "y": 26,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Saddle",
@@ -4332,123 +6822,145 @@
         {
             "name": "Trait_Torso_Boombox",
             "parent": null,
-            "x": 5.5,
-            "y": 32.0,
+            "x": 16.5,
+            "y": 26.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Mcfly",
             "parent": null,
-            "x": 10.5,
-            "y": 28.5,
+            "x": 21.5,
+            "y": 23,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Banjo",
             "parent": null,
-            "x": 12.5,
-            "y": 23.0,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_NotFootball",
-            "parent": null,
-            "x": 4.0,
-            "y": 33.5,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_Bone",
-            "parent": null,
-            "x": 4.0,
+            "x": 23.5,
             "y": 17.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_NotFootball",
+            "parent": null,
+            "x": 15,
+            "y": 28,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_Bone",
+            "parent": null,
+            "x": 15,
+            "y": 12,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Zippo",
             "parent": null,
-            "x": 23.5,
-            "y": 24.5,
+            "x": 34.5,
+            "y": 19,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_FancySword",
             "parent": null,
-            "x": 22.0,
-            "y": 25.5,
+            "x": 33,
+            "y": 20,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_RubberChikn",
             "parent": null,
-            "x": 13.5,
-            "y": 24.0,
+            "x": 24.5,
+            "y": 18.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_FreshFish",
             "parent": null,
-            "x": 5.5,
-            "y": 28.0,
+            "x": 16.5,
+            "y": 22.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Katana",
             "parent": null,
-            "x": 17.5,
-            "y": 23.5,
+            "x": 28.5,
+            "y": 18,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Omelette",
             "parent": null,
-            "x": 9.0,
-            "y": 33.0,
+            "x": 20,
+            "y": 27.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_PlayBoy",
@@ -4486,189 +6998,223 @@
         {
             "name": "Trait_Torso_HomeRun",
             "parent": null,
-            "x": 0.0,
-            "y": 26.0,
+            "x": 11,
+            "y": 20.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Hoops",
             "parent": null,
-            "x": 3.5,
-            "y": 30.0,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_AvaxBanger",
-            "parent": null,
-            "x": 2.5,
-            "y": 22.5,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_Gainz",
-            "parent": null,
-            "x": 1.5,
-            "y": 35.0,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_Banger",
-            "parent": null,
-            "x": 3.5,
-            "y": 23.0,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_CdRw",
-            "parent": null,
-            "x": 2.0,
-            "y": 28.5,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_Sword",
-            "parent": null,
-            "x": 29.5,
-            "y": 34.0,
-            "rotation": 0.0,
-            "scale": 1.0,
-            "z_index": 6,
-            "pivot_x": 0.5,
-            "pivot_y": 0.5
-        },
-        {
-            "name": "Trait_Torso_BigStick",
-            "parent": null,
-            "x": 11.5,
+            "x": 14.5,
             "y": 24.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_AvaxBanger",
+            "parent": null,
+            "x": 13.5,
+            "y": 17,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_Gainz",
+            "parent": null,
+            "x": 12.5,
+            "y": 29.5,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_Banger",
+            "parent": null,
+            "x": 14.5,
+            "y": 17.5,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_CdRw",
+            "parent": null,
+            "x": 13,
+            "y": 23,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_Sword",
+            "parent": null,
+            "x": 40.5,
+            "y": 28.5,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Torso_BigStick",
+            "parent": null,
+            "x": 22.5,
+            "y": 19,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 6,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Starfish",
             "parent": null,
-            "x": 7.5,
-            "y": 38.0,
+            "x": 18.5,
+            "y": 32.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_BigOlCornCob",
             "parent": null,
-            "x": -3.0,
-            "y": 19.0,
+            "x": 8,
+            "y": 13.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Shovel",
             "parent": null,
-            "x": 2.5,
-            "y": 24.0,
+            "x": 13.5,
+            "y": 18.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Spork",
             "parent": null,
-            "x": 17.5,
-            "y": 28.0,
+            "x": 28.5,
+            "y": 22.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_Spelunker",
             "parent": null,
-            "x": 13.5,
-            "y": 26.5,
+            "x": 24.5,
+            "y": 21,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_9Iron",
             "parent": null,
-            "x": 10.0,
-            "y": 15.0,
+            "x": 21,
+            "y": 9.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_TheKey",
             "parent": null,
-            "x": 16.0,
-            "y": 27.5,
+            "x": 27,
+            "y": 22,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_AFreshBaguette",
             "parent": null,
-            "x": 2.0,
-            "y": 14.5,
+            "x": 13,
+            "y": 9,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Torso_TootToot",
             "parent": null,
-            "x": 19.0,
-            "y": 29.0,
+            "x": 30,
+            "y": 23.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 6,
             "pivot_x": 0.5,
-            "pivot_y": 0.5
+            "pivot_y": 0.5,
+            "follow_slot": "Wing A",
+            "render_order": -1
         },
         {
             "name": "Trait_Feet_GoldenGreaves_A",
@@ -4761,8 +7307,8 @@
         {
             "name": "Trait_Feet_BlueTimbs_A",
             "parent": null,
-            "x": 2.0,
-            "y": -1.5,
+            "x": 8.5,
+            "y": -9.79565,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4772,8 +7318,8 @@
         {
             "name": "Trait_Feet_BlueTimbs_B",
             "parent": null,
-            "x": 6.0,
-            "y": -4.0,
+            "x": 9,
+            "y": -9.79565,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 0,
@@ -4805,8 +7351,8 @@
         {
             "name": "Trait_Feet_BallNChain",
             "parent": null,
-            "x": -39.0,
-            "y": -6.0,
+            "x": -31.5,
+            "y": -8.5,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4816,8 +7362,8 @@
         {
             "name": "Trait_Feet_AllStars_A",
             "parent": null,
-            "x": 4.0,
-            "y": -1.5,
+            "x": 7,
+            "y": -7.658949999999999,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4827,8 +7373,8 @@
         {
             "name": "Trait_Feet_AllStars_B",
             "parent": null,
-            "x": 20.0,
-            "y": -4.0,
+            "x": 7.5,
+            "y": -7.519599999999999,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 0,
@@ -4838,8 +7384,8 @@
         {
             "name": "Trait_Feet_SneakerHead_A",
             "parent": null,
-            "x": 4.5,
-            "y": -5.0,
+            "x": 3.7356,
+            "y": -10.9873,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4849,8 +7395,8 @@
         {
             "name": "Trait_Feet_SneakerHead_B",
             "parent": null,
-            "x": 8.0,
-            "y": -6.0,
+            "x": 6.2854,
+            "y": -11.85625,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 0,
@@ -4860,8 +7406,8 @@
         {
             "name": "Trait_Feet_Buckaroo_A",
             "parent": null,
-            "x": 3.0,
-            "y": -10.5,
+            "x": 5.8,
+            "y": -18.6676,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
@@ -4871,8 +7417,8 @@
         {
             "name": "Trait_Feet_Buckaroo_B",
             "parent": null,
-            "x": 7.5,
-            "y": -12.0,
+            "x": 6.3,
+            "y": -18.3889,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 0,
@@ -4904,7 +7450,7 @@
         {
             "name": "Trait_Feet_GoldenFeet",
             "parent": null,
-            "x": -5.5,
+            "x": 2.5,
             "y": -9.0,
             "rotation": 0.0,
             "scale": 1.0,
@@ -4915,7 +7461,7 @@
         {
             "name": "Trait_Feet_CelestialFeet",
             "parent": null,
-            "x": -6.0,
+            "x": 2.0,
             "y": -9.0,
             "rotation": 0.0,
             "scale": 1.0,
@@ -4926,7 +7472,7 @@
         {
             "name": "Trait_Feet_GreenFeet",
             "parent": null,
-            "x": -5.0,
+            "x": 3.0,
             "y": -8.5,
             "rotation": 0.0,
             "scale": 1.0,
@@ -4937,7 +7483,7 @@
         {
             "name": "Trait_Feet_RedFeet",
             "parent": null,
-            "x": -5.0,
+            "x": 3.0,
             "y": -9.5,
             "rotation": 0.0,
             "scale": 1.0,
@@ -5091,13 +7637,649 @@
         {
             "name": "Trait_Tail_ChiknJockey",
             "parent": null,
-            "x": 28.0,
-            "y": -17.5,
+            "x": -11.668694,
+            "y": -32.85,
+            "rotation": 0.0,
+            "scale": 0.66,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Torso",
+            "render_order": 7
+        },
+        {
+            "name": "Trait_Feet_IronClaw",
+            "parent": null,
+            "x": -8.0,
+            "y": -5.0,
             "rotation": 0.0,
             "scale": 1.0,
             "z_index": 20,
             "pivot_x": 0.5,
             "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Head_Permabull_B",
+            "parent": null,
+            "x": 12.458284,
+            "y": -34.008925,
+            "rotation": -5,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "render_order": -1
+        },
+        {
+            "name": "Trait_Head_Beard",
+            "parent": null,
+            "x": 6.0,
+            "y": 3.0,
+            "rotation": 0.0,
+            "scale": 1.0,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5
+        },
+        {
+            "name": "Trait_Neck_AvaxDegen_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.avaxdegen",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_AvaxDegen_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.avaxdegen",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_AvaxDegen_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.avaxdegen",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqMaxi_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqMaxi_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqMaxi_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_GweiGuzzler_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.ethereumgweiguzzler",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_GweiGuzzler_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.ethereumgweiguzzler",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_GweiGuzzler_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.ethereumgweiguzzler",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_BitcoinMaxi_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_BitcoinMaxi_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_BitcoinMaxi_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_ChickMagnet_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_ChickMagnet_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_ChickMagnet_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinbling",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_Clockchain_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_Clockchain_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_Clockchain_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_MakeAWish_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_MakeAWish_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_MakeAWish_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_StopLoss_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_StopLoss_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_StopLoss_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_JosephDrip_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_JosephDrip_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_JosephDrip_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqTags_ChainLeft",
+            "parent": null,
+            "x": -11.994,
+            "y": 6.776399999999999,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 0,
+                "y": 0,
+                "width": 280,
+                "height": 232
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqTags_ChainRight",
+            "parent": null,
+            "x": 8.676249999999996,
+            "y": 2.9674999999999994,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 0,
+                "width": 165,
+                "height": 150
+            }
+        },
+        {
+            "name": "Trait_Neck_CoqTags_ChainLink",
+            "parent": null,
+            "x": 3.7989999999999995,
+            "y": 12.954249999999998,
+            "rotation": 0,
+            "scale": 1,
+            "z_index": 20,
+            "pivot_x": 0.5,
+            "pivot_y": 0.5,
+            "follow_slot": "Head",
+            "render_order": 19,
+            "asset_id": "chikn.rig.bitcoinmaxi",
+            "texture_region": {
+                "x": 280,
+                "y": 150,
+                "width": 60,
+                "height": 65
+            }
         }
     ]
 }

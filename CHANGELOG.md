@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.0-coqfight.1 - Unpublished candidate
+## 0.10.0-rc.1 - Unpublished candidate
 
 - Add explicit native V2 rig and animation contracts, with sampled cubic/stepped curves, named attachment changes, signed scales and slot RGBA while preserving authored V1 playback.
 - Preserve global slot ordering through Pixi RenderLayer independently of bone parenting; require PixiJS 8.11 or newer.

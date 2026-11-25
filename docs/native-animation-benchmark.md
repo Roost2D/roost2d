@@ -1,7 +1,7 @@
 # Native animation CPU benchmark
 
 Measured on 25 November 2026 while preparing the unpublished Roost2D
-`0.10.0-coqfight.1` and Chikn helper `0.7.0-coqfight.1` candidates.
+`0.10.0-rc.1` and Chikn helper `0.7.0-rc.1` candidates.
 
 This measures animation sampling and Pixi property updates in Node. It does
 **not** measure browser frame rate, GPU rendering, texture uploads, media

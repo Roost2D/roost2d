@@ -1,6 +1,6 @@
 {
   "name": "roost2d",
-  "version": "0.10.0-coqfight.1",
+  "version": "0.10.0-rc.1",
   "private": true,
   "description": "Modular deterministic TypeScript game-engine packages for coding agents and browser games.",
   "type": "module",

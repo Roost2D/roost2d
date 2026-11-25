@@ -181,8 +181,7 @@ positions, collision shapes, or hit timings. The pinned catalog includes the
 upstream locomotion additions; authored locomotion still remains a separate set.
 The new source does not provide particle artwork or sound recordings.
 
-This candidate is tested with local, code-only package tarballs. It does not imply
-a package publication or deployment. Later Roostrift/Bokstrike adoption must pin the
+This release uses exact published package versions and a separately pinned media artifact. Later Roostrift/Bokstrike adoption must pin the
 reviewed library versions, immutable media hashes, and metadata together and keep
 their existing game-owned action/locomotion policies. Bokstrike rendering changes
 must cover web, Steam, and Windows native consumers in the same integration.

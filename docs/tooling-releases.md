@@ -47,7 +47,7 @@ The workflow uses npm 11.5.2, GitHub-hosted runners, and `id-token: write`; it d
 `NPM_TOKEN` or a maintainer's local npm login. The OIDC permission exists only in the final publish
 job. Dependency installation, builds, tests, and tarball creation happen in a separate job without
 an npm publishing credential. npm trusted publishing adds provenance automatically. A retry after a
-partial 13-package publish skips only versions whose registry integrity exactly matches the verified
+partial 14-package publish skips only versions whose registry integrity exactly matches the verified
 tarball and whose requested dist-tag is already correct, then checks every package/version/tag before
 succeeding. Dist-tag repair remains an explicit operator action rather than expanding the OIDC job's
 authority beyond publishing.

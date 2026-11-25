@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0-coqfight.1 - Unpublished candidate
+
+- Add explicit native V2 rig and animation contracts, with sampled cubic/stepped curves, named attachment changes, signed scales and slot RGBA while preserving authored V1 playback.
+- Preserve global slot ordering through Pixi RenderLayer independently of bone parenting; require PixiJS 8.11 or newer.
+- Add a bounded build-time Spine 4.2 region importer. Source content and converted official data remain in the separately licensed asset distribution, outside engine npm packages.
+- Keep the existing sampling/action APIs and add deterministic overlay cleanup, source compatibility tests and selected-character CPU measurements.
+
 ## 0.8.0 - 2026-11-01
 
 - Correct Chikn/Roostr trait placements, source orientation and multipart layering against the V2 visuals, including hair, horns, Samurai, footwear, mounted riders, chains, eggs, held props, shorts, muscles and claws.

@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import type { AnimationClipV1, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigClipPolygonV1, RigClipRectV1, RigDefinitionV1, RigSocketV1, TextureRef } from '@roost2d/contracts';
+import type { AnimationClip, AnimationChannelV2, AnimationNumberKeyframeV2, AnimationCueV1, AnimationTrackV1, RigAttachmentGroupV1, RigClipPolygonV1, RigClipRectV1, RigDefinition, RigDefinitionV1, RigSlotColorV2, RigSocketV1, TextureRef } from '@roost2d/contracts';
 import { pickAnimationKeyframeValues, validateAnimationClip, validateRigDefinition } from '@roost2d/contracts';
 
 export interface RigDisplayNode {
@@ -23,6 +23,8 @@ export interface RigDisplayFactory {
   createAttachment(id: string, texture: TextureRef): RigDisplayNode;
   attach(parent: RigDisplayNode | undefined, child: RigDisplayNode): void;
   destroy(node: RigDisplayNode): void;
+  /** Optional V2 capability: draw these attachments in the supplied global order. */
+  setDrawOrder?(attachments: readonly RigDisplayNode[]): void;
 }
 
 export interface RigPlayOptions {
@@ -57,26 +59,37 @@ export interface RigAnimationHandle {
   readonly completed: boolean;
 }
 
-export class RigRuntime {
+interface NativeRigPose { channels: readonly AnimationChannelV2[]; timeMs: number; active: boolean; }
+
+export class RigRuntime<D extends RigDefinition = RigDefinitionV1> {
   private readonly bones = new Map<string, RigDisplayNode>();
   private readonly attachments = new Map<string, RigDisplayNode>();
   private readonly sockets = new Map<string, RigDisplayNode>();
   private readonly slotAttachments = new Map<string, RigDisplayNode[]>();
-  private readonly clips = new Map<string, AnimationClipV1>();
+  private readonly clips = new Map<string, AnimationClip>();
   private readonly playbacks = new Map<string, RigAnimationPlayback>();
   private readonly baseBoneZIndexes = new Map<string, number | undefined>();
   private readonly activeGroups = new Map<string, RigAttachmentGroupV1>();
   private readonly manualAttachments = new Map<string, string>();
   private readonly visibilityOverrides = new Map<string, boolean>();
   private readonly layerSpeeds = new Map<string, number>();
+  private readonly nativePoses = new Map<string, NativeRigPose>();
+  private readonly nativeAttachmentNames = new Map<string, string | null>();
+  private readonly slotColors = new Map<string, RigSlotColorV2>();
+  private readonly gameTints = new Map<string, number>();
+  private readonly boneDefinitions = new Map<string, RigDefinition['bones'][number]>();
+  private readonly setupSlotColors = new Map<string, RigSlotColorV2>();
   private runtimeSpeed = 1;
   private mirrored = false;
   private skinId?: string;
   private disposed = false;
 
-  constructor(readonly definition: RigDefinitionV1, private readonly factory: RigDisplayFactory, clips: readonly AnimationClipV1[] = []) {
+  constructor(readonly definition: D, private readonly factory: RigDisplayFactory, clips: readonly AnimationClip[] = []) {
     const errors = validateRigDefinition(definition); if (errors.length) throw new Error(`Invalid rig definition:\n${errors.join('\n')}`);
+    if (definition.schema === 'roost2d.rig/v2' && !factory.setDrawOrder) throw new Error('V2 rigs require a display factory with global slot draw-order support');
+    if (definition.schema === 'roost2d.rig/v2') for (const slot of definition.slots) this.setupSlotColors.set(slot.id, { red: 1, green: 1, blue: 1, alpha: 1, ...slot.color });
     for (const bone of definition.bones) {
+      this.boneDefinitions.set(bone.id, bone);
       const node = factory.createBone(bone.id); this.applyTransform(node, bone); this.bones.set(bone.id, node);
     }
     for (const bone of definition.bones) if (!bone.followSlotId) factory.attach(bone.parentId ? this.bones.get(bone.parentId) : undefined, this.bones.get(bone.id)!);
@@ -91,6 +104,12 @@ export class RigRuntime {
       const slotDefinition = definition.slots.find(({ id }) => id === attachment.slotId);
       factory.attach(attachment.boneId ? this.bones.get(attachment.boneId) : slotDefinition?.boneId ? this.bones.get(slotDefinition.boneId) : undefined, node);
     }
+    if (definition.schema === 'roost2d.rig/v2') {
+      for (const slot of definition.slots) if (!this.slotAttachments.has(slot.id)) this.slotAttachments.set(slot.id, []);
+      const order = new Map(definition.slots.map((slot, index) => [slot.id, index]));
+      const attachments = [...definition.attachments].sort((left, right) => order.get(left.slotId)! - order.get(right.slotId)!);
+      factory.setDrawOrder!(attachments.map(attachment => this.attachments.get(attachment.id)!));
+    }
     for (const socket of definition.sockets ?? []) {
       const node = factory.createBone(`socket:${socket.id}`); this.applyTransform(node, socket); this.sockets.set(socket.id, node);
       factory.attach(this.socketParent(socket), node);
@@ -101,7 +120,7 @@ export class RigRuntime {
     if (initialSkin) this.applySkin(initialSkin); else this.applyVisibility();
   }
 
-  registerClip(clip: AnimationClipV1): this {
+  registerClip(clip: AnimationClip): this {
     const errors = validateAnimationClip(clip, this.definition); if (errors.length) throw new Error(`Invalid animation clip:\n${errors.join('\n')}`);
     this.clips.set(clip.id, clip); return this;
   }
@@ -136,10 +155,10 @@ export class RigRuntime {
     this.activeGroups.delete(slotId); this.applyVisibility();
   }
 
-  play(clip: AnimationClipV1, options?: RigPlayOptions): RigAnimationHandle;
+  play(clip: AnimationClip, options?: RigPlayOptions): RigAnimationHandle;
   play(clipId: string, options?: RigPlayOptions): RigAnimationHandle;
-  play(clipOrId: AnimationClipV1 | string, options?: RigPlayOptions): RigAnimationHandle;
-  play(clipOrId: AnimationClipV1 | string, options: RigPlayOptions = {}): RigAnimationHandle {
+  play(clipOrId: AnimationClip | string, options?: RigPlayOptions): RigAnimationHandle;
+  play(clipOrId: AnimationClip | string, options: RigPlayOptions = {}): RigAnimationHandle {
     const clip = typeof clipOrId === 'string' ? this.resolveClip(clipOrId) : this.useClip(clipOrId);
     const layer = options.layer ?? clip.defaultLayer ?? 'base'; this.stop(layer);
     const timeline = gsap.timeline({ paused: true,
@@ -147,19 +166,33 @@ export class RigRuntime {
       yoyo: clip.loop === true && clip.loopMode === 'ping-pong',
     });
     const mask = new Set(options.mask ?? clip.mask ?? []);
-    for (const track of clip.tracks) if (!mask.size || mask.has(track.targetId)) this.addTrack(timeline, track);
+    let samplePose: ((timeMs: number) => void) | undefined;
+    let nativePose: NativeRigPose | undefined;
+    this.clearNativeLayer(layer);
+    if (clip.schema === 'roost2d.animation/v1') {
+      for (const track of clip.tracks) if (!mask.size || mask.has(track.targetId)) this.addTrack(timeline, track);
+    } else {
+      const pose = { channels: clip.channels.filter(channel => !mask.size || mask.has(channel.targetId)), timeMs: 0, active: true };
+      nativePose = pose;
+      this.nativePoses.set(layer, pose);
+      samplePose = timeMs => { pose.timeMs = timeMs; this.applyNativePoses(pose); };
+      // One clock tween per clip. Native channels are sampled directly, not expanded into GSAP tweens.
+      timeline.to({ time: 0 }, { time: 1, duration: clip.durationMs / 1000, ease: 'none' }, 0);
+    }
     // Keep cue-only clips and authored recovery time addressable even when their last tween ends early.
     timeline.to({}, { duration: 0 }, clip.durationMs / 1000);
     const playback = new RigAnimationPlayback(timeline, clip, options, () => {
+      if (nativePose) nativePose.active = false;
       if (this.playbacks.get(layer) === playback) this.playbacks.delete(layer);
-    });
+    }, samplePose);
     playback.setSpeed(this.normaliseSpeed(options.speed ?? this.layerSpeeds.get(layer) ?? this.runtimeSpeed));
     this.playbacks.set(layer, playback);
+    samplePose?.(0);
     if (!options.controlled) playback.play();
     return playback;
   }
 
-  playOneShot(clipOrId: AnimationClipV1 | string, layer = 'reaction', onComplete?: () => void): RigAnimationHandle {
+  playOneShot(clipOrId: AnimationClip | string, layer = 'reaction', onComplete?: () => void): RigAnimationHandle {
     return this.play(clipOrId, { layer, repeat: 0, onComplete });
   }
 
@@ -214,11 +247,16 @@ export class RigRuntime {
 
   setTint(tint?: number, attachmentIds?: readonly string[]): void {
     const ids = attachmentIds ? new Set(attachmentIds) : undefined;
-    for (const [id, node] of this.attachments) if (!ids || ids.has(id)) node.tint = tint ?? 0xffffff;
+    for (const [id, node] of this.attachments) if (!ids || ids.has(id)) {
+      if (this.definition.schema === 'roost2d.rig/v2') this.gameTints.set(id, tint ?? 0xffffff);
+      else node.tint = tint ?? 0xffffff;
+    }
+    if (this.definition.schema === 'roost2d.rig/v2') this.applyNativeColors();
   }
 
   resetPose(): void {
     this.stop();
+    this.nativePoses.clear(); this.nativeAttachmentNames.clear(); this.slotColors.clear();
     for (const bone of this.definition.bones) this.applyTransform(this.bones.get(bone.id)!, bone);
     for (const attachment of this.definition.attachments) this.applyTransform(this.attachments.get(attachment.id)!, attachment);
     for (const socket of this.definition.sockets ?? []) this.applyTransform(this.sockets.get(socket.id)!, socket);
@@ -232,19 +270,21 @@ export class RigRuntime {
     if (this.disposed) return; this.disposed = true; this.stop();
     for (const node of [...this.sockets.values(), ...this.attachments.values(), ...this.bones.values()]) this.factory.destroy(node);
     this.sockets.clear(); this.attachments.clear(); this.slotAttachments.clear(); this.bones.clear(); this.clips.clear(); this.activeGroups.clear(); this.manualAttachments.clear(); this.visibilityOverrides.clear(); this.layerSpeeds.clear();
+    this.nativePoses.clear(); this.nativeAttachmentNames.clear(); this.slotColors.clear(); this.gameTints.clear();
+    this.boneDefinitions.clear(); this.setupSlotColors.clear();
   }
 
   /** Clips handed straight to `play` skip `registerClip`, so they are validated here instead. */
-  private useClip(clip: AnimationClipV1): AnimationClipV1 {
+  private useClip(clip: AnimationClip): AnimationClip {
     if (clip && this.clips.get(clip.id) === clip) return clip;
     const errors = validateAnimationClip(clip, this.definition);
     if (errors.length) throw new Error(`Invalid animation clip:\n${errors.join('\n')}`);
     return clip;
   }
 
-  private resolveClip(id: string): AnimationClipV1 {
+  private resolveClip(id: string): AnimationClip {
     let clip = this.clips.get(id); const visited = new Set<string>();
-    while (clip?.fallbackClipId && !clip.tracks.length) {
+    while (clip?.fallbackClipId && !(clip.schema === 'roost2d.animation/v1' ? clip.tracks : clip.channels).length) {
       if (visited.has(clip.id)) throw new Error(`Animation fallback cycle: ${id}`); visited.add(clip.id); clip = this.clips.get(clip.fallbackClipId);
     }
     if (!clip) throw new Error(`Unknown animation clip: ${id}`); return clip;
@@ -271,6 +311,7 @@ export class RigRuntime {
     }
     this.resolveFollowerParents();
     this.resolveSocketParents();
+    if (this.definition.schema === 'roost2d.rig/v2') this.applyNativeColors();
   }
 
   private applyGroupDepthOverrides(): void {
@@ -305,10 +346,19 @@ export class RigRuntime {
   private selectedAttachmentIds(): Set<string> {
     const selected = new Set<string>();
     const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
-    if (skin) for (const attachmentId of Object.values(skin)) if (attachmentId) selected.add(attachmentId);
-    else for (const slot of this.definition.slots) {
-      const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId;
-      if (id) selected.add(id);
+    if (this.definition.schema === 'roost2d.rig/v2') {
+      for (const slot of this.definition.slots) {
+        const name = this.nativeAttachmentNames.has(slot.id) ? this.nativeAttachmentNames.get(slot.id) : slot.defaultAttachmentName;
+        const id = name === undefined ? skin?.[slot.id] ?? slot.defaultAttachmentId : name === null ? undefined : this.lookupAttachmentName(slot.id, name);
+        if (id) selected.add(id);
+      }
+    } else if (skin) {
+      for (const attachmentId of Object.values(skin)) if (attachmentId) selected.add(attachmentId);
+    } else {
+      for (const slot of this.definition.slots) {
+        const id = this.manualAttachments.get(slot.id) ?? slot.defaultAttachmentId;
+        if (id) selected.add(id);
+      }
     }
     for (const [slotId, id] of this.manualAttachments) {
       for (const attachment of this.definition.attachments) if (attachment.slotId === slotId) selected.delete(attachment.id);
@@ -321,6 +371,10 @@ export class RigRuntime {
   }
 
   private selectedAttachmentId(slotId: string): string | undefined {
+    if (this.definition.schema === 'roost2d.rig/v2') {
+      const selected = this.selectedAttachmentIds();
+      return this.definition.attachments.find(attachment => attachment.slotId === slotId && selected.has(attachment.id))?.id;
+    }
     const manual = this.manualAttachments.get(slotId); if (manual) return manual;
     const group = this.activeGroups.get(slotId); if (group) return group.attachmentIds[0];
     const skin = this.skinId ? this.definition.skins?.[this.skinId] : undefined;
@@ -363,10 +417,138 @@ export class RigRuntime {
     return this.slotAnimationTarget(socket.targetId);
   }
 
+  private lookupAttachmentName(slotId: string, name: string): string | undefined {
+    const definition = this.definition;
+    if (definition.schema !== 'roost2d.rig/v2') return undefined;
+    const lookup = (skinId: string | undefined) => {
+      if (!skinId || !Object.hasOwn(definition.attachmentNames, skinId)) return undefined;
+      const skin = definition.attachmentNames[skinId]!;
+      if (!Object.hasOwn(skin, slotId)) return undefined;
+      const names = skin[slotId]!;
+      return Object.hasOwn(names, name) ? names[name] : undefined;
+    };
+    return lookup(this.skinId) ?? lookup('default');
+  }
+
+  private clearNativeLayer(layer: string): void {
+    const previous = this.nativePoses.get(layer);
+    if (!previous) return;
+    for (const channel of previous.channels) if (channel.kind === 'number' && channel.target === 'bone') this.restoreNativeBone(channel.targetId, channel.property);
+    this.nativePoses.delete(layer);
+    this.applyNativePoses();
+  }
+
+  private restoreNativeBone(id: string, property: string): void {
+    const bone = this.boneDefinitions.get(id);
+    if (!bone) return;
+    switch (property) {
+      case 'x': case 'y': case 'rotation': case 'scaleX': case 'scaleY':
+        this.writeNativeBone(id, property, bone[property]);
+    }
+  }
+
+  private writeNativeBone(id: string, property: string, value: number): void {
+    const node = this.bones.get(id);
+    if (!node) return;
+    // Explicit allowlist even after validation: retained JSON objects must not become arbitrary setters.
+    switch (property) {
+      case 'x': node.x = value; break;
+      case 'y': node.y = value; break;
+      case 'rotation': node.rotation = value; break;
+      case 'scaleX': node.scaleX = value; break;
+      case 'scaleY': node.scaleY = value; break;
+    }
+  }
+
+  private applyNativePoses(requestedPose?: NativeRigPose): void {
+    this.nativeAttachmentNames.clear(); this.slotColors.clear();
+    const poses = [...this.nativePoses.values()].filter(pose => pose.active || pose === requestedPose);
+    // Restoring driven properties first makes backward scrubbing and delayed first keys deterministic.
+    for (const pose of poses) for (const channel of pose.channels) {
+      if (channel.kind === 'number' && channel.target === 'bone') this.restoreNativeBone(channel.targetId, channel.property);
+    }
+    for (const pose of poses) for (const channel of pose.channels) {
+      if (channel.kind === 'attachment') {
+        const index = keyframeIndex(channel.keyframes, pose.timeMs);
+        if (index >= 0) this.nativeAttachmentNames.set(channel.targetId, channel.keyframes[index]!.name);
+        continue;
+      }
+      const value = sampleNativeNumber(channel.keyframes, pose.timeMs);
+      if (value === undefined) continue;
+      if (channel.target === 'bone') this.writeNativeBone(channel.targetId, channel.property, value);
+      else {
+        const color = this.nativeSlotColor(channel.targetId);
+        switch (channel.property) {
+          case 'red': color.red = value; break;
+          case 'green': color.green = value; break;
+          case 'blue': color.blue = value; break;
+          case 'alpha': color.alpha = value; break;
+        }
+      }
+    }
+    this.applyVisibility();
+  }
+
+  private nativeSlotColor(slotId: string): RigSlotColorV2 {
+    let color = this.slotColors.get(slotId);
+    if (!color) {
+      color = { red: 1, green: 1, blue: 1, alpha: 1, ...this.setupSlotColors.get(slotId) };
+      this.slotColors.set(slotId, color);
+    }
+    return color;
+  }
+
+  private applyNativeColors(): void {
+    for (const attachment of this.definition.attachments) {
+      const node = this.attachments.get(attachment.id)!;
+      const color = this.nativeSlotColor(attachment.slotId);
+      const original = attachment.tint ?? 0xffffff;
+      const tint = this.gameTints.get(attachment.id) ?? 0xffffff;
+      const red = Math.round(((original >> 16) & 255) * ((tint >> 16) & 255) / 255 * clampUnit(color.red));
+      const green = Math.round(((original >> 8) & 255) * ((tint >> 8) & 255) / 255 * clampUnit(color.green));
+      const blue = Math.round((original & 255) * (tint & 255) / 255 * clampUnit(color.blue));
+      node.tint = (red << 16) | (green << 8) | blue;
+      node.alpha = (attachment.alpha ?? 1) * clampUnit(color.alpha);
+    }
+  }
+
   private normaliseSpeed(speed: number): number {
     if (!Number.isFinite(speed) || speed < 0) throw new Error('Rig speed must be a finite non-negative number');
     return speed;
   }
+}
+
+function clampUnit(value: number): number { return Math.max(0, Math.min(1, value)); }
+
+function keyframeIndex(frames: readonly { timeMs: number }[], timeMs: number): number {
+  let low = 0; let high = frames.length - 1;
+  while (low <= high) {
+    const middle = (low + high) >>> 1;
+    if (frames[middle]!.timeMs <= timeMs) low = middle + 1;
+    else high = middle - 1;
+  }
+  return high;
+}
+
+function sampleNativeNumber(frames: readonly AnimationNumberKeyframeV2[], timeMs: number): number | undefined {
+  const index = keyframeIndex(frames, timeMs);
+  if (index < 0) return undefined;
+  const left = frames[index]!; const right = frames[index + 1];
+  if (!right || timeMs === left.timeMs || left.curve === 'stepped') return left.value;
+  if (!left.curve || left.curve === 'linear') return left.value + (right.value - left.value) * (timeMs - left.timeMs) / (right.timeMs - left.timeMs);
+  const [x1, y1, x2, y2] = left.curve.controlPoints;
+  const cubic = (start: number, first: number, second: number, end: number, t: number) => {
+    const inverse = 1 - t;
+    return inverse * inverse * inverse * start + 3 * inverse * inverse * t * first + 3 * inverse * t * t * second + t * t * t * end;
+  };
+  // Monotonic time inversion via bounded bisection preserves flat value segments and overshoot.
+  let low = 0; let high = 1;
+  for (let iteration = 0; iteration < 32; iteration += 1) {
+    const middle = (low + high) / 2;
+    if (cubic(left.timeMs, x1, x2, right.timeMs, middle) < timeMs) low = middle;
+    else high = middle;
+  }
+  return cubic(left.value, y1, y2, right.value, (low + high) / 2);
 }
 
 /** Playback wrapper shared by realtime rendering, previews, and deterministic export. */
@@ -378,9 +560,10 @@ class RigAnimationPlayback implements RigAnimationHandle {
 
   constructor(
     private readonly timeline: gsap.core.Timeline,
-    private readonly clip: AnimationClipV1,
+    private readonly clip: AnimationClip,
     private readonly options: RigPlayOptions,
     private readonly finalize: () => void,
+    private readonly samplePose?: (timeMs: number) => void,
   ) {
     timeline.eventCallback('onUpdate', () => this.observeAutomaticTime());
     timeline.eventCallback('onComplete', () => this.finish());
@@ -409,6 +592,7 @@ class RigAnimationPlayback implements RigAnimationHandle {
     // callback so a projectile snapshots the authored release socket instead of the later pose.
     if (emitCues && next >= this.#elapsedMs) this.emitCrossedCues(this.#elapsedMs, next, true);
     this.timeline.pause().totalTime(next / 1000, true);
+    this.samplePose?.(this.timeline.time() * 1000);
     this.#elapsedMs = next;
     if (next >= this.totalDurationMs()) this.finish();
   }
@@ -419,6 +603,7 @@ class RigAnimationPlayback implements RigAnimationHandle {
   }
 
   private observeAutomaticTime(): void {
+    this.samplePose?.(this.timeline.time() * 1000);
     if (this.#killed || this.options.controlled) return;
     const next = this.timeline.totalTime() * 1000;
     if (next >= this.#elapsedMs) this.emitCrossedCues(this.#elapsedMs, next);
@@ -430,7 +615,10 @@ class RigAnimationPlayback implements RigAnimationHandle {
       if (this.#emittedCues.has(cue.id)) continue;
       if ((cue.timeMs > previousMs || (previousMs === 0 && cue.timeMs === 0)) && cue.timeMs <= nextMs) {
         this.#emittedCues.add(cue.id);
-        if (sampleCuePose) this.timeline.pause().totalTime(cue.timeMs / 1000, true);
+        if (sampleCuePose) {
+          this.timeline.pause().totalTime(cue.timeMs / 1000, true);
+          this.samplePose?.(this.timeline.time() * 1000);
+        }
         this.options.onCue?.({ clipId: this.clip.id, cue, elapsedMs: cue.timeMs });
       }
     }
@@ -461,11 +649,11 @@ export class RigActionController {
   private disposed = false;
 
   constructor(
-    private readonly rig: RigRuntime,
+    private readonly rig: RigRuntime<RigDefinition>,
     private readonly options: { actionLayer?: string; locomotionLayer?: string; resumeLocomotion?: () => void } = {},
   ) {}
 
-  play(clipOrId: AnimationClipV1 | string, options: RigActionPlayOptions = {}): RigAnimationHandle {
+  play(clipOrId: AnimationClip | string, options: RigActionPlayOptions = {}): RigAnimationHandle {
     if (this.disposed) throw new Error('Rig action controller is disposed');
     this.cancel();
     if (options.fullBody ?? true) this.rig.stop(this.options.locomotionLayer ?? 'base');

@@ -159,6 +159,34 @@ The engine does not require Chikn content. To use different or commercially clea
 
 Your replacement pack may keep your game's preferred logical IDs; only the optional `@roost2d/chikn-rigs` metadata expects the `chikn.rig.*` aliases. Generic scenes, rendering, asset integrity, atlases, input, and simulation packages work without that adapter or the Chikn repository.
 
+## Separate Official Coqfight set
+
+The optional `coqfight-v1` set uses native V2 rig/animation contracts. Its source
+data comes from the separately licensed asset pack; `@roost2d/chikn-rigs` continues
+to supply the authored V1 rigs, locomotion, recipes, and actions. Selecting the
+official set never retargets a saved authored recipe or replaces its walk/fly clips.
+
+Use the asset helper's `loadCoqfightCatalog({ pack })` to enumerate the snapshot,
+then `loadCoqfightCharacter({ pack, recipe })` to compose a selected character.
+The separate recipe schema is `chikn.coqfight-character/v1`; its `setId` is
+`coqfight-v1`, and `species`, `bodySkinId`, `traitSkinIds`, and `animationName` use
+the catalog's exact upstream names. Load the returned `assetIds` through the normal
+integrity-checked texture loader, then construct `RigRuntime` with the returned
+`definition` and `clips`. A Pixi rig supports the required global slot ordering.
+
+Idle, IdleHurt, Walk, Run, Victory and Flap repeat by default; combat/reaction clips play once. Upstream loop
+flags and game-script curves remain source metadata. Optional approach/lunge motion
+belongs below an application-owned display root and never moves authoritative
+positions, collision shapes, or hit timings. The pinned catalog includes the
+upstream locomotion additions; authored locomotion still remains a separate set.
+The new source does not provide particle artwork or sound recordings.
+
+This candidate is tested with local, code-only package tarballs. It does not imply
+a package publication or deployment. Later Roostrift/Bokstrike adoption must pin the
+reviewed library versions, immutable media hashes, and metadata together and keep
+their existing game-owned action/locomotion policies. Bokstrike rendering changes
+must cover web, Steam, and Windows native consumers in the same integration.
+
 ## Troubleshooting
 
 - `404 runtime/manifest.json`: the supplied base URL points inside `runtime/` instead of to the directory above it, or the ZIP structure was flattened.

@@ -1,7 +1,7 @@
-import { Application, Container, Graphics, ImageSource, Rectangle, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
+import { Application, Container, Graphics, ImageSource, Rectangle, RenderLayer, Sprite, Texture, type ApplicationOptions, type PointData, type TextureSource } from 'pixi.js';
 import type { AssetManifestResolver, LazyAssetLoader } from '@roost2d/assets';
 import type { RigDisplayFactory, RigDisplayNode, RigRuntime } from '@roost2d/rig2d';
-import type { AtlasFrameV1, RigClipPolygonV1, RigClipRectV1, TextureRef } from '@roost2d/contracts';
+import type { AtlasFrameV1, RigClipPolygonV1, RigClipRectV1, RigDefinition, TextureRef } from '@roost2d/contracts';
 import { sampleProceduralEffect, type ProceduralEffectDescriptor } from '@roost2d/effects';
 
 export interface PixiHostOptions extends Partial<ApplicationOptions> {
@@ -255,6 +255,7 @@ function textureOptions(source: TextureSource, frame: AtlasFrameV1, scale: numbe
 export class PixiRigFactory implements RigDisplayFactory {
   readonly root = new Container();
   private readonly derivedTextures = new Set<Texture>();
+  private drawLayer?: RenderLayer;
   constructor(private readonly textures: ReadonlyMap<string, Texture>) { this.root.sortableChildren = true; }
   createBone(id: string): PixiRigNode { const display = new Container(); display.label = id; display.sortableChildren = true; return new PixiRigNode(display); }
   createAttachment(id: string, texture: TextureRef): PixiRigNode {
@@ -273,6 +274,19 @@ export class PixiRigFactory implements RigDisplayFactory {
     // marking Pixi's depth sort dirty. Skin/trait refreshes must preserve order.
     if (childDisplay.parent !== parentDisplay) parentDisplay.addChild(childDisplay);
   }
+  setDrawOrder(attachments: readonly RigDisplayNode[]): void {
+    const displays = attachments.map(node => {
+      if (!(node instanceof PixiRigNode) || !(node.display instanceof Sprite)) throw new Error('Global rig draw order requires Pixi attachment sprites');
+      return node.display;
+    });
+    if (!this.drawLayer) {
+      this.drawLayer = new RenderLayer({ sortableChildren: false });
+      this.drawLayer.label = 'rig-slot-order';
+      this.root.addChild(this.drawLayer);
+    }
+    this.drawLayer.detachAll();
+    this.drawLayer.attach(...displays);
+  }
   destroy(node: RigDisplayNode): void {
     if (!(node instanceof PixiRigNode)) return;
     node.clipPolygon = undefined;
@@ -282,7 +296,9 @@ export class PixiRigFactory implements RigDisplayFactory {
     if (texture && this.derivedTextures.delete(texture)) texture.destroy(false);
   }
   destroyRoot(): void {
+    this.drawLayer?.detachAll();
     this.root.destroy({ children: true, texture: false, textureSource: false });
+    this.drawLayer = undefined;
     for (const texture of this.derivedTextures) texture.destroy(false);
     this.derivedTextures.clear();
   }
@@ -347,7 +363,7 @@ export class PixiProceduralEffect {
    * Creates an effect at its authored rig origin. Detached effects are immediately reparented while
    * preserving the release transform, so later recoil or recovery cannot drag a projectile.
    */
-  static fromRig(descriptor: ProceduralEffectDescriptor, rig: RigRuntime, effectRoot: Container): PixiProceduralEffect {
+  static fromRig(descriptor: ProceduralEffectDescriptor, rig: RigRuntime<RigDefinition>, effectRoot: Container): PixiProceduralEffect {
     const origin = descriptor.origin ?? { target: 'socket' as const, targetId: 'weapon' };
     const node = rig.node(origin.target, origin.targetId);
     if (!(node instanceof PixiRigNode)) throw new Error(`Effect origin is unavailable in the Pixi rig: ${origin.target}:${origin.targetId}`);

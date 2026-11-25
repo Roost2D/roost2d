@@ -2,6 +2,8 @@
 
 PixiJS v8 application, camera, layer, atlas-texture, and Rig2D display adapters.
 
+Requires PixiJS **8.11.0 or later within v8**. `PixiRigFactory` supplies the native V2 `setDrawOrder` capability through a per-rig `RenderLayer`: sprites retain their bone parents and transforms while drawing in global slot order. The factory owns the layer and releases its membership during teardown without destroying shared textures. V1 rigs retain their existing hierarchy-based drawing.
+
 ```sh
 npm install pixi.js @roost2d/pixi
 ```

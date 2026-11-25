@@ -4,6 +4,7 @@ import { basename, dirname, relative, resolve, sep } from 'node:path';
 import sharp from 'sharp';
 import type { AssetFileV1, AssetManifestV1, AssetVariantV1, AtlasFrameV1, AtlasManifestV1, RightsManifestV1 } from '@roost2d/contracts';
 import { isSha256SRI, validateAnimationClip, validateAssetManifest, validateAtlasManifest, validateRigDefinition, validateRightsManifest } from '@roost2d/contracts';
+export { importSpine42, type Spine42TextureContext, type Spine42ImportOptions, type Spine42ImportResult } from './spine42.js';
 
 export type JsonReadResult = { ok: true; value: unknown } | { ok: false; errors: string[] };
 

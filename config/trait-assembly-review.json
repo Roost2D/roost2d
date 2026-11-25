@@ -1,8 +1,15 @@
 {
   "schema": "roost2d.trait-assembly-review/v1",
   "status": "approved",
-  "approvedBy": "Repository owner: explicit implementation and release plan, 2026-11-06",
-  "evidence": "Owner explicitly instructed implementation and release of the hat coverage plan. Corrected all-trait, pilot-cap and Sesh Hat before/after previews were delivered in the session before publication. The release instruction is bound to this corrected source fingerprint; no later owner visual sign-off is assumed. See docs/release-0.9.0.md and companion asset docs/headwear-0.6.3.md.",
-  "sourceSha256": "698316c82d3ab64f47c7d84129fc5d008d0478103ebd7c88e91617694815eece",
-  "requiredReview": "Corrected previews delivered before publication under the explicitly authorized implementation and release plan."
+  "approvedBy": "Repository owner: explicit stable publication and merge instruction, 2026-11-25",
+  "evidence": "After implementation and verification of PR #26 and companion asset/site PRs, the owner instructed: publish all new libs and update sites, including merge; selected stable releases and both starters/all related sites; then explicitly requested implementation of that release plan. This authorization binds the verified native-animation source fingerprint. Desktop/mobile preview evidence, 14,952 source-axis assertions and green release/CI checks were delivered. No additional owner visual sign-off is asserted. See docs/release-0.10.0.md.",
+  "sourceSha256": "0d698055f15b8a22b3e87775cc0cca66b93f653f453bdcb8a459f32fcf3b617b",
+  "requiredReview": "Explicit publication authorization for the completed, tested source and preview evidence; preserve previous release evidence.",
+  "previousApprovals": [
+    {
+      "approvedBy": "Repository owner: explicit implementation and release plan, 2026-11-06",
+      "sourceSha256": "698316c82d3ab64f47c7d84129fc5d008d0478103ebd7c88e91617694815eece",
+      "evidence": "Corrected all-trait, pilot-cap and Sesh Hat before/after previews were delivered before the explicitly requested 0.9.0 release. No later visual sign-off was assumed. See docs/release-0.9.0.md and companion asset docs/headwear-0.6.3.md."
+    }
+  ]
 }
